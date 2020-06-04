@@ -162,6 +162,9 @@ public class MotionBase : MonoBehaviour
         if (_coroutine != null) StopCoroutine(_coroutine);
         _coroutine = null;
         _isEnterUpdate = false;
+        if (ComputeBuffer != null)
+        ComputeBuffer.Release();
+        ComputeBuffer = null;
     }
 
 }

@@ -28,6 +28,12 @@
 
 #include "../GPUParticleComputeCommon.cginc"
 
+  struct DepthInfo
+{
+     int depth;
+     float originalDepth;
+     float handleDepth;
+};
 
 
 #include "Assets/Common/Shaders/Math.cginc"
@@ -37,34 +43,45 @@
 
 
 RWStructuredBuffer<PosAndDir> clickPointsBuff;
-float Z;
-//拖拽的时候的输入量
-float4 movePos;
-int actionState;
-float deltaTime;
-//归位的量
-float3 moveDir;
-//0索引图片的点,不受图片运动的影响
-float3 originPos;
+RWStructuredBuffer<DepthInfo> depthBuffer;
 
-//面片组成的矩形的宽
-float rectangleWidth;
-//面片组成矩形的高
-float rectangleHeight;
+
+float deltaTime;
+
+
+
+
 
 float4 clickPoint;
 
 //插值速度
 float MoveSpeed;
 
-float4 drag;
 
-int rot;
-//点的移动
+
+
+
 [numthreads(thread_group_size_x, thread_group_size_y, 1)]
 void CSPositionKernel (uint3 id : SV_DispatchThreadID)
 {
-   positionBuffer[id.x].position.x+=0.0065f;
+   float4 velocity = positionBuffer[id.x].velocity;
+
+   float3 moveTarget = positionBuffer[id.x].moveTarget;
+
+   float z = depthBuffer[velocity.x].handleDepth;
+   
+   float3 depthDir = float3(0,0,z);
+
+   float3 moveDir = float3(0.0075,0,0);
+
+    moveTarget +=  moveDir;
+
+	float3 allDir = moveTarget +depthDir;
+  
+
+   positionBuffer[id.x].position.xyz= lerp(positionBuffer[id.x].position.xyz,allDir,deltaTime);
+   positionBuffer[id.x].moveTarget = moveTarget;
+
 }
 
 //位置变换

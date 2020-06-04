@@ -458,4 +458,19 @@ public class TextureInstanced : MonoBehaviour, IDragHandler, IEndDragHandler
             Debug.Log(www.error);
         }
     }
+
+    private void OnGUI()
+    {
+        if (GUI.Button(new Rect(0f, 0f, 100f, 100f), "test"))
+        {
+
+           ClassiFicationMotion. ChangeState(1);
+        }
+        if (GUI.Button(new Rect(100f, 0f, 100f, 100f), "test2"))
+        {
+
+            MultiDepthMotion.ChangeState();
+        }
+    }
+
 }

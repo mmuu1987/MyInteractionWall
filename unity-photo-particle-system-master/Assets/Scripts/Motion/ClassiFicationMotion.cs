@@ -211,7 +211,7 @@ public class ClassiFicationMotion : MotionInputMoveBase
     /// <summary>
     /// 改变状态，直接把大矩形填满整个屏幕，其他大矩形则透明掉
     /// </summary>
-    private void ChangeState(int classNumber)
+    public void ChangeState(int classNumber)
     {
        
 
@@ -403,14 +403,7 @@ public class ClassiFicationMotion : MotionInputMoveBase
     }
 
     private int rot = 0;
-    private void OnGUI()
-    {
-        if (GUI.Button(new Rect(0f, 0f, 100f, 100f), "test"))
-        {
 
-            ChangeState(1);
-        }
-    }
     private Vector3[] QuadTest(Rect rect, int count, float z,out Vector2 scale)
     {
 

@@ -18,7 +18,7 @@ public struct DepthInfo
     /// </summary>
     public float handleDepth;
     /// <summary>
-    /// toDepth深度下的缩放
+    /// originalDepth深度下的缩放
     /// </summary>
     public float scale;
 
@@ -157,7 +157,6 @@ public class MultiDepthMotion : MotionInputMoveBase
     private void SetDepth(int form,int to)
     {
         float z1 = _depths[form].handleDepth;
-
 
         float z2 = _depths[to].handleDepth;
 

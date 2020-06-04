@@ -76,40 +76,44 @@ public class MultiDepthMotion : MotionInputMoveBase
         PosAndDir[] newData = temp.ToArray();
         int stride = Marshal.SizeOf(typeof(DepthInfo));
          depthBuffer = new ComputeBuffer(5, stride);
-         _depths = new DepthInfo[6];
-        int k = 1;
-        float z = -5;
-        _depths[0] = new DepthInfo(k,z,z,1);
-        for (int j = 1; j <= newData.Length; j++)
+         _depths = new DepthInfo[5];
+        int k = 0;
+        float z = 20;
+      
+        for (int j = 0; j < newData.Length; j++)
         {
-            _screenPosLeftDown = Camera.main.ScreenToWorldPoint(new Vector3(0, 0, z - Camera.main.transform.position.z));
-            _screenPosLeftUp = Camera.main.ScreenToWorldPoint(new Vector3(0, Height, z - Camera.main.transform.position.z));
-            _screenPosRightDown = Camera.main.ScreenToWorldPoint(new Vector3(Width, 0, z - Camera.main.transform.position.z));
-            _screenPosRightUp = Camera.main.ScreenToWorldPoint(new Vector3(Width, Height, z - Camera.main.transform.position.z));
+           
 
             if (j % 1000 == 0)
             {
                 k++;
-                z = k * 0.5f + z;//每个层级的深度
+                float tempZ = k*z;
+
+                _screenPosLeftDown = Camera.main.ScreenToWorldPoint(new Vector3(0, 0, tempZ - Camera.main.transform.position.z));
+                _screenPosLeftUp = Camera.main.ScreenToWorldPoint(new Vector3(0, Height, tempZ - Camera.main.transform.position.z));
+                _screenPosRightDown = Camera.main.ScreenToWorldPoint(new Vector3(Width, 0, tempZ - Camera.main.transform.position.z));
+                _screenPosRightUp = Camera.main.ScreenToWorldPoint(new Vector3(Width, Height, tempZ - Camera.main.transform.position.z));
+
+                
+               
 
                 float s = 1f;//不同层次的给定不同的缩放  
-                if (k == 1 || k == 2) s = 1f;
-                else if (k == 3) s = 1.25f;
-                else if (k == 4) s = 1.5f;
-                else if (k == 5) s = 1.75f;
-                else if (k == 6) s = 2f;
-                _depths[k - 1] = new DepthInfo(k, z, z, s);
+                if (k == 0 || k == 1) s = 1f;
+                else if (k == 2) s = 1.25f;
+                else if (k == 3) s = 1.5f;
+                else if (k == 4) s = 1.75f;
+                _depths[k - 1] = new DepthInfo(k - 1, tempZ - 5, tempZ - 5, s);
                 
             }
 
 
-            int index = j - 1;
+            int index = j ;
 
 
 
-            float rangeX = Random.Range(_screenPosLeftDown.x * 70, _screenPosRightDown.x * 70);//随机x轴位置
+            float rangeX = Random.Range(_screenPosLeftDown.x , _screenPosRightDown.x );//随机x轴位置
             float rangeY = Random.Range(_screenPosLeftDown.y, _screenPosLeftUp.y);
-            float rangeZ = Random.Range(-0.2f, 0.2f);//在同一层次，再随机不同的深度位置，不至于重叠一起，显得错落有致
+            float rangeZ = Random.Range(-0.1f, 0.1f);//在同一层次，再随机不同的深度位置，不至于重叠一起，显得错落有致
 
 
             Vector4 posTemp = newData[index].position;
@@ -117,9 +121,9 @@ public class MultiDepthMotion : MotionInputMoveBase
             float scale = 1f;//不同层次的给定不同的缩放  
             if (k == 1 || k == 2) scale = 1f;
             else if (k == 3) scale = 1.25f;
-            else if (k == 4) scale = 1.5f;
-            else if (k == 5) scale = 1.75f;
-            else if (k == 6) scale = 2f;
+            else if (k == 4) scale = 2f;
+            else if (k == 5) scale = 2.5f;
+            else if (k == 6) scale = 4f;
 
             newData[index].position = new Vector4(posTemp.x, posTemp.y, posTemp.z, scale);
 
@@ -129,7 +133,7 @@ public class MultiDepthMotion : MotionInputMoveBase
             newData[index].uv2Offset = new Vector4(1f, 1f, 0f, 0f);
             newData[index].picIndex = index % TextureInstanced.Instance.textures.Count;
             newData[index].bigIndex = index % TextureInstanced.Instance.textures.Count;
-            newData[index].velocity = new Vector4(k, 0, 0, 0);//x存储层次深度
+            newData[index].velocity = new Vector4(k-1, 0, 0, 0);//x存储层次深度
         }
 
         TextureInstanced.Instance.InstanceMaterial.SetVector("_WHScale", new Vector4(1f, 1f, 1f, 1f));
@@ -188,6 +192,6 @@ public class MultiDepthMotion : MotionInputMoveBase
 
     public  void ChangeState()
     {
-        SetDepth(1, 3);
+        SetDepth(3, 4);
     }
 }

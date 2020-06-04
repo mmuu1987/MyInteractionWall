@@ -68,7 +68,7 @@ void CSPositionKernel (uint3 id : SV_DispatchThreadID)
 
    float3 moveTarget = positionBuffer[id.x].moveTarget;
 
-   float z = depthBuffer[velocity.x].handleDepth;
+   float z = depthBuffer[3].handleDepth;
    
    float3 depthDir = float3(0,0,z);
 

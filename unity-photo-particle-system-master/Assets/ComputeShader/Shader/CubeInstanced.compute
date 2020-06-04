@@ -1,0 +1,75 @@
+﻿// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel CSMain
+
+ #define thread_group_size_x 64
+ #define thread_group_size_y 1
+
+#include "../GPUParticle.cginc"
+
+
+#include "../GPUParticleComputeCommon.cginc"
+
+
+#include "Assets/Common/Shaders/Math.cginc"
+#include "Assets/Common/Shaders/Random.cginc"
+//#include "Assets/Common/Shaders/Noise/SimplexNoiseGrad3D.cginc"
+
+float Z;
+//拖拽的时候的输入量
+float4 movePos;
+int actionState;
+float deltaTime;
+//归位的量
+float2 moveDir;
+//0索引图片的点,不受图片运动的影响
+float3 originPos;
+
+//面片组成的矩形的宽
+float rectangleWidth;
+//面片组成矩形的高
+float rectangleHeight;
+
+
+[numthreads(thread_group_size_x, thread_group_size_y, 1)]
+void CSMain (uint3 id : SV_DispatchThreadID)
+{
+
+   
+  
+	    
+		//originPos.z = Z;
+		//0为弹起后的误操作状态，1为按下，2为按下中
+		if(actionState==2)
+		{
+		  positionBuffer[id.x].position.xy += movePos;//移动加成后的位置
+		  positionBuffer[id.x].moveDir= float3(0,0,0);
+		  
+		}
+		else if(actionState==3 || actionState==4)//滚轮状态
+		{
+		 positionBuffer[id.x].position.z = positionBuffer[id.x].originalPos.z+  Z;//z深度影响
+		 positionBuffer[id.x].moveDir= float3(0,0,0);
+		}
+		else if(actionState==0)
+		{
+		 if(length(positionBuffer[id.x].moveDir))
+		 {
+		   
+		   if(distance(positionBuffer[id.x].position,positionBuffer[id.x].moveTarget)>=0.001f)
+		   {
+		    positionBuffer[id.x].position.xyz = lerp(positionBuffer[id.x].position,positionBuffer[id.x].moveTarget,deltaTime*5);
+		   }
+		 }
+		 else
+		 {
+		    float r = positionBuffer[id.x].indexRC.x;
+
+		    float v =  r % 3;//隔两行动
+
+		    positionBuffer[id.x].moveDir= float3(v*0.01*sin(r),0,1);//z用来做判断
+
+		    positionBuffer[id.x].moveTarget = positionBuffer[id.x].position.xyz + float3(moveDir.x,moveDir.y,0);
+		  }
+		}
+		
+}

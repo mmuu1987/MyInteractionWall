@@ -5,13 +5,17 @@ using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.Rendering;
-using Random = UnityEngine.Random;
 using UnityEngine.UI;
 
-
+/// <summary>
+/// 传递给GPU的结构体，在不同的运动类型，变量的意义有些不一样
+/// </summary>
 public struct PosAndDir
 {
     public Vector4 position;
+    /// <summary>
+    /// 一般指速度，在不同的运动类有不同的意义
+    /// </summary>
     public Vector4 velocity;
     /// <summary>
     /// 物体初始速度

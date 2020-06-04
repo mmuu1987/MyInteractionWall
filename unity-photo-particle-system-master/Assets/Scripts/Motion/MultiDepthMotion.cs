@@ -12,11 +12,6 @@ public class MultiDepthMotion : MotionInputMoveBase
     {
         base.Init();
 
-        //_screenPosLeftDown = Camera.main.ScreenToWorldPoint(new Vector3(0, 0, Z - Camera.main.transform.position.z));
-        //_screenPosLeftUp = Camera.main.ScreenToWorldPoint(new Vector3(0, Height, Z - Camera.main.transform.position.z));
-        //_screenPosRightDown = Camera.main.ScreenToWorldPoint(new Vector3(Width, 0, Z - Camera.main.transform.position.z));
-        //_screenPosRightUp = Camera.main.ScreenToWorldPoint(new Vector3(Width, Height, Z - Camera.main.transform.position.z));
-
         int instanceCount = TextureInstanced.Instance.InstanceCount;
 
         PosAndDir[] datas = new PosAndDir[ComputeBuffer.count];
@@ -70,19 +65,29 @@ public class MultiDepthMotion : MotionInputMoveBase
 
             float rangeX = Random.Range(_screenPosLeftDown.x*50, _screenPosRightDown.x*50);//随机x轴位置
             float rangeY = Random.Range(_screenPosLeftDown.y, _screenPosLeftUp.y);
-
+            float rangeZ = Random.Range(z - 0.2f, z + 0.2f);//在同一层次，再随机不同的深度位置，不至于重叠一起，显得错落有致
 
 
             Vector4 posTemp = newData[index].position;
-            newData[index].position = new Vector4(posTemp.x, posTemp.y, posTemp.z, 1f);
-            newData[index].moveTarget = new Vector3(rangeX, rangeY,  z );
+
+            float scale = 1f;//不同层次的给定不同的缩放
+            if (k == 1 || k==2) scale = 1f;
+            else if (k == 3) scale = 1.25f;
+            else if (k == 4) scale = 1.5f;
+            else if (k == 5) scale = 1.75f;
+
+            newData[index].position = new Vector4(posTemp.x, posTemp.y, posTemp.z, scale);
+
+
+            newData[index].moveTarget = new Vector3(rangeX, rangeY, rangeZ);
             newData[index].uvOffset = new Vector4(1f, 1f, 0f, 0f);
             newData[index].uv2Offset = new Vector4(1f, 1f, 0f, 0f);
             newData[index].picIndex = index % TextureInstanced.Instance.textures.Count;
             newData[index].bigIndex = index % TextureInstanced.Instance.textures.Count;
+            newData[index].velocity = new Vector4(k,0,0,0);//x存储层次深度
         }
 
-        TextureInstanced.Instance.InstanceMaterial.SetVector("_WHScale", new Vector4(1f, 1f, 1f, 1f));
+        TextureInstanced.Instance.InstanceMaterial.SetVector("_WHScale", new Vector4(1.5f, 1f, 1f, 1f));
 
 
         allDataList.AddRange(newData);

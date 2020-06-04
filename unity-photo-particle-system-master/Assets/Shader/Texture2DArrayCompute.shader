@@ -156,7 +156,7 @@
 			   float2 uv1 = i.uv_MainTex;
 			   float2 uv2 = i.uv_Main2Tex;
 			   float2 lerpUV = lerp(uv1,uv2,lerpValue);
-			    //圆角作用
+			    //圆角作用  
 			    if(abs(i.RadiusBuceVU.x)<0.5-_RADIUSBUCE||abs(i.RadiusBuceVU.y)<0.5-_RADIUSBUCE)    //即上面说的|x|<(0.5-r)或|y|<(0.5-r)
                 {
 					col = UNITY_SAMPLE_TEX2DARRAY(_TexArr, float3(i.uv_MainTex, index));

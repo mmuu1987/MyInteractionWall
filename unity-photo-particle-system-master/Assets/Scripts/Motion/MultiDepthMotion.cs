@@ -5,15 +5,29 @@ using UnityEngine;
 
 public struct DepthInfo
 {
-    public int depth;
-    public float originalDepth;
+    /// <summary>
+    /// 本来的深度
+    /// </summary>
+    public int originalDepth;
+    /// <summary>
+    /// 移动到的深度
+    /// </summary>
+    public float toDepth;
+    /// <summary>
+    /// 深度距离
+    /// </summary>
     public float handleDepth;
+    /// <summary>
+    /// toDepth深度下的缩放
+    /// </summary>
+    public float scale;
 
-    public DepthInfo(int d,float o,float h)
+    public DepthInfo(int d,float o,float h,float s)
     {
-        this.depth = d;
-        this.originalDepth = o;
+        this.originalDepth = d;
+        this.toDepth = o;
         this.handleDepth = h;
+        scale = s;
     }
 
 };
@@ -65,7 +79,7 @@ public class MultiDepthMotion : MotionInputMoveBase
          _depths = new DepthInfo[6];
         int k = 1;
         float z = -5;
-        _depths[0] = new DepthInfo(k,z,z);
+        _depths[0] = new DepthInfo(k,z,z,1);
         for (int j = 1; j <= newData.Length; j++)
         {
             _screenPosLeftDown = Camera.main.ScreenToWorldPoint(new Vector3(0, 0, z - Camera.main.transform.position.z));
@@ -77,8 +91,14 @@ public class MultiDepthMotion : MotionInputMoveBase
             {
                 k++;
                 z = k * 0.5f + z;//每个层级的深度
-                
-                _depths[k-1] = new DepthInfo(k, z, z);
+
+                float s = 1f;//不同层次的给定不同的缩放  
+                if (k == 1 || k == 2) s = 1f;
+                else if (k == 3) s = 1.25f;
+                else if (k == 4) s = 1.5f;
+                else if (k == 5) s = 1.75f;
+                else if (k == 6) s = 2f;
+                _depths[k - 1] = new DepthInfo(k, z, z, s);
                 
             }
 
@@ -137,6 +157,7 @@ public class MultiDepthMotion : MotionInputMoveBase
     private void SetDepth(int form,int to)
     {
         float z1 = _depths[form].handleDepth;
+
 
         float z2 = _depths[to].handleDepth;
 

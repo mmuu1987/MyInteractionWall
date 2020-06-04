@@ -79,6 +79,8 @@ public class MultiDepthMotion : MotionInputMoveBase
          _depths = new DepthInfo[5];
         int k = 0;
         float z = 20;
+
+        float tempZZZ = 0;
       
         for (int j = 0; j < newData.Length; j++)
         {
@@ -103,7 +105,9 @@ public class MultiDepthMotion : MotionInputMoveBase
                 else if (k == 3) s = 1.5f;
                 else if (k == 4) s = 1.75f;
                 _depths[k - 1] = new DepthInfo(k - 1, tempZ - 5, tempZ - 5, s);
-                
+
+                tempZZZ = tempZ - 5;
+
             }
 
 
@@ -128,7 +132,7 @@ public class MultiDepthMotion : MotionInputMoveBase
             newData[index].position = new Vector4(posTemp.x, posTemp.y, posTemp.z, scale);
 
 
-            newData[index].moveTarget = new Vector3(rangeX, rangeY, rangeZ);
+            newData[index].moveTarget = new Vector3(rangeX, rangeY, tempZZZ);
             newData[index].uvOffset = new Vector4(1f, 1f, 0f, 0f);
             newData[index].uv2Offset = new Vector4(1f, 1f, 0f, 0f);
             newData[index].picIndex = index % TextureInstanced.Instance.textures.Count;

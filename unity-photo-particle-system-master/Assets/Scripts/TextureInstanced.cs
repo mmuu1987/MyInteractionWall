@@ -188,6 +188,10 @@ public class TextureInstanced : MonoBehaviour, IDragHandler, IEndDragHandler
 
     public RawImage MoveTexture;
 
+    /// <summary>
+    /// 当前实例渲染的材质
+    /// </summary>
+    public Material CurMaterial { get; private set; }
 
     private void Awake()
     {
@@ -201,7 +205,7 @@ public class TextureInstanced : MonoBehaviour, IDragHandler, IEndDragHandler
     {
 
         InstanceCount = HorizontalColumn * VerticalColumn;
-
+        CurMaterial = InstanceMaterial;
         HandleTextureArry();
 
         argsBuffer = new ComputeBuffer(5, sizeof(uint), ComputeBufferType.IndirectArguments);
@@ -209,7 +213,7 @@ public class TextureInstanced : MonoBehaviour, IDragHandler, IEndDragHandler
         CreateBuffers();
 
 
-
+       
 
         // StartCoroutine(LoadVideo(path));
     }
@@ -221,8 +225,24 @@ public class TextureInstanced : MonoBehaviour, IDragHandler, IEndDragHandler
         // UpdateBuffers();
         UpdateBuffers(_type);
         // Render
-        Graphics.DrawMeshInstancedIndirect(InstanceMesh, 0, InstanceMaterial, InstanceMesh.bounds, argsBuffer, 0, null, ShadowCastingMode.Off, false);
+        Graphics.DrawMeshInstancedIndirect(InstanceMesh, 0, CurMaterial, InstanceMesh.bounds, argsBuffer, 0, null, ShadowCastingMode.Off, false);
     }
+
+    /// <summary>
+    /// 用不同的材质渲染实例对象
+    /// </summary>
+    public void ChangeInstanceMat(Material mat)
+    {
+        if (mat != null)
+        {
+            CurMaterial = mat;
+        }
+        else //如果为null，默认自带的材质
+        {
+            CurMaterial = InstanceMaterial;
+        }
+    }
+
     void UpdateCubeBuffers()
     {
         LoopMotion.ExitMotion();
@@ -335,8 +355,8 @@ public class TextureInstanced : MonoBehaviour, IDragHandler, IEndDragHandler
 
 
 
-        InstanceMaterial.SetBuffer("positionBuffer", positionBuffer);
-        InstanceMaterial.SetBuffer("colorBuffer", colorBuffer);
+        CurMaterial.SetBuffer("positionBuffer", positionBuffer);
+      //  CurMaterial.SetBuffer("colorBuffer", colorBuffer);
 
 
         // indirect args
@@ -402,7 +422,7 @@ public class TextureInstanced : MonoBehaviour, IDragHandler, IEndDragHandler
 
 
 
-        InstanceMaterial.SetTexture("_TexArr", texArr);
+        CurMaterial.SetTexture("_TexArr", texArr);
         //m_mat.SetFloat("_Index", Random.Range(0, textures.Length));
 
         //AssetDatabase.CreateAsset(texArr, "Assets/RogueX/Prefab/texArray.asset");

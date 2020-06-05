@@ -113,7 +113,7 @@ public class MotionBase : MonoBehaviour
 
         RightDownTip = TextureInstanced.Instance.tipRD;
 
-
+        
 
     }
     public IEnumerator WaitStart()
@@ -162,9 +162,9 @@ public class MotionBase : MonoBehaviour
         if (_coroutine != null) StopCoroutine(_coroutine);
         _coroutine = null;
         _isEnterUpdate = false;
-        if (ComputeBuffer != null)
-        ComputeBuffer.Release();
-        ComputeBuffer = null;
+        //if (ComputeBuffer != null)
+        //ComputeBuffer.Release();
+        //ComputeBuffer = null;
     }
 
 }

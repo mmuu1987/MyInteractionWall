@@ -30,10 +30,12 @@
 
   struct DepthInfo
 {
-     int depth;
-     float originalDepth;
-     float handleDepth;
+     int originalDepth;
+	 float toDepth;
+	 float originalScal;
+	 float handleDepth;
 	 float scale;
+     float alpha;
 };
 
 
@@ -65,27 +67,44 @@ float MoveSpeed;
 [numthreads(thread_group_size_x, thread_group_size_y, 1)]
 void CSPositionKernel (uint3 id : SV_DispatchThreadID)
 {
+
+  
+   float4 pos = positionBuffer[id.x].position;
+
+   if(pos.w==0)return;//初始数据w为0的不搞事情  
+
    float4 velocity = positionBuffer[id.x].velocity;
 
    float3 moveTarget = positionBuffer[id.x].moveTarget;
 
    float z = depthBuffer[velocity.x].handleDepth;
+
+   float alpha = depthBuffer[velocity.x].alpha;
+
+   float scale = depthBuffer[velocity.x].scale;
    
    float3 depthDir = float3(0,0,z);
 
    float3 moveDir = float3(0.0075,0,0);
 
-    moveTarget +=  moveDir;
+   moveTarget +=  moveDir;
 
-	float3 allDir = moveTarget +depthDir;
+   float3 allDir = moveTarget +depthDir;
   
 
-   positionBuffer[id.x].position.xyz= lerp(positionBuffer[id.x].position.xyz,allDir,deltaTime);
+   pos.xyz= lerp(pos.xyz,allDir,deltaTime);
+   pos.w = lerp(pos.w,scale,deltaTime);
+   velocity.y = lerp(velocity.y,alpha,deltaTime);
+
+   positionBuffer[id.x].position = pos;
+
    positionBuffer[id.x].moveTarget = moveTarget;
+
+   positionBuffer[id.x].velocity= float4(velocity.x,velocity.y,0,0);//保存新的透明值
 
 }
 
-//位置变换
+//位置变换  
 [numthreads(thread_group_size_x, thread_group_size_y, 1)]
 void InitLerp (uint3 id : SV_DispatchThreadID)
 {

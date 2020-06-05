@@ -109,7 +109,8 @@ public class LoopMotion : MotionInputMoveBase
         ComputeShader.SetFloat("rectangleWidth", rectangleWidth);
         ComputeShader.SetFloat("rectangleHeight", rectangleHeight);
         ComputeShader.SetFloat("MoveSpeed", MoveSpeed);
-        TextureInstanced.Instance.InstanceMaterial.SetVector("_WHScale", new Vector4(1, 1, 1, 1));
+        TextureInstanced.Instance.ChangeInstanceMat(null);
+        TextureInstanced.Instance.CurMaterial.SetVector("_WHScale", new Vector4(1, 1, 1, 1));
 
     }
 

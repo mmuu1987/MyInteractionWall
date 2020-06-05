@@ -109,7 +109,7 @@ public class MotionInputMoveBase : MotionBase, IDragHandler, IEndDragHandler
 
         _rightUpDir = new Vector2(1, 1).normalized * distanceSize;
 
-        TextureInstanced.Instance.InstanceMaterial.SetVector("_WHScale", Vector4.one);
+       
 
     }
 

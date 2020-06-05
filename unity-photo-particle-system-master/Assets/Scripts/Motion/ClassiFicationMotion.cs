@@ -198,7 +198,8 @@ public class ClassiFicationMotion : MotionInputMoveBase
             }
 
         }
-        TextureInstanced.Instance.InstanceMaterial.SetVector("_WHScale", new Vector4(scale.x, scale.y, 1, 1));
+        TextureInstanced.Instance.ChangeInstanceMat(null);
+        TextureInstanced.Instance.CurMaterial.SetVector("_WHScale", new Vector4(scale.x, scale.y, 1, 1));
 
         ComputeBuffer.SetData(datas);
         ComputeShader.SetBuffer(dispatchID, "positionBuffer", ComputeBuffer);
@@ -387,7 +388,7 @@ public class ClassiFicationMotion : MotionInputMoveBase
             }
         }
 
-        TextureInstanced.Instance.InstanceMaterial.SetVector("_WHScale", new Vector4(scale.x, scale.y, 1, 1));
+        TextureInstanced.Instance.CurMaterial.SetVector("_WHScale", new Vector4(scale.x, scale.y, 1, 1));
 
 
         allDataList.AddRange(newData);

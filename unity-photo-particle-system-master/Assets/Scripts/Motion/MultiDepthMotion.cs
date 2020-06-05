@@ -6,7 +6,7 @@ using UnityEngine;
 public struct DepthInfo
 {
     /// <summary>
-    /// 本来的深度的层次，不能随意改写
+    /// 每层的索引
     /// </summary>
     public int originalDepth;
     /// <summary>
@@ -25,14 +25,19 @@ public struct DepthInfo
     /// 深度下的缩放，根据handleDepth的变动而变动
     /// </summary>
     public float scale;
+    /// <summary>
+    /// 该层次下的透明度
+    /// </summary>
+    public float alpha;
 
-    public DepthInfo(int d, float o, float s)
+    public DepthInfo(int d, float o, float s,float a)
     {
         this.originalDepth = d;
         this.toDepth = o;
         this.handleDepth = o;
         scale = s;
         originalScal = s;
+        alpha = a;
     }
 
 };
@@ -46,19 +51,19 @@ public class MultiDepthMotion : MotionInputMoveBase
 
     private DepthInfo[] _depths;
 
-    private ComputeBuffer depthBuffer;
+    private ComputeBuffer _depthBuffer;
+
+    public Material CurMaterial;
     protected override void Init()
     {
         base.Init();
-
-        int instanceCount = TextureInstanced.Instance.InstanceCount;
 
         PosAndDir[] datas = new PosAndDir[ComputeBuffer.count];
 
         ComputeBuffer.GetData(datas);
 
         //写死5个深度，每个深度一千个面片，这个类的运动，我们只要5000就可以了
-        //每个深度距离相差10个单位  
+        
         List<PosAndDir> temp = new List<PosAndDir>();
         List<PosAndDir> allDataList = new List<PosAndDir>();
 
@@ -80,12 +85,10 @@ public class MultiDepthMotion : MotionInputMoveBase
 
         PosAndDir[] newData = temp.ToArray();
         int stride = Marshal.SizeOf(typeof(DepthInfo));
-        depthBuffer = new ComputeBuffer(5, stride);
+        _depthBuffer = new ComputeBuffer(5, stride);
         _depths = new DepthInfo[5];
         int k = 0;
         float z = 2;
-
-        float tempZZZ = 0;
 
         for (int j = 0; j < newData.Length; j++)
         {
@@ -103,14 +106,35 @@ public class MultiDepthMotion : MotionInputMoveBase
 
 
 
-                tempZZZ = tempZ - 8;
+                var tempZZZ = tempZ - 8;
                 float s = 1f;//不同层次的给定不同的缩放  
-                if (k == 1) s = 1f;
-                else if (k == 2) s = 1.25f;
-                else if (k == 3) s = 1.5f;
-                else if (k == 4) s = 1.75f;
-                else if (k == 5) s = 2f;
-                _depths[k - 1] = new DepthInfo(k - 1, tempZZZ, s);
+                float a = 1f;//不同层次的给定不同的透明度
+                if (k == 1)
+                {
+                    s = 1f;
+                    a = 1f;
+                }
+                else if (k == 2)
+                {
+                    s = 1.25f;
+                    a = 0.75f;
+                }
+                else if (k == 3)
+                {
+                    s = 1.5f;
+                    a = 0.5f;
+                }
+                else if (k == 4)
+                {
+                    s = 1.75f;
+                    a = 0.25f;
+                }
+                else if (k == 5)
+                {
+                    s = 2f;
+                    a = 0.1f;
+                }
+                _depths[k - 1] = new DepthInfo(k - 1, tempZZZ, s,a);
 
 
 
@@ -127,16 +151,7 @@ public class MultiDepthMotion : MotionInputMoveBase
 
 
             Vector4 posTemp = newData[index].position;
-
-            float scale = 1f;//不同层次的给定不同的缩放  
-            if (k == 1) scale = 1f;
-            else if (k == 2) scale = 1.25f;
-            else if (k == 3) scale = 1.5f;
-            else if (k == 4) scale = 1.75f;
-            else if (k == 5) scale = 2f;
-
-
-            newData[index].position = new Vector4(posTemp.x, posTemp.y, posTemp.z, scale);
+            newData[index].position = new Vector4(posTemp.x, posTemp.y, posTemp.z, 1);
 
 
             newData[index].moveTarget = new Vector3(rangeX, rangeY, rangeZ);
@@ -144,18 +159,21 @@ public class MultiDepthMotion : MotionInputMoveBase
             newData[index].uv2Offset = new Vector4(1f, 1f, 0f, 0f);
             newData[index].picIndex = index % TextureInstanced.Instance.textures.Count;
             newData[index].bigIndex = index % TextureInstanced.Instance.textures.Count;
-            newData[index].velocity = new Vector4(k - 1, 0, 0, 0);//x存储层次深度
+            newData[index].velocity = new Vector4(k - 1, 1f, 0, 0);//x存储层次的索引
         }
+        TextureInstanced.Instance.ChangeInstanceMat(CurMaterial);
+        TextureInstanced.Instance.CurMaterial.SetVector("_WHScale", new Vector4(1f, 1f, 1f, 1f));
 
-        TextureInstanced.Instance.InstanceMaterial.SetVector("_WHScale", new Vector4(1f, 1f, 1f, 1f));
 
+        TextureInstanced.Instance.CurMaterial.SetBuffer("positionBuffer", ComputeBuffer);
+        TextureInstanced.Instance.CurMaterial.SetTexture("_TexArr", TextureInstanced.Instance.texArr);
 
         allDataList.AddRange(newData);
 
         ComputeBuffer.SetData(allDataList.ToArray());
-        depthBuffer.SetData(_depths);
+        _depthBuffer.SetData(_depths);
 
-        ComputeShader.SetBuffer(dispatchID, "depthBuffer", depthBuffer);
+        ComputeShader.SetBuffer(dispatchID, "depthBuffer", _depthBuffer);
         ComputeShader.SetBuffer(dispatchID, "positionBuffer", ComputeBuffer);
         ComputeShader.SetBuffer(InitID, "positionBuffer", ComputeBuffer);
         MoveSpeed = 50f;//更改更快的插值速度
@@ -167,29 +185,43 @@ public class MultiDepthMotion : MotionInputMoveBase
     }
 
     /// <summary>
-    ///  调换层次深度
+    /// 当前在最前面的深度，默认是0
     /// </summary>
-    /// <param name="form"></param>
-    /// <param name="top"></param>
-    private void SetDepth(int form, int top)
+    private int _curDepth=0;
+
+    /// <summary>
+    ///  调换层次位置
+    /// </summary>
+    /// <param name="top">需要切换到最前的层次</param>
+    private void SetDepth(int top)
     {
-        float z1 = _depths[form].handleDepth;
-        float s1 = _depths[form].scale;
+        if (_curDepth == top) return;
+        if (top > 5) return;
+
+        float z1 = _depths[0].toDepth;
+        float s1 = _depths[0].originalScal;
+        float a1 = 1f;//在最前的透明度默认为1
+
 
         float z2 = _depths[top].handleDepth;
         float s2 = _depths[top].scale;
+        float a2 = _depths[top].alpha;
 
+        
 
         _depths[top].handleDepth = z1;
         _depths[top].scale = s1;
+        _depths[top].alpha = a1;
 
-        _depths[form].handleDepth = z2;
-        _depths[form].scale = s2;
+        _depths[_curDepth].handleDepth = z2;
+        _depths[_curDepth].scale = s2;
+        _depths[_curDepth].alpha = a2;
 
+        _curDepth = top;//重新得到当前在最前面的深度
 
-        depthBuffer.SetData(_depths);
+        _depthBuffer.SetData(_depths);
 
-        ComputeShader.SetBuffer(dispatchID, "depthBuffer", depthBuffer);
+        ComputeShader.SetBuffer(dispatchID, "depthBuffer", _depthBuffer);
     }
     protected override void Dispatch(ComputeBuffer system)
     {
@@ -203,15 +235,16 @@ public class MultiDepthMotion : MotionInputMoveBase
     public override void ExitMotion()
     {
         base.ExitMotion();
-        depthBuffer.Release();
-        depthBuffer = null;
+        if (_depthBuffer!=null)
+        _depthBuffer.Release();
+        _depthBuffer = null;
 
     }
 
 
-
+    public int Depth=2;
     public void ChangeState()
     {
-        SetDepth(0, 4);
+        SetDepth(Depth);
     }
 }

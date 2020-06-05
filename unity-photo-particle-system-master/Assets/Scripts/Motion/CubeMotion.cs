@@ -81,7 +81,8 @@ public class CubeMotion : MotionInputMoveBase
             }
         }
         ComputeBuffer.SetData(datas);
-        TextureInstanced.Instance.InstanceMaterial.SetVector("_WHScale", new Vector4(1, 1, 1, 1));
+        TextureInstanced.Instance.ChangeInstanceMat(null);
+        TextureInstanced.Instance.CurMaterial.SetVector("_WHScale", new Vector4(1, 1, 1, 1));
        
     }
 }

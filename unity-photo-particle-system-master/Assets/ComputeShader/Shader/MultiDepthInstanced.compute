@@ -33,6 +33,7 @@
      int depth;
      float originalDepth;
      float handleDepth;
+	 float scale;
 };
 
 
@@ -64,23 +65,23 @@ float MoveSpeed;
 [numthreads(thread_group_size_x, thread_group_size_y, 1)]
 void CSPositionKernel (uint3 id : SV_DispatchThreadID)
 {
- //  float4 velocity = positionBuffer[id.x].velocity;
+   float4 velocity = positionBuffer[id.x].velocity;
 
- //  float3 moveTarget = positionBuffer[id.x].moveTarget;
+   float3 moveTarget = positionBuffer[id.x].moveTarget;
 
- //  float z = depthBuffer[velocity.x].handleDepth;
+   float z = depthBuffer[velocity.x].handleDepth;
    
- //  float3 depthDir = float3(0,0,z);
+   float3 depthDir = float3(0,0,z);
 
- //  float3 moveDir = float3(0.0075,0,0);
+   float3 moveDir = float3(0.0075,0,0);
 
- //   moveTarget +=  moveDir;
+    moveTarget +=  moveDir;
 
-	//float3 allDir = moveTarget +depthDir;
+	float3 allDir = moveTarget +depthDir;
   
 
- //  positionBuffer[id.x].position.xyz= lerp(positionBuffer[id.x].position.xyz,allDir,deltaTime);
- //  positionBuffer[id.x].moveTarget = moveTarget;
+   positionBuffer[id.x].position.xyz= lerp(positionBuffer[id.x].position.xyz,allDir,deltaTime);
+   positionBuffer[id.x].moveTarget = moveTarget;
 
 }
 

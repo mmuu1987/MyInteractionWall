@@ -36,6 +36,7 @@
 	 float handleDepth;
 	 float scale;
      float alpha;
+	
 };
 
 
@@ -51,24 +52,16 @@ RWStructuredBuffer<DepthInfo> depthBuffer;
 
 float deltaTime;
 
-
-
-
-
 float4 clickPoint;
-
 //插值速度  
 float MoveSpeed;
+//点击屏幕，触发吸引力的范围,必须在CS赋值初始化
+float dis = 5;
 
 
-
-
-
-[numthreads(thread_group_size_x, thread_group_size_y, 1)]
-void CSPositionKernel (uint3 id : SV_DispatchThreadID)
+void OldMethods(uint3 id )
 {
 
-  
    float4 pos = positionBuffer[id.x].position;
 
    if(pos.w==0)return;//初始数据w为0的不搞事情  
@@ -92,16 +85,44 @@ void CSPositionKernel (uint3 id : SV_DispatchThreadID)
    float3 allDir = moveTarget +depthDir;
   
 
-   pos.xyz= lerp(pos.xyz,allDir,deltaTime);
-   pos.w = lerp(pos.w,scale,deltaTime);
-   velocity.y = lerp(velocity.y,alpha,deltaTime);
+   
+
+   //如果有鼠标点击事件//CS代码那边，如果没有点击，点击点会移到 Vector3.one * 1000000位置
+   if(clickPoint.z<1000 &&length(pos.xy - clickPoint.xy)<=dis )
+   {
+	   pos.xy = lerp(pos.xy,clickPoint.xy,deltaTime *0.5f);
+   }
+   else
+   {
+     pos= lerp(pos,float4(allDir,scale),deltaTime);
+  
+     velocity.y = lerp(velocity.y,alpha,deltaTime);
+   }
+
+   //边界检测
+   float RightBorder = velocity.z;
+   float LeftBorder = -RightBorder;
+   //if(pos.x<LeftBorder)pos.x += 2*RightBorder;
+   if(pos.x>RightBorder)
+   {
+    pos.x -= 2*RightBorder;
+	moveTarget.x-=2*RightBorder;
+   }
+
+
 
    positionBuffer[id.x].position = pos;
 
    positionBuffer[id.x].moveTarget = moveTarget;
 
-   positionBuffer[id.x].velocity= float4(velocity.x,velocity.y,0,0);//保存新的透明值
+   positionBuffer[id.x].velocity= float4(velocity.x,velocity.y,velocity.z,0);//保存新的透明值
+}
 
+
+[numthreads(thread_group_size_x, thread_group_size_y, 1)]
+void CSPositionKernel (uint3 id : SV_DispatchThreadID)
+{
+  OldMethods(id);
 }
 
 //位置变换  
@@ -109,10 +130,26 @@ void CSPositionKernel (uint3 id : SV_DispatchThreadID)
 void InitLerp (uint3 id : SV_DispatchThreadID)
 {
 
-   //positionBuffer[id.x].moveDir= float3(0,0,0);
-  float v = deltaTime;
+  //float4 pos = positionBuffer[id.x].position;
 
-  if(v>=1)v=1;
-  positionBuffer[id.x].position.xyz =lerp(positionBuffer[id.x].position.xyz,positionBuffer[id.x].moveTarget,1);//
+  //if(pos.w==0)return;//初始数据w为0的不搞事情  
+  ////把百分比转化为具体位置
+
+  // float4 velocity = positionBuffer[id.x].velocity;
+
+  // float4  screenPos = depthBuffer[velocity.x].screenPos;
+
+  // float3 moveTarget = positionBuffer[id.x].moveTarget;
+
+  // float x1 = moveTarget.x*screenPos.z;
+  // float y1 = moveTarget.y *screenPos.w;
+
+  // float2 newPos = screenPos.xy +float2(x1,y1);
+
+  // float z = depthBuffer[velocity.x].handleDepth;
+  
+  // float3 pos1 = float3(newPos,z);
+
+  // positionBuffer[id.x].position.xyz =lerp(positionBuffer[id.x].position.xyz,pos1,1);
  
 }

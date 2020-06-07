@@ -5,6 +5,7 @@ using UnityEngine;
 using mattatz;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using UnityEngine.Rendering;
 
 public class Test : MonoBehaviour, IDragHandler, IEndDragHandler
 {
@@ -23,12 +24,70 @@ public class Test : MonoBehaviour, IDragHandler, IEndDragHandler
 
     public GameObject Quab;
 
+    
+
+    public List<Texture2D> Texture2DOne;
+
+    public List<Texture2D> Texture2DTwo;
+
+    public Material CurMaterial;
+
 	// Use this for initialization
 	void Start ()
 	{
-      
+        HandleTextureArry(Texture2DOne, "_TexArrOne");
+        HandleTextureArry(Texture2DTwo, "_TexArrTwo");
 	}
+    private void HandleTextureArry(List<Texture2D> textures,string texsName)
+    {
+        Texture2DArray texs;
+        if (textures == null || textures.Count == 0)
+        {
+            enabled = false;
+            return;
+        }
 
+        if (SystemInfo.copyTextureSupport == CopyTextureSupport.None ||
+            !SystemInfo.supports2DArrayTextures)
+        {
+            enabled = false;
+            return;
+        }
+        // Texture tx = new Texture();
+        texs = new Texture2DArray(textures[0].width, textures[0].width, textures.Count, TextureFormat.DXT1, false, false);
+
+        // 结论 //
+        // Graphics.CopyTexture耗时(单位:Tick): 5914, 8092, 6807, 5706, 5993, 5865, 6104, 5780 //
+        // Texture2DArray.SetPixels耗时(单位:Tick): 253608, 255041, 225135, 256947, 260036, 295523, 250641, 266044 //
+        // Graphics.CopyTexture 明显快于 Texture2DArray.SetPixels 方法 //
+        // Texture2DArray.SetPixels 方法的耗时大约是 Graphics.CopyTexture 的50倍左右 //
+        // Texture2DArray.SetPixels 耗时的原因是需要把像素数据从cpu传到gpu, 原文: Call Apply to actually upload the changed pixels to the graphics card //
+        // 而Graphics.CopyTexture只在gpu端进行操作, 原文: operates on GPU-side data exclusively //
+
+        // using (Timer timer = new Timer(Timer.ETimerLogType.Tick))
+        //{
+      
+            for (int i = 0; i < textures.Count; i++)
+            {
+                // 以下两行都可以 //
+                //Graphics.CopyTexture(textures[i], 0, texArr, i);
+                Graphics.CopyTexture(textures[i], 0, 0, texs, i, 0);
+
+            }
+        
+        
+        //}
+
+            texs.wrapMode = TextureWrapMode.Clamp;
+            texs.filterMode = FilterMode.Bilinear;
+
+
+
+            CurMaterial.SetTexture(texsName, texs);
+        //m_mat.SetFloat("_Index", Random.Range(0, textures.Length));
+
+        //AssetDatabase.CreateAsset(texArr, "Assets/RogueX/Prefab/texArray.asset");
+    }
     private Vector3 [] QuadTest(Rect rect,int count,float z)
     {
       

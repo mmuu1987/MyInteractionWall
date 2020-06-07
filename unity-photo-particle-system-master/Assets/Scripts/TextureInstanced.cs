@@ -127,15 +127,15 @@ public class TextureInstanced : MonoBehaviour, IDragHandler, IEndDragHandler
     private ComputeBuffer boundaryBuffer;
 
 
+    /// <summary>
+    /// 图片范围的长，就是屏幕的宽
+    /// </summary>
+    public int Width { get; private set; }
 
     /// <summary>
-    /// 图片范围的长
+    /// 图片范围的高，就是屏幕的高
     /// </summary>
-    public int Width;
-    /// <summary>
-    /// 图片范围的高
-    /// </summary>
-    public int Height;
+    public int Height { get; private set; }
 
     /// <summary>
     /// 横列，一横有多少个数
@@ -203,6 +203,8 @@ public class TextureInstanced : MonoBehaviour, IDragHandler, IEndDragHandler
 
     void Start()
     {
+        Width = Screen.width;
+        Height = Screen.height;
 
         InstanceCount = HorizontalColumn * VerticalColumn;
         CurMaterial = InstanceMaterial;
@@ -481,12 +483,12 @@ public class TextureInstanced : MonoBehaviour, IDragHandler, IEndDragHandler
 
     private void OnGUI()
     {
-        if (GUI.Button(new Rect(0f, 0f, 100f, 100f), "test"))
+        if (GUI.Button(new Rect(0f, 0f, 300f, 300f), "test"))
         {
 
            ClassiFicationMotion. ChangeState(1);
         }
-        if (GUI.Button(new Rect(100f, 0f, 100f, 100f), "test2"))
+        if (GUI.Button(new Rect(300f, 0f, 300f, 300f), "test2"))
         {
 
             MultiDepthMotion.ChangeState();

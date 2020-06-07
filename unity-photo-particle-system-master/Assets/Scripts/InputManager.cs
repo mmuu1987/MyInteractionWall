@@ -64,6 +64,12 @@ public class InputManager : MonoBehaviour {
         if (Input.GetMouseButtonDown(id)) return true;
         return false;
     }
+
+    public bool GetMouseButton(int id)
+    {
+        if (Input.GetMouseButton(id)) return true;
+        return false;
+    }
     /// <summary>
     /// 滚轮没有运动后0.5f回复 _inputState = 0;状态
     /// </summary>

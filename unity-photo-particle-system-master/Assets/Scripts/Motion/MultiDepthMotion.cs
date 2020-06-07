@@ -71,7 +71,7 @@ public class MultiDepthMotion : MotionInputMoveBase
         for (int i = 0; i < datas.Length; i++)
         {
             PosAndDir data = datas[i];
-            if (i < 5000)
+            if (i < 250)
             {
                 temp.Add(data);//编号一样的单独拿出来
             }
@@ -89,15 +89,15 @@ public class MultiDepthMotion : MotionInputMoveBase
         _depths = new DepthInfo[5];
         int k = 0;
         float z = 2;
-
+        float scaleY = 1;//y轴位置屏幕有内容的比率
         for (int j = 0; j < newData.Length; j++)
         {
 
 
-            if (j % 1000 == 0)
+            if (j % 50 == 0)
             {
                 k++;
-                float tempZ = k * z;
+                float tempZ = k * z -6;
 
                 _screenPosLeftDown = Camera.main.ScreenToWorldPoint(new Vector3(0, 0, tempZ - Camera.main.transform.position.z));
                 _screenPosLeftUp = Camera.main.ScreenToWorldPoint(new Vector3(0, Height, tempZ - Camera.main.transform.position.z));
@@ -106,47 +106,47 @@ public class MultiDepthMotion : MotionInputMoveBase
 
 
 
-                var tempZZZ = tempZ - 8;
+               
                 float s = 1f;//不同层次的给定不同的缩放  
                 float a = 1f;//不同层次的给定不同的透明度
                 if (k == 1)
                 {
                     s = 1f;
                     a = 1f;
+                    scaleY = 1f;
                 }
                 else if (k == 2)
                 {
-                    s = 1.25f;
-                    a = 0.75f;
+                    s = 1.2f;
+                    a = 0.85f;
+                    scaleY = 0.9f;
                 }
                 else if (k == 3)
                 {
-                    s = 1.5f;
-                    a = 0.5f;
+                    s = 1.4f;
+                    a = 0.65f;
+                    scaleY = 0.8f;
                 }
                 else if (k == 4)
                 {
-                    s = 1.75f;
-                    a = 0.25f;
+                    s = 1.6f;
+                    a = 0.45f;
+                    scaleY = 0.7f;
                 }
                 else if (k == 5)
                 {
-                    s = 2f;
-                    a = 0.1f;
+                    s = 1.8f;
+                    a = 0.25f;
+                    scaleY = 0.6f;
                 }
-                _depths[k - 1] = new DepthInfo(k - 1, tempZZZ, s,a);
-
-
-
+                _depths[k - 1] = new DepthInfo(k - 1, tempZ, s, a);
             }
-
-
             int index = j;
 
 
 
-            float rangeX = Random.Range(_screenPosLeftDown.x * 20f, _screenPosRightDown.x * 20f);//随机x轴位置
-            float rangeY = Random.Range(_screenPosLeftDown.y * 0.75f, _screenPosLeftUp.y * 0.75f);
+            float rangeX = Random.Range(_screenPosLeftDown.x*1.5f , _screenPosRightDown.x*1.5f);//随机x轴位置
+            float rangeY = Random.Range(_screenPosLeftDown.y * scaleY, _screenPosLeftUp.y * scaleY);
             float rangeZ = Random.Range(-0.3f, 0.3f);//在同一层次，再随机不同的深度位置，不至于重叠一起，显得错落有致
 
 
@@ -159,7 +159,8 @@ public class MultiDepthMotion : MotionInputMoveBase
             newData[index].uv2Offset = new Vector4(1f, 1f, 0f, 0f);
             newData[index].picIndex = index % TextureInstanced.Instance.textures.Count;
             newData[index].bigIndex = index % TextureInstanced.Instance.textures.Count;
-            newData[index].velocity = new Vector4(k - 1, 1f, 0, 0);//x存储层次的索引
+            //x存储层次的索引,y存储透明度,   z存储，x轴右边的边界值，为正数   
+            newData[index].velocity = new Vector4(k - 1, 1f, _screenPosRightDown.x * 1.5f, 0);
         }
         TextureInstanced.Instance.ChangeInstanceMat(CurMaterial);
         TextureInstanced.Instance.CurMaterial.SetVector("_WHScale", new Vector4(1f, 1f, 1f, 1f));
@@ -178,7 +179,7 @@ public class MultiDepthMotion : MotionInputMoveBase
         ComputeShader.SetBuffer(InitID, "positionBuffer", ComputeBuffer);
         MoveSpeed = 50f;//更改更快的插值速度
         ComputeShader.SetFloat("MoveSpeed", MoveSpeed);
-
+        ComputeShader.SetFloat("dis", 2);
         InitDisPatch(InitID);
 
 
@@ -225,13 +226,37 @@ public class MultiDepthMotion : MotionInputMoveBase
     }
     protected override void Dispatch(ComputeBuffer system)
     {
-
+        MouseButtonDownAction();
         ComputeShader.SetFloat("deltaTime", Time.deltaTime);
 
         Dispatch(dispatchID, system);
 
     }
+    /// <summary>
+    /// 点击点
+    /// </summary>
+    private Vector3 _clickPoint;
+    private void MouseButtonDownAction()
+    {
 
+        _clickPoint = Vector3.one * 1000000;//不让其再次触发
+
+        if (InputManager.Instance.GetMouseButton(0))
+        {
+            
+
+            _clickPoint = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 6));//固定相机前面10个单位的距离，因为我们不需要z值，只需要xy
+           // Debug.Log("鼠标右键按下 " + _clickPoint);
+           // _clickPoint = new Vector3(_clickPoint.x, _clickPoint.y, -6);
+        }
+
+        TextureInstanced.Instance.tipLD.position = _clickPoint;
+        ComputeShader.SetVector("clickPoint", _clickPoint);
+      
+       
+
+
+    }
     public override void ExitMotion()
     {
         base.ExitMotion();

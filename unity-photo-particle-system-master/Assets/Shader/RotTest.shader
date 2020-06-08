@@ -60,13 +60,9 @@
 				return o;
 			}
 			
-			fixed4 frag (v2f i) : SV_Target
+			float rot(float angle)
 			{
-				fixed4 col1 =  UNITY_SAMPLE_TEX2DARRAY(_TexArrOne, float3(i.uv.xy, 0));
-				fixed4 col2 =  UNITY_SAMPLE_TEX2DARRAY(_TexArrTwo, float3(i.uv.xy, 0));
-			
-
-				float angle = i.angle;
+			  
 				if(angle>0)angle*=-1;
 				//-80  -100  转换图片 4*3 1920 1080
 
@@ -92,6 +88,14 @@
 			    	}
 			        else if(angle<-280) f=0;
 			   }
+			   return f;
+			}
+			fixed4 frag (v2f i) : SV_Target
+			{
+				fixed4 col1 =  UNITY_SAMPLE_TEX2DARRAY(_TexArrOne, float3(i.uv.xy, 0));
+				fixed4 col2 =  UNITY_SAMPLE_TEX2DARRAY(_TexArrTwo, float3(i.uv.xy, 0));
+
+				float f =rot(i.angle);
 
 				fixed4 col = lerp(col1,col2,f)
 				// apply fog

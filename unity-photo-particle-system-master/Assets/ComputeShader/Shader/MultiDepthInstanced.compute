@@ -59,6 +59,45 @@ float MoveSpeed;
 float dis = 5;
 
 
+
+void LerpTex(uint3 id )
+{
+   //这里用originalPos存储插值信息
+   float4 v = positionBuffer[id.x].originalPos;
+   float3 cache =  positionBuffer[id.x].initialVelocity;
+
+   v.z+=deltaTime;
+   if(v.z>=v.x)//延长时间结束
+   {
+     //开始插值事务
+     float t = v.z -v.x ;//得到插值时间
+
+	 if(v.y>=0)//正向插值
+	 {
+	   v.w = t/v.y;
+	  
+	   if(v.w>1)//重置插值数据
+	   {
+	    v = float4(v.x,-v.y,0,1);//-v.y 反向插值的证据
+		cache.x++;//记录改变次数
+	   }
+	 }
+	 else //反向插值
+	 {
+	   v.w = (-v.y-t)/-v.y;
+	   if(v.w<=0)
+	   {
+	     v = float4(v.x,-v.y,0,0);
+		// cache.x++;//记录改变次数
+	   }
+	 }
+   }
+
+	 positionBuffer[id.x].originalPos = v;
+	 positionBuffer[id.x].initialVelocity=cache ;
+}
+
+
 void OldMethods(uint3 id )
 {
 
@@ -116,13 +155,17 @@ void OldMethods(uint3 id )
    positionBuffer[id.x].moveTarget = moveTarget;
 
    positionBuffer[id.x].velocity= float4(velocity.x,velocity.y,velocity.z,0);//保存新的透明值
+
+  // LerpTex(id);
 }
 
 
 [numthreads(thread_group_size_x, thread_group_size_y, 1)]
 void CSPositionKernel (uint3 id : SV_DispatchThreadID)
 {
+  
   OldMethods(id);
+  
 }
 
 //位置变换  

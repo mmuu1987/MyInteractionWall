@@ -352,7 +352,7 @@ public class ClassiFicationMotion : MotionInputMoveBase
 
                
                 newData[index].moveTarget = pos;
-                newData[index].originalPos = Vector4.one;
+                newData[index].originalPos = Vector4.one*3;
                 newData[index].indexRC = new Vector2(columnCount, rowsCount);
                 newData[index].picIndex = i%TextureInstanced.Instance.textures.Count;
                 newData[index].bigIndex = i%TextureInstanced.Instance.textures.Count;//分类编号

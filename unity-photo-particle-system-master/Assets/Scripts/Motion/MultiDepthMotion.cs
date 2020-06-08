@@ -78,6 +78,7 @@ public class MultiDepthMotion : MotionInputMoveBase
             else
             {
                 data.position = Vector4.zero;//其他编号都隐藏
+                
                 allDataList.Add(data);
             }
 
@@ -90,6 +91,7 @@ public class MultiDepthMotion : MotionInputMoveBase
         int k = 0;
         float z = 2;
         float scaleY = 1;//y轴位置屏幕有内容的比率
+        float delay = 0f;
         for (int j = 0; j < newData.Length; j++)
         {
 
@@ -104,7 +106,7 @@ public class MultiDepthMotion : MotionInputMoveBase
                 _screenPosRightDown = Camera.main.ScreenToWorldPoint(new Vector3(Width, 0, tempZ - Camera.main.transform.position.z));
                 _screenPosRightUp = Camera.main.ScreenToWorldPoint(new Vector3(Width, Height, tempZ - Camera.main.transform.position.z));
 
-
+               delay = Random.Range(3, 20);
 
                
                 float s = 1f;//不同层次的给定不同的缩放  
@@ -161,6 +163,14 @@ public class MultiDepthMotion : MotionInputMoveBase
             newData[index].bigIndex = index % TextureInstanced.Instance.textures.Count;
             //x存储层次的索引,y存储透明度,   z存储，x轴右边的边界值，为正数   
             newData[index].velocity = new Vector4(k - 1, 1f, _screenPosRightDown.x * 1.5f, 0);
+
+            //Vector4 otherData = new Vector4();//切换图片索要缓存的数据
+            //otherData.x = delay;//延迟播放的时间
+            //otherData.y = 2f;//Random.Range(0.1f,1f);//切换图片的时间
+            //otherData.z = 0f;//时间缓存
+            //otherData.w = 0f;//插值值
+            //datas[index].originalPos = otherData;
+
         }
         TextureInstanced.Instance.ChangeInstanceMat(CurMaterial);
         TextureInstanced.Instance.CurMaterial.SetVector("_WHScale", new Vector4(1f, 1f, 1f, 1f));

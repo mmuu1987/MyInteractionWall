@@ -66,7 +66,7 @@
             #endif
 			    v2f o;
 				float lerpValue = positionBuffer[instanceID].originalPos.w;//得到旋转的插值系数
-				float angle = -360* lerpValue;
+				float angle = -180* lerpValue;
 				float4 rot = rotate_angle_axis(angle/RadianRatio,float3(1,0,0));
 				float3 newVector = rotate_vector_at(v.vertex,float3(0,0,0),rot);
 

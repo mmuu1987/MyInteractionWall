@@ -167,7 +167,7 @@ public class MultiDepthMotion : MotionInputMoveBase
             newData[index].velocity = new Vector4(k - 1, 1f, _screenPosRightDown.x * 1.5f, 0);
 
             Vector4 otherData = new Vector4();//切换图片索要缓存的数据
-            otherData.x = delay;//延迟播放的时间
+            otherData.x = delay;//延迟播放的时间   
             otherData.y = 2f;//Random.Range(0.1f,1f);//切换图片的时间
             otherData.z = 0f;//时间缓存
             otherData.w = 0f;//插值值

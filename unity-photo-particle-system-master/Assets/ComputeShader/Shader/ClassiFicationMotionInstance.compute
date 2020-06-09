@@ -10,7 +10,22 @@
 
 
 
-#include "../GPUParticle.cginc"
+//#include "../GPUParticle.cginc"
+  struct PosAndDir
+{
+        float4 position;
+        float4 velocity;
+		float3 initialVelocity;
+        float4 originalPos;
+		float3 moveTarget;
+		float3 moveDir;
+		float2 indexRC;
+		int picIndex;
+        int bigIndex;
+        float4 uvOffset; 
+	    float4 uv2Offset; 
+
+};
 #include "../GPUParticleComputeCommon.cginc"
 
 

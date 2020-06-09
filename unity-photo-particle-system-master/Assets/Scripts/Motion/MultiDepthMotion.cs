@@ -30,6 +30,8 @@ public struct DepthInfo
     /// </summary>
     public float alpha;
 
+
+
     public DepthInfo(int d, float o, float s,float a)
     {
         this.originalDepth = d;
@@ -78,7 +80,7 @@ public class MultiDepthMotion : MotionInputMoveBase
             else
             {
                 data.position = Vector4.zero;//其他编号都隐藏
-                
+                data.originalPos = Vector4.one;
                 allDataList.Add(data);
             }
 
@@ -164,20 +166,19 @@ public class MultiDepthMotion : MotionInputMoveBase
             //x存储层次的索引,y存储透明度,   z存储，x轴右边的边界值，为正数   
             newData[index].velocity = new Vector4(k - 1, 1f, _screenPosRightDown.x * 1.5f, 0);
 
-            //Vector4 otherData = new Vector4();//切换图片索要缓存的数据
-            //otherData.x = delay;//延迟播放的时间
-            //otherData.y = 2f;//Random.Range(0.1f,1f);//切换图片的时间
-            //otherData.z = 0f;//时间缓存
-            //otherData.w = 0f;//插值值
-            //datas[index].originalPos = otherData;
-
+            Vector4 otherData = new Vector4();//切换图片索要缓存的数据
+            otherData.x = delay;//延迟播放的时间
+            otherData.y = 2f;//Random.Range(0.1f,1f);//切换图片的时间
+            otherData.z = 0f;//时间缓存
+            otherData.w = 0f;//插值值
+            newData[index].originalPos = otherData;
+            datas[index].originalPos = otherData;
         }
         TextureInstanced.Instance.ChangeInstanceMat(CurMaterial);
         TextureInstanced.Instance.CurMaterial.SetVector("_WHScale", new Vector4(1f, 1f, 1f, 1f));
 
 
-        TextureInstanced.Instance.CurMaterial.SetBuffer("positionBuffer", ComputeBuffer);
-        TextureInstanced.Instance.CurMaterial.SetTexture("_TexArr", TextureInstanced.Instance.texArr);
+        
 
         allDataList.AddRange(newData);
 
@@ -187,6 +188,8 @@ public class MultiDepthMotion : MotionInputMoveBase
         ComputeShader.SetBuffer(dispatchID, "depthBuffer", _depthBuffer);
         ComputeShader.SetBuffer(dispatchID, "positionBuffer", ComputeBuffer);
         ComputeShader.SetBuffer(InitID, "positionBuffer", ComputeBuffer);
+        TextureInstanced.Instance.CurMaterial.SetBuffer("positionBuffer", ComputeBuffer);
+        TextureInstanced.Instance.CurMaterial.SetTexture("_TexArr", TextureInstanced.Instance.texArr);
         MoveSpeed = 50f;//更改更快的插值速度
         ComputeShader.SetFloat("MoveSpeed", MoveSpeed);
         ComputeShader.SetFloat("dis", 2);

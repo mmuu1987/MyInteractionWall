@@ -76,6 +76,7 @@ public struct PosAndDir
         uvOffset = new Vector4();
 
         uv2Offset = new Vector4();
+        
     }
 }
 

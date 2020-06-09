@@ -14,6 +14,7 @@
         int bigIndex;
         float4 uvOffset; 
 	    float4 uv2Offset; 
+
 };
 
 

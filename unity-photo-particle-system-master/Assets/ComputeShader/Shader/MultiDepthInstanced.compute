@@ -58,6 +58,7 @@ float MoveSpeed;
 //点击屏幕，触发吸引力的范围,必须在CS赋值初始化
 float dis = 5;
 
+float4 rangeRot;
 
 
 void LerpTex(uint3 id )
@@ -70,6 +71,13 @@ void LerpTex(uint3 id )
    //这里用velocity存储插值信息
    float4 v = positionBuffer[id.x].originalPos;
    float3 cache =  positionBuffer[id.x].initialVelocity;
+
+  if(id.x== rangeRot.x ||id.x==rangeRot.y || id.x==rangeRot.z || id.x==rangeRot.w)
+  { 
+	   v.x = 1;
+	   v.y=0.75;
+  }
+   if(v.y==0)return;//y=0 没有运算意义,把不旋转的面片屏蔽掉
 
    v.z+=deltaTime;
    if(v.z>=v.x)//延长时间结束
@@ -93,10 +101,18 @@ void LerpTex(uint3 id )
 	   if(v.w<=0)
 	   {
 	     v = float4(v.x,-v.y,0,0);
-		// cache.x++;//记录改变次数
+		 cache.x++;//记录改变次数
 	   }
 	 }
    }
+
+   //旋转两次后一切归位
+   if(cache.x>=2)
+   {
+    v = float4(0,0,0,0);
+	cache = float3(0,0,0);
+   }
+
 
 	 positionBuffer[id.x].originalPos = v;
 	 positionBuffer[id.x].initialVelocity=cache ;
@@ -169,7 +185,7 @@ void OldMethods(uint3 id )
 void CSPositionKernel (uint3 id : SV_DispatchThreadID)
 {
   
-  // OldMethods(id);
+   OldMethods(id);
    LerpTex(id);
   
 }
@@ -179,38 +195,5 @@ void CSPositionKernel (uint3 id : SV_DispatchThreadID)
 void InitLerp (uint3 id : SV_DispatchThreadID)
 {
 
-   float4 pos = positionBuffer[id.x].position;
-
-   if(pos.w==0)return;//初始数据w为0的不搞事情  
-
-   float4 velocity = positionBuffer[id.x].velocity;
-
-   float3 moveTarget = positionBuffer[id.x].moveTarget;
-
-   float z = depthBuffer[velocity.x].handleDepth;
-
-   float alpha = depthBuffer[velocity.x].alpha;
-
-   float scale = depthBuffer[velocity.x].scale;
-   
-   float3 depthDir = float3(0,0,z);
-
-   float3 moveDir = float3(0.000,0,0);
-
-   moveTarget +=  moveDir;
-
-   float3 allDir = moveTarget +depthDir;
-  
-
-   
-   pos.xyz = allDir; 
-   
-
-
-   positionBuffer[id.x].position = pos;
-
-   positionBuffer[id.x].moveTarget = moveTarget;
-
-   positionBuffer[id.x].velocity= float4(velocity.x,velocity.y,velocity.z,0);//保存新的透明值
  
 }

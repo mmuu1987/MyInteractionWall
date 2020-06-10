@@ -56,6 +56,8 @@ public class MultiDepthMotion : MotionInputMoveBase
     private ComputeBuffer _depthBuffer;
 
     public Material CurMaterial;
+
+    private int _zeroIndexCount = 0;
     protected override void Init()
     {
         base.Init();
@@ -85,7 +87,7 @@ public class MultiDepthMotion : MotionInputMoveBase
             }
 
         }
-
+        _zeroIndexCount = allDataList.Count;
         PosAndDir[] newData = temp.ToArray();
         int stride = Marshal.SizeOf(typeof(DepthInfo));
         _depthBuffer = new ComputeBuffer(5, stride);
@@ -166,14 +168,8 @@ public class MultiDepthMotion : MotionInputMoveBase
             //x存储层次的索引,y存储透明度,   z存储，x轴右边的边界值，为正数   
             newData[index].velocity = new Vector4(k - 1, 1f, _screenPosRightDown.x * 1.5f, 0);
 
-            Vector4 otherData = new Vector4();//切换图片索要缓存的数据
-            delay = Random.Range(3, 20);
-            otherData.x = delay;//延迟播放的时间   
-            otherData.y = 2f;//Random.Range(0.1f,1f);//切换图片的时间
-            otherData.z = 0f;//时间缓存
-            otherData.w = 0f;//插值值
+            Vector4 otherData = new Vector4();
             newData[index].originalPos = otherData;
-            //datas[index].originalPos = otherData;
         }
         TextureInstanced.Instance.ChangeInstanceMat(CurMaterial);
         TextureInstanced.Instance.CurMaterial.SetVector("_WHScale", new Vector4(1f, 1f, 1f, 1f));
@@ -194,6 +190,7 @@ public class MultiDepthMotion : MotionInputMoveBase
         MoveSpeed = 50f;//更改更快的插值速度
         ComputeShader.SetFloat("MoveSpeed", MoveSpeed);
         ComputeShader.SetFloat("dis", 2);
+
         InitDisPatch(InitID);
 
 
@@ -241,6 +238,15 @@ public class MultiDepthMotion : MotionInputMoveBase
     protected override void Dispatch(ComputeBuffer system)
     {
         MouseButtonDownAction();
+
+        if (Input.GetMouseButtonDown(1))
+        {
+            ComputeShader.SetVector("rangeRot", new Vector4(_zeroIndexCount + 115, _zeroIndexCount + 130, _zeroIndexCount + 50, _zeroIndexCount + 157));
+        }
+        if (Input.GetMouseButtonUp(1))
+        {
+            ComputeShader.SetVector("rangeRot", new Vector4(-1, -1, -1, -1));
+        }
         ComputeShader.SetFloat("deltaTime", Time.deltaTime);
 
         Dispatch(dispatchID, system);

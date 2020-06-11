@@ -55,7 +55,7 @@ public struct PosAndDir
     /// </summary>
     public Vector4 uvOffset;
     /// <summary>
-    /// 第二套UV加UV偏移
+    /// 第二套UV加UV偏移 
     /// </summary>
     public Vector4 uv2Offset;
 
@@ -66,7 +66,7 @@ public struct PosAndDir
 
         velocity = new Vector3();
         initialVelocity = new Vector3();
-        originalPos = new Vector4();
+        originalPos = new Vector4(); 
         moveTarget = new Vector3();
         moveDir = new Vector3();
         indexRC = new Vector2();
@@ -83,7 +83,7 @@ public struct PosAndDir
 
 
 /// <summary>
-/// 运动类型
+/// 运动类型 
 /// </summary>
 public enum MotionType
 {

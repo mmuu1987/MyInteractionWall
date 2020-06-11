@@ -458,29 +458,7 @@ public class TextureInstanced : MonoBehaviour, IDragHandler, IEndDragHandler
     }
 
 
-    private IEnumerator LoadVideo(string url)
-    {
-        WWW www = new WWW("file://" + url);
-        yield return www;
-
-        if (string.IsNullOrEmpty(www.error))
-        {
-            MovieTexture movie = www.GetMovieTexture();
-
-            MoveTexture.texture = movie;
-
-            movie.Stop();
-
-            movie.Play();
-            // textures.Clear();
-            // textures.Add(movie);
-            //HandleTextureArry();
-        }
-        else
-        {
-            Debug.Log(www.error);
-        }
-    }
+   
 
     private void OnGUI()
     {

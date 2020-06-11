@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public struct DepthInfo
 {
@@ -56,6 +57,14 @@ public class MultiDepthMotion : MotionInputMoveBase
     private ComputeBuffer _depthBuffer;
 
     public Material CurMaterial;
+
+    /// <summary>
+    /// 获取点击到图片的信息
+    /// </summary>
+    private ComputeBuffer _clickPointBuff;
+
+   
+
 
     private int _zeroIndexCount = 0;
     protected override void Init()
@@ -239,14 +248,16 @@ public class MultiDepthMotion : MotionInputMoveBase
     {
         MouseButtonDownAction();
 
-        if (Input.GetMouseButtonDown(1))
-        {
-            ComputeShader.SetVector("rangeRot", new Vector4(_zeroIndexCount + 115, _zeroIndexCount + 130, _zeroIndexCount + 50, _zeroIndexCount + 157));
-        }
-        if (Input.GetMouseButtonUp(1))
-        {
-            ComputeShader.SetVector("rangeRot", new Vector4(-1, -1, -1, -1));
-        }
+        //if (Input.GetMouseButtonDown(1))
+        //{
+        //    ComputeShader.SetVector("rangeRot", new Vector4(_zeroIndexCount + 115, _zeroIndexCount + 130, _zeroIndexCount + 50, _zeroIndexCount + 157));
+        //}
+        //if (Input.GetMouseButtonUp(1))
+        //{
+        //    ComputeShader.SetVector("rangeRot", new Vector4(-1, -1, -1, -1));
+        //}
+
+
         ComputeShader.SetFloat("deltaTime", Time.deltaTime);
 
         Dispatch(dispatchID, system);
@@ -263,19 +274,10 @@ public class MultiDepthMotion : MotionInputMoveBase
 
         if (InputManager.Instance.GetMouseButton(0))
         {
-            
-
             _clickPoint = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 6));//固定相机前面10个单位的距离，因为我们不需要z值，只需要xy
-           // Debug.Log("鼠标右键按下 " + _clickPoint);
-           // _clickPoint = new Vector3(_clickPoint.x, _clickPoint.y, -6);
         }
-
         TextureInstanced.Instance.tipLD.position = _clickPoint;
         ComputeShader.SetVector("clickPoint", _clickPoint);
-      
-       
-
-
     }
     public override void ExitMotion()
     {
@@ -291,5 +293,12 @@ public class MultiDepthMotion : MotionInputMoveBase
     public void ChangeState()
     {
         SetDepth(Depth);
+    }
+
+    public override void OnPointerUp(PointerEventData eventData)
+    {
+        base.OnPointerUp(eventData);
+       // eventData.pointerId
+        Debug.Log("this is child");
     }
 }

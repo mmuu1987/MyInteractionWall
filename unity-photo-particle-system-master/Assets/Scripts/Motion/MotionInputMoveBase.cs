@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class MotionInputMoveBase : MotionBase, IDragHandler, IEndDragHandler
+public class MotionInputMoveBase : MotionBase, IDragHandler, IEndDragHandler, IPointerClickHandler, IPointerDownHandler, IPointerUpHandler
 {
     /// <summary>
     /// 面片坐标系的原点========>所有面片组成的矩形的0,0点，组成的矩形相当于在x,y正向展开面片
@@ -270,6 +270,21 @@ public class MotionInputMoveBase : MotionBase, IDragHandler, IEndDragHandler
         base.ExitMotion();
       
         _actionState = 0;
+    }
+
+    public virtual void OnPointerUp(PointerEventData eventData)
+    {
+       // Debug.Log("OnPointerUp");
+    }
+
+    public void OnPointerClick(PointerEventData eventData)
+    {
+      //  Debug.Log("OnPointerClick");
+    }
+
+    public void OnPointerDown(PointerEventData eventData)
+    {
+       // Debug.Log("OnPointerDown");
     }
 
     

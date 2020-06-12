@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class MotionInputMoveBase : MotionBase, IDragHandler, IEndDragHandler, IPointerClickHandler, IPointerDownHandler, IPointerUpHandler
+public class MotionInputMoveBase : MotionBase, IDragHandler, IEndDragHandler, IPointerClickHandler, IPointerDownHandler, IPointerUpHandler,IBeginDragHandler
+    
 {
     /// <summary>
-    /// 面片坐标系的原点========>所有面片组成的矩形的0,0点，组成的矩形相当于在x,y正向展开面片
+    /// 面片坐标系的原点========>所有面片组成的矩形的0,0点，组成的矩形相当于在x,y正向展开面片  
     /// </summary>
     protected Vector3 _originalPosLeftDown;
     /// <summary>
@@ -113,15 +114,7 @@ public class MotionInputMoveBase : MotionBase, IDragHandler, IEndDragHandler, IP
 
     }
 
-    public void OnDrag(PointerEventData eventData)
-    {
-        _delta = eventData.delta;
-    }
-
-    public void OnEndDrag(PointerEventData eventData)
-    {
-        _delta = Vector2.zero;
-    }
+   
 
     
     /// <summary>
@@ -277,15 +270,30 @@ public class MotionInputMoveBase : MotionBase, IDragHandler, IEndDragHandler, IP
        // Debug.Log("OnPointerUp");
     }
 
-    public void OnPointerClick(PointerEventData eventData)
+    public virtual void OnPointerClick(PointerEventData eventData)
     {
-      //  Debug.Log("OnPointerClick");
+       // Debug.Log("OnPointerClick");
     }
 
-    public void OnPointerDown(PointerEventData eventData)
+    public virtual void OnPointerDown(PointerEventData eventData)
     {
-       // Debug.Log("OnPointerDown");
+      //  Debug.Log("OnPointerDown");
     }
 
-    
+    public virtual void OnDrag(PointerEventData eventData)
+    {
+        _delta = eventData.delta;
+      //  Debug.Log("OnDrag");
+    }
+
+    public virtual void OnEndDrag(PointerEventData eventData)
+    {
+        _delta = Vector2.zero;
+      //  Debug.Log("OnEndDrag");
+    }
+
+    public virtual void OnBeginDrag(PointerEventData eventData)
+    {
+       // Debug.Log("OnBeginDrag");
+    }
 }

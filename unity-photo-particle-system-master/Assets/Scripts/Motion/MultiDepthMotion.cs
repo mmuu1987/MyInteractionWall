@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -45,7 +46,12 @@ public struct DepthInfo
 
 };
 
+public class ClickData
+{
+    public Vector3 Position;
 
+    public float ClickTime;
+}
 /// <summary>
 /// 多层深度的面片运动
 /// </summary>
@@ -63,14 +69,26 @@ public class MultiDepthMotion : MotionInputMoveBase
     /// </summary>
     private ComputeBuffer _clickPointBuff;
 
-   
+    public int Depth = 2;
+    private int _zeroIndexCount;
 
 
-    private int _zeroIndexCount = 0;
+    /// <summary>
+    /// 点击点 
+    /// </summary>
+    private Vector3 _clickPoint;
+
+    private ComputeBuffer _clickBuff;
+
+    /// <summary>
+    /// 触摸数据int为id,vector,4为屏幕位置，加 点击的 时间点
+    /// </summary>
+    private Dictionary<int, ClickData> _touchIds; 
     protected override void Init()
     {
         base.Init();
 
+        _touchIds = new Dictionary<int, ClickData>();
         PosAndDir[] datas = new PosAndDir[ComputeBuffer.count];
 
         ComputeBuffer.GetData(datas);
@@ -200,6 +218,16 @@ public class MultiDepthMotion : MotionInputMoveBase
         ComputeShader.SetFloat("MoveSpeed", MoveSpeed);
         ComputeShader.SetFloat("dis", 2);
 
+
+        //触摸点最大为十个
+        List<Vector3> clicks = new List<Vector3>();
+        for (int i = 0; i < 10; i++)
+        {
+            clicks.Add(Vector3.one*100000);
+        }
+        _clickBuff = new ComputeBuffer(10, 12);
+        _clickBuff.SetData(clicks.ToArray());
+        ComputeShader.SetBuffer(dispatchID, "clicks", _clickBuff);
         InitDisPatch(InitID);
 
 
@@ -247,7 +275,7 @@ public class MultiDepthMotion : MotionInputMoveBase
     protected override void Dispatch(ComputeBuffer system)
     {
         MouseButtonDownAction();
-
+          
         //if (Input.GetMouseButtonDown(1))
         //{
         //    ComputeShader.SetVector("rangeRot", new Vector4(_zeroIndexCount + 115, _zeroIndexCount + 130, _zeroIndexCount + 50, _zeroIndexCount + 157));
@@ -260,24 +288,36 @@ public class MultiDepthMotion : MotionInputMoveBase
 
         ComputeShader.SetFloat("deltaTime", Time.deltaTime);
 
-        Dispatch(dispatchID, system);
+        Dispatch(dispatchID, system); 
 
     }
+   
     /// <summary>
-    /// 点击点
+    /// 触摸长按后传输到GPU
     /// </summary>
-    private Vector3 _clickPoint;
     private void MouseButtonDownAction()
     {
 
-        _clickPoint = Vector3.one * 1000000;//不让其再次触发
+        Vector3[] temp = new Vector3[_clickBuff.count];
 
-        if (InputManager.Instance.GetMouseButton(0))
+        _clickBuff.GetData(temp);
+        //传输过去前，先重置数据
+        for (int i = 0; i < temp.Length ; i++)
         {
-            _clickPoint = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 6));//固定相机前面10个单位的距离，因为我们不需要z值，只需要xy
+            temp[i] = Vector3.one*1000000;
         }
-        TextureInstanced.Instance.tipLD.position = _clickPoint;
-        ComputeShader.SetVector("clickPoint", _clickPoint);
+
+        int n = 0;
+        foreach (KeyValuePair<int, ClickData> keyValuePair in _touchIds)
+        {
+
+            Vector3 pos = keyValuePair.Value.Position;
+            pos = Camera.main.ScreenToWorldPoint(new Vector3(pos.x, pos.y, 6));
+            temp[n] = pos;
+            n++;
+        }
+        _clickBuff.SetData(temp);
+        ComputeShader.SetBuffer(dispatchID, "clicks", _clickBuff);
     }
     public override void ExitMotion()
     {
@@ -285,11 +325,13 @@ public class MultiDepthMotion : MotionInputMoveBase
         if (_depthBuffer!=null)
         _depthBuffer.Release();
         _depthBuffer = null;
-
+        _clickBuff.Release();
+        _clickBuff = null;
     }
 
 
-    public int Depth=2;
+    
+
     public void ChangeState()
     {
         SetDepth(Depth);
@@ -298,7 +340,50 @@ public class MultiDepthMotion : MotionInputMoveBase
     public override void OnPointerUp(PointerEventData eventData)
     {
         base.OnPointerUp(eventData);
-       // eventData.pointerId
-        Debug.Log("this is child");
+
+        if (_touchIds.ContainsKey(eventData.pointerId))
+        {
+            float temp = _touchIds[eventData.pointerId].ClickTime;
+
+           // Debug.Log(temp);
+            if (temp <= 0.35f)
+            {
+                Debug.Log("产生点击事件");
+            }
+            _touchIds.Remove(eventData.pointerId);
+        }
+    }
+
+    public override void OnPointerDown(PointerEventData eventData)
+    {
+        base.OnPointerDown(eventData);
+      //  Debug.Log("this is OnPointerDown  eventData.clickTime " + eventData.clickTime);
+
+        if (!_touchIds.ContainsKey(eventData.pointerId))
+        {
+            Vector3 pos = eventData.position;
+            ClickData data = new ClickData();
+            data.Position = pos;
+            data.ClickTime = 0;
+            _touchIds.Add(eventData.pointerId, data);
+        }
+    }
+
+    public override void OnDrag(PointerEventData eventData)
+    {
+        base.OnDrag(eventData);
+        if (_touchIds.ContainsKey(eventData.pointerId))
+        {
+            Vector3 pos = eventData.position;
+            _touchIds[eventData.pointerId].Position = pos;//保留初始点击时间
+        }
+    }
+
+    private void LateUpdate()
+    {
+        foreach (KeyValuePair<int, ClickData> data in _touchIds)
+        {
+            data.Value.ClickTime += Time.deltaTime;
+        }
     }
 }

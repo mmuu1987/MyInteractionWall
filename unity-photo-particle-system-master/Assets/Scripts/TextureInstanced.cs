@@ -106,6 +106,23 @@ public enum MotionType
     /// </summary>
     MultiDepth
 }
+
+public enum TouchType
+{
+    None,
+    /// <summary>
+    /// 触摸离开
+    /// </summary>
+    TouchUp,
+    /// <summary>
+    /// 首次触摸按下
+    /// </summary>
+    TouchDown,
+    /// <summary>
+    /// 触摸中
+    /// </summary>
+    Touching
+}
 /// <summary>
 /// This demo shows the use of Compute Shaders to update the object's
 /// positions. The buffer is stored and updated directly in GPU.

@@ -48,6 +48,8 @@
 
 RWStructuredBuffer<PosAndDir> clickPointsBuff;
 RWStructuredBuffer<DepthInfo> depthBuffer;
+//多个点击点的运动
+RWStructuredBuffer<float3>  clicks;
 
 
 float deltaTime;
@@ -138,37 +140,56 @@ void OldMethods(uint3 id )
    
    float3 depthDir = float3(0,0,z);
 
-   float3 moveDir = float3(0.0075,0,0);
+   float3 moveDir = float3(-0.0075,0,0);
 
    moveTarget +=  moveDir;
 
    float3 allDir = moveTarget +depthDir;
   
 
+    //计算多点碰撞聚集运动的算法
+	//-------------------------
+    uint count;
+	uint stride; 
+	clicks.GetDimensions(count,stride);
+	int n=-1;//让下面的循环else 体里只执行一次，否则执行十次，不是我们想要的
+	
+	for (int i = 0; i < count; i++)
+	{
+	   //如果有鼠标点击事件//CS代码那边，如果没有点击，点击点会移到 Vector3.one * 1000000位置
+       if(clicks[i].z<1000 &&length(pos.xy - clicks[i].xy)<=dis)
+       {
+	     n=i;//如果有在这个范围的，则跳出循环
+		 break;
+       }
+	}
+
+	if(n>=0)//如果在某个触摸点半径范围，则吸引
+	{
+	  pos.xy = lerp(pos.xy,clicks[n].xy,deltaTime*0.5);
+	}
+    else
+	{
+	   pos= lerp(pos,float4(allDir,scale),deltaTime);
+  
+       velocity.y = lerp(velocity.y,alpha,deltaTime);
+	}
+    //计算多点碰撞聚集运动的算法
+	//-------------------------
    
 
-   //如果有鼠标点击事件//CS代码那边，如果没有点击，点击点会移到 Vector3.one * 1000000位置
-   if(clickPoint.z<1000 &&length(pos.xy - clickPoint.xy)<=dis )
-   {
-	   pos.xy = lerp(pos.xy,clickPoint.xy,deltaTime *0.5f);
-   }
-   else
-   {
-     pos= lerp(pos,float4(allDir,scale),deltaTime);
   
-     velocity.y = lerp(velocity.y,alpha,deltaTime);
-   }
 
    //边界检测
    float RightBorder = velocity.z;
    float LeftBorder = -RightBorder;
    //if(pos.x<LeftBorder)pos.x += 2*RightBorder;
-   if(pos.x>RightBorder)
+   if(pos.x<LeftBorder)
    {
-    pos.x -= 2*RightBorder;
-	moveTarget.x-=2*RightBorder;
+    pos.x -= 2*LeftBorder;
+	moveTarget.x-=2*LeftBorder;
    }
-
+   //边界检测
 
 
    positionBuffer[id.x].position = pos;

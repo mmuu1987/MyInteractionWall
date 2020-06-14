@@ -110,7 +110,7 @@ public class MotionInputMoveBase : MotionBase, IDragHandler, IEndDragHandler, IP
 
         _rightUpDir = new Vector2(1, 1).normalized * distanceSize;
 
-       
+        Camera.main.fieldOfView = 60f;
 
     }
 

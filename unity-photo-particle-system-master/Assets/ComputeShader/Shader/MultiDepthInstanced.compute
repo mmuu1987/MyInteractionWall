@@ -45,11 +45,14 @@
 
 
 
-
+//反馈给cs，点击到哪个图索引
 RWStructuredBuffer<PosAndDir> clickPointsBuff;
 RWStructuredBuffer<DepthInfo> depthBuffer;
 //多个点击点的运动
 RWStructuredBuffer<float3>  clicks;
+
+
+
 
 
 float deltaTime;
@@ -62,6 +65,41 @@ float dis = 5;
 
 float4 rangeRot;
 
+//检测点击点在哪个面片里面
+void CheckClickPoint(uint3 id)
+{
+   clickPointsBuff[0].picIndex=-1;//重置索引
+
+   if(clickPoint.z>=100000)return;
+
+   float4 pos = positionBuffer[id.x].position;
+
+   float4 velocity = positionBuffer[id.x].velocity;
+
+ //  if(velocity.x>0)return;//值允许第一层有点击行为
+
+    float alpha = depthBuffer[velocity.x].alpha;
+
+	if(alpha<1) return;// 在第一排的深度才可以点击，用透明度判断是否在第一排
+   
+   //float2 leftDownP2, float2 leftUpP1, float2 rightDownP3, float2 rightUpP4, float2 p
+   //默认图片大小为长宽为1，一半就是0.5
+   float2 leftDown = pos.xy + float2(-0.5,-0.5);
+
+   float2 leftUp = pos.xy + float2(-0.5,0.5);
+
+   float2 rightDown = pos.xy + float2(0.5,-0.5);
+
+   float2 rightUp = pos.xy + float2(0.5,0.5);
+
+   bool   isContains = ContainsQuadrangle(leftDown,leftUp,rightDown,rightUp,clickPoint);
+
+   if(isContains)
+   {
+    positionBuffer[id.x].position.w=2;
+	clickPointsBuff[0] = positionBuffer[id.x];
+   }
+}
 
 void LerpTex(uint3 id )
 {
@@ -198,7 +236,9 @@ void OldMethods(uint3 id )
 
    positionBuffer[id.x].velocity= float4(velocity.x,velocity.y,velocity.z,0);//保存新的透明值
 
-   LerpTex(id);
+   CheckClickPoint(id);
+ //  LerpTex(id);
+   
 }
 
 
@@ -207,7 +247,7 @@ void CSPositionKernel (uint3 id : SV_DispatchThreadID)
 {
   
    OldMethods(id);
-   LerpTex(id);
+  // LerpTex(id);
   
 }
 

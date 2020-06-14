@@ -29,7 +29,7 @@ public class LoopMotion : MotionInputMoveBase
 
         float SizeHeight = TextureInstanced.Instance.SizeHeight;
 
-        List<Texture> textures = TextureInstanced.Instance.textures;
+      
 
 
 
@@ -68,8 +68,8 @@ public class LoopMotion : MotionInputMoveBase
             datas[i].indexRC = new Vector2(rows, column);
             datas[i].uvOffset = new Vector4(1f, 1f, 0f, 0f);
             datas[i].uv2Offset = new Vector4(1f, 1f, 0f, 0f);
-            datas[i].picIndex = i % textures.Count;
-            datas[i].bigIndex = i % textures.Count;
+            datas[i].picIndex = i % TextureInstanced.Instance.TexArr.depth;
+            datas[i].bigIndex = i % TextureInstanced.Instance.TexArr.depth;
             Vector4 posTemp = datas[i].position;
             datas[i].position =new Vector4(posTemp.x,posTemp.y,posTemp.z,1f);
             if (i == 0) _originalPosLeftDown = temp;//保存面片坐标点原点位置
@@ -158,7 +158,7 @@ public class LoopMotion : MotionInputMoveBase
         {
             PosAndDir[] datas = new PosAndDir[1];
             _clickPointBuff.GetData(datas);
-            //Debug.Log(datas[0].picIndex);
+            Debug.Log(datas[0].picIndex);
         }
        
     }

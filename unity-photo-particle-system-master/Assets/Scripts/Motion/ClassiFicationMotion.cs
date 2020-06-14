@@ -354,8 +354,8 @@ public class ClassiFicationMotion : MotionInputMoveBase
                 newData[index].moveTarget = pos;
                 newData[index].originalPos = Vector4.one;
                 newData[index].indexRC = new Vector2(columnCount, rowsCount);
-                newData[index].picIndex = i%TextureInstanced.Instance.textures.Count;
-                newData[index].bigIndex = i%TextureInstanced.Instance.textures.Count;//分类编号
+                newData[index].picIndex = i % TextureInstanced.Instance.TexArr.depth;
+                newData[index].bigIndex = i % TextureInstanced.Instance.TexArr.depth;//分类编号
 
                 Vector4 otherData = new Vector4();//切换图片索要缓存的数据
                 otherData.x = delay;//延迟播放的时间

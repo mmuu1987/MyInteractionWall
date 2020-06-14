@@ -187,10 +187,14 @@ public class TextureInstanced : MonoBehaviour, IDragHandler, IEndDragHandler
     public Transform tipRU;
 
 
-    public Texture2DArray texArr;
+    public Texture2DArray TexArr;
 
-    // public Texture2D[] textures;
-    public List<Texture> textures;
+   
+
+    /// <summary>
+    /// 贴图个数
+    /// </summary>
+    public int TextureCount = 0;
     public Texture2DArrayStyle.ECopyTexMethpd copyTexMethod;
 
     public CubeMotion CubeMotion;
@@ -216,7 +220,7 @@ public class TextureInstanced : MonoBehaviour, IDragHandler, IEndDragHandler
         if (Instance != null) throw new UnityException("已经有单例了，不能重复赋值");
 
         Instance = this;
-
+        
     }
 
     void Start()
@@ -226,7 +230,8 @@ public class TextureInstanced : MonoBehaviour, IDragHandler, IEndDragHandler
 
         InstanceCount = HorizontalColumn * VerticalColumn;
         CurMaterial = InstanceMaterial;
-        HandleTextureArry();
+        HandleTextureArry(PictureHandle.Instance.Texs);
+        PictureHandle.Instance.DestroyTexture();//贴图加载到GPU那边后这边内存就清理掉
 
         argsBuffer = new ComputeBuffer(5, sizeof(uint), ComputeBufferType.IndirectArguments);
 
@@ -367,7 +372,7 @@ public class TextureInstanced : MonoBehaviour, IDragHandler, IEndDragHandler
         for (int i = 0; i < InstanceCount; i++)
         {
             posDirs[i].position = Vector4.one;
-            posDirs[i].picIndex = i % textures.Count;
+            posDirs[i].picIndex = i % TexArr.depth;
         }
 
         colorBuffer.SetData(colors);
@@ -386,10 +391,12 @@ public class TextureInstanced : MonoBehaviour, IDragHandler, IEndDragHandler
         argsBuffer.SetData(args);
     }
 
-    private void HandleTextureArry()
+    
+
+    private void HandleTextureArry(List<Texture2D> texs )
     {
 
-        if (textures == null || textures.Count == 0)
+        if (texs == null || texs.Count == 0)
         {
             enabled = false;
             return;
@@ -402,7 +409,7 @@ public class TextureInstanced : MonoBehaviour, IDragHandler, IEndDragHandler
             return;
         }
         // Texture tx = new Texture();
-        texArr = new Texture2DArray(textures[0].width, textures[0].width, textures.Count, TextureFormat.DXT1, false, false);
+        TexArr = new Texture2DArray(texs[0].width, texs[0].width, texs.Count, TextureFormat.DXT5, false, false);
 
         // 结论 //
         // Graphics.CopyTexture耗时(单位:Tick): 5914, 8092, 6807, 5706, 5993, 5865, 6104, 5780 //
@@ -416,37 +423,21 @@ public class TextureInstanced : MonoBehaviour, IDragHandler, IEndDragHandler
         //{
         if (copyTexMethod == Texture2DArrayStyle.ECopyTexMethpd.CopyTexture)
         {
-            for (int i = 0; i < textures.Count; i++)
+            for (int i = 0; i < texs.Count; i++)
             {
-                // 以下两行都可以 //
-                //Graphics.CopyTexture(textures[i], 0, texArr, i);
-                Graphics.CopyTexture(textures[i], 0, 0, texArr, i, 0);
+               
+                Graphics.CopyTexture(texs[i], 0, 0, TexArr, i, 0);
 
             }
         }
-        else if (copyTexMethod == Texture2DArrayStyle.ECopyTexMethpd.SetPexels)
-        {
-            //for (int i = 0; i < textures.Count; i++)
-            //{
-            //    // 以下两行都可以 //
-            //    //texArr.SetPixels(textures[i].GetPixels(), i);
-            //    texArr.SetPixels(textures[i].GetPixels(), i, 0);
-            //}
+        TexArr.wrapMode = TextureWrapMode.Clamp;
+        TexArr.filterMode = FilterMode.Bilinear;
+        CurMaterial.SetTexture("_TexArr", TexArr);
 
-            //texArr.Apply();
-        }
-        //}
-
-        texArr.wrapMode = TextureWrapMode.Clamp;
-        texArr.filterMode = FilterMode.Bilinear;
-
-
-
-        CurMaterial.SetTexture("_TexArr", texArr);
-        //m_mat.SetFloat("_Index", Random.Range(0, textures.Length));
-
-        //AssetDatabase.CreateAsset(texArr, "Assets/RogueX/Prefab/texArray.asset");
+       // Debug.Log("texArr length is " + TexArr.depth);
     }
+
+   
     void OnDisable()
     {
         if (positionBuffer != null) positionBuffer.Release();

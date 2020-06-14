@@ -68,9 +68,6 @@ void CheckClickPoint(uint3 id)
 [numthreads(thread_group_size_x, thread_group_size_y, 1)]
 void CSPositionKernel (uint3 id : SV_DispatchThreadID)
 {
-
-		
-
 		positionBuffer[id.x].position.z = Z;//z深度影响
 		////originPos.z = Z;
 		////0为弹起后的误操作状态，1为按下，2为按下中

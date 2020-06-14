@@ -64,10 +64,9 @@ public class MultiDepthMotion : MotionInputMoveBase
 
     public Material CurMaterial;
 
-    /// <summary>
-    /// 获取点击到图片的信息
-    /// </summary>
-    private ComputeBuffer _clickPointBuff;
+   
+
+
 
     public int Depth = 2;
     private int _zeroIndexCount;
@@ -78,7 +77,15 @@ public class MultiDepthMotion : MotionInputMoveBase
     /// </summary>
     private Vector3 _clickPoint;
 
+    /// <summary>
+    /// 触摸互动吸引的点击buff
+    /// </summary>
     private ComputeBuffer _clickBuff;
+
+    /// <summary>
+    /// 获取点击到图片的信息
+    /// </summary>
+    private ComputeBuffer _clickPointBuff;
 
     /// <summary>
     /// 触摸数据int为id,vector,4为屏幕位置，加 点击的 时间点
@@ -87,6 +94,8 @@ public class MultiDepthMotion : MotionInputMoveBase
     protected override void Init()
     {
         base.Init();
+
+       // Camera.main.fieldOfView = 30f;
 
         _touchIds = new Dictionary<int, ClickData>();
         PosAndDir[] datas = new PosAndDir[ComputeBuffer.count];
@@ -102,7 +111,7 @@ public class MultiDepthMotion : MotionInputMoveBase
         for (int i = 0; i < datas.Length; i++)
         {
             PosAndDir data = datas[i];
-            if (i < 250)
+            if (i < 300)
             {
                 temp.Add(data);//编号一样的单独拿出来
             }
@@ -117,17 +126,24 @@ public class MultiDepthMotion : MotionInputMoveBase
         _zeroIndexCount = allDataList.Count;
         PosAndDir[] newData = temp.ToArray();
         int stride = Marshal.SizeOf(typeof(DepthInfo));
-        _depthBuffer = new ComputeBuffer(5, stride);
-        _depths = new DepthInfo[5];
+        _depthBuffer = new ComputeBuffer(3, stride);
+        _depths = new DepthInfo[3];
+
+        //点击缓存
+        _clickPointBuff = new ComputeBuffer(1,  Marshal.SizeOf(typeof(PosAndDir)));
+        PosAndDir[] clickPoint = { new PosAndDir(-1) };
+        _clickPointBuff.SetData(clickPoint);
+
         int k = 0;
         float z = 2;
         float scaleY = 1;//y轴位置屏幕有内容的比率
         float delay = 0f;
+        List<Vector2> randomPos = new List<Vector2>();
         for (int j = 0; j < newData.Length; j++)
         {
 
 
-            if (j % 50 == 0)
+            if (j %100 == 0)
             {
                 k++;
                 float tempZ = k * z -6;
@@ -138,7 +154,7 @@ public class MultiDepthMotion : MotionInputMoveBase
                 _screenPosRightUp = Camera.main.ScreenToWorldPoint(new Vector3(Width, Height, tempZ - Camera.main.transform.position.z));
 
               
-
+               
                
                 float s = 1f;//不同层次的给定不同的缩放  
                 float a = 1f;//不同层次的给定不同的透明度
@@ -151,13 +167,13 @@ public class MultiDepthMotion : MotionInputMoveBase
                 else if (k == 2)
                 {
                     s = 1.2f;
-                    a = 0.85f;
+                    a = 0.45f;
                     scaleY = 0.9f;
                 }
                 else if (k == 3)
                 {
                     s = 1.4f;
-                    a = 0.65f;
+                    a = 0.25f;
                     scaleY = 0.8f;
                 }
                 else if (k == 4)
@@ -172,14 +188,13 @@ public class MultiDepthMotion : MotionInputMoveBase
                     a = 0.25f;
                     scaleY = 0.6f;
                 }
+                randomPos = Common.Sample2D((_screenPosRightDown.x - _screenPosLeftDown.x) * 1.5f, (_screenPosLeftUp.y - _screenPosLeftDown.y) * scaleY, s, 15);
+                Debug.Log("randomPos count is  " + randomPos.Count +" 层级为=> " + (k-1));
                 _depths[k - 1] = new DepthInfo(k - 1, tempZ, s, a);
             }
+
             int index = j;
 
-
-
-            float rangeX = Random.Range(_screenPosLeftDown.x*1.5f , _screenPosRightDown.x*1.5f);//随机x轴位置
-            float rangeY = Random.Range(_screenPosLeftDown.y * scaleY, _screenPosLeftUp.y * scaleY);
             float rangeZ = Random.Range(-0.3f, 0.3f);//在同一层次，再随机不同的深度位置，不至于重叠一起，显得错落有致
 
 
@@ -187,11 +202,15 @@ public class MultiDepthMotion : MotionInputMoveBase
             newData[index].position = new Vector4(posTemp.x, posTemp.y, posTemp.z, 1);
 
 
-            newData[index].moveTarget = new Vector3(rangeX, rangeY, rangeZ);
+            Vector2 randomPoint = randomPos[index % randomPos.Count];
+
+            randomPoint = new Vector2(randomPoint.x +_screenPosLeftDown.x, randomPoint.y+_screenPosLeftDown.y );
+
+            newData[index].moveTarget = new Vector3(randomPoint.x, randomPoint.y, rangeZ);
             newData[index].uvOffset = new Vector4(1f, 1f, 0f, 0f);
             newData[index].uv2Offset = new Vector4(1f, 1f, 0f, 0f);
-            newData[index].picIndex = index % TextureInstanced.Instance.textures.Count;
-            newData[index].bigIndex = index % TextureInstanced.Instance.textures.Count;
+            newData[index].picIndex = PictureHandle.Instance.GetLevelIndex(index, k-1);
+            newData[index].bigIndex = PictureHandle.Instance.GetLevelIndex(index, k-1);
             //x存储层次的索引,y存储透明度,   z存储，x轴右边的边界值，为正数   
             newData[index].velocity = new Vector4(k - 1, 1f, _screenPosRightDown.x * 1.5f, 0);
 
@@ -213,10 +232,12 @@ public class MultiDepthMotion : MotionInputMoveBase
         ComputeShader.SetBuffer(dispatchID, "positionBuffer", ComputeBuffer);
         ComputeShader.SetBuffer(InitID, "positionBuffer", ComputeBuffer);
         TextureInstanced.Instance.CurMaterial.SetBuffer("positionBuffer", ComputeBuffer);
-        TextureInstanced.Instance.CurMaterial.SetTexture("_TexArr", TextureInstanced.Instance.texArr);
+        TextureInstanced.Instance.CurMaterial.SetTexture("_TexArr", TextureInstanced.Instance.TexArr);
         MoveSpeed = 50f;//更改更快的插值速度
         ComputeShader.SetFloat("MoveSpeed", MoveSpeed);
         ComputeShader.SetFloat("dis", 2);
+
+        ComputeShader.SetBuffer(dispatchID, "clickPointsBuff", _clickPointBuff);
 
 
         //触摸点最大为十个
@@ -233,6 +254,8 @@ public class MultiDepthMotion : MotionInputMoveBase
 
     }
 
+    private List<Vector2> _poss = new List<Vector2>(); 
+   
     /// <summary>
     /// 当前在最前面的深度，默认是0
     /// </summary>
@@ -245,7 +268,7 @@ public class MultiDepthMotion : MotionInputMoveBase
     private void SetDepth(int top)
     {
         if (_curDepth == top) return;
-        if (top > 5) return;
+        if (top >= 3) return;
 
         float z1 = _depths[0].toDepth;
         float s1 = _depths[0].originalScal;
@@ -272,6 +295,35 @@ public class MultiDepthMotion : MotionInputMoveBase
 
         ComputeShader.SetBuffer(dispatchID, "depthBuffer", _depthBuffer);
     }
+    /// <summary>
+    /// 触摸长按后传输到GPU
+    /// </summary>
+    private void MouseButtonDownAction()
+    {
+
+        Vector3[] temp = new Vector3[_clickBuff.count];
+
+        _clickBuff.GetData(temp);
+        //传输过去前，先重置数据
+        for (int i = 0; i < temp.Length; i++)
+        {
+            temp[i] = Vector3.one * 1000000;
+        }
+
+        int n = 0;
+        foreach (KeyValuePair<int, ClickData> keyValuePair in _touchIds)
+        {
+
+            Vector3 pos = keyValuePair.Value.Position;
+            pos = Camera.main.ScreenToWorldPoint(new Vector3(pos.x, pos.y, 6));
+            temp[n] = pos;
+            n++;
+        }
+        LeftDownTip.position = temp[0];
+        _clickBuff.SetData(temp);
+        ComputeShader.SetBuffer(dispatchID, "clicks", _clickBuff);
+    }
+
     protected override void Dispatch(ComputeBuffer system)
     {
         MouseButtonDownAction();
@@ -285,48 +337,44 @@ public class MultiDepthMotion : MotionInputMoveBase
         //    ComputeShader.SetVector("rangeRot", new Vector4(-1, -1, -1, -1));
         //}
 
+        if (_clickPoint.z<0)
+            _clickPoint = Camera.main.ScreenToWorldPoint(new Vector3(_clickPoint.x, _clickPoint.y, 6));
+        else 
+            _clickPoint = Vector3.one * 1000000;
 
+        ComputeShader.SetVector("clickPoint", _clickPoint);
         ComputeShader.SetFloat("deltaTime", Time.deltaTime);
 
-        Dispatch(dispatchID, system); 
+        Dispatch(dispatchID, system);
+
+        if (_clickPoint.z < 1000000)//相当于有点击事件才触发
+        {
+            PosAndDir[] datas = new PosAndDir[1];
+            _clickPointBuff.GetData(datas);
+            int index = datas[0].picIndex;
+            Debug.Log("click index is " + index);
+            PictureHandle.Instance.GetYearInfo(index);
+            _clickPoint  = Vector3.one * 1000000;//重置数据
+        }
+
 
     }
    
-    /// <summary>
-    /// 触摸长按后传输到GPU
-    /// </summary>
-    private void MouseButtonDownAction()
-    {
-
-        Vector3[] temp = new Vector3[_clickBuff.count];
-
-        _clickBuff.GetData(temp);
-        //传输过去前，先重置数据
-        for (int i = 0; i < temp.Length ; i++)
-        {
-            temp[i] = Vector3.one*1000000;
-        }
-
-        int n = 0;
-        foreach (KeyValuePair<int, ClickData> keyValuePair in _touchIds)
-        {
-
-            Vector3 pos = keyValuePair.Value.Position;
-            pos = Camera.main.ScreenToWorldPoint(new Vector3(pos.x, pos.y, 6));
-            temp[n] = pos;
-            n++;
-        }
-        _clickBuff.SetData(temp);
-        ComputeShader.SetBuffer(dispatchID, "clicks", _clickBuff);
-    }
+    
     public override void ExitMotion()
     {
         base.ExitMotion();
         if (_depthBuffer!=null)
         _depthBuffer.Release();
         _depthBuffer = null;
+
+        if (_clickBuff != null)
         _clickBuff.Release();
         _clickBuff = null;
+
+        if (_clickPointBuff != null)
+        _clickPointBuff.Release();
+        _clickPointBuff = null;
     }
 
 
@@ -337,6 +385,7 @@ public class MultiDepthMotion : MotionInputMoveBase
         SetDepth(Depth);
     }
 
+    
     public override void OnPointerUp(PointerEventData eventData)
     {
         base.OnPointerUp(eventData);
@@ -348,7 +397,8 @@ public class MultiDepthMotion : MotionInputMoveBase
            // Debug.Log(temp);
             if (temp <= 0.35f)
             {
-                Debug.Log("产生点击事件");
+               // Debug.Log("产生点击事件");
+                _clickPoint = new Vector3(eventData.position.x,eventData.position.y,-1);//-1表示有点击事件产生
             }
             _touchIds.Remove(eventData.pointerId);
         }
@@ -381,6 +431,7 @@ public class MultiDepthMotion : MotionInputMoveBase
 
     private void LateUpdate()
     {
+        if(_touchIds!=null)
         foreach (KeyValuePair<int, ClickData> data in _touchIds)
         {
             data.Value.ClickTime += Time.deltaTime;

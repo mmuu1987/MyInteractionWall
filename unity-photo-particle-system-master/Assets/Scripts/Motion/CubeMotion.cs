@@ -47,8 +47,8 @@ public class CubeMotion : MotionInputMoveBase
                     datas[index].originalPos = pos;
                     datas[index].uvOffset = new Vector4(1f,1f,0f,0f);
                     datas[index].uv2Offset = new Vector4(1f, 1f, 0f, 0f);
-                    datas[index].picIndex = index % TextureInstanced.Instance.textures.Count;
-                    datas[index].bigIndex = index % TextureInstanced.Instance.textures.Count;
+                    datas[index].picIndex = index % TextureInstanced.Instance.TexArr.depth;
+                    datas[index].bigIndex = index % TextureInstanced.Instance.TexArr.depth;
                     Vector4 posTemp = datas[index].position;
                     datas[index].position = new Vector4(posTemp.x, posTemp.y, posTemp.z, 1f);
                     if (index == 0)

@@ -158,7 +158,7 @@ public class PictureHandle : MonoBehaviour
 
         HandleTextureArry(Texs);
 
-        LoadYearInfo();
+        //LoadYearInfo();
         // var temp = Common.Sample2D(1920, 1080, 1,10);
 
         // Debug.Log(temp.Count);

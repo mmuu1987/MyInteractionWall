@@ -32,7 +32,7 @@ public struct DepthInfo
     /// </summary>
     public float alpha;
 
-
+    
 
     public DepthInfo(int d, float o, float s,float a)
     {
@@ -64,8 +64,8 @@ public class MultiDepthMotion : MotionInputMoveBase
 
     public Material CurMaterial;
 
-   
 
+    public Canvas Canvas;
 
 
     public int Depth = 2;
@@ -353,7 +353,7 @@ public class MultiDepthMotion : MotionInputMoveBase
             _clickPointBuff.GetData(datas);
             int index = datas[0].picIndex;
             Debug.Log("click index is " + index);
-            PictureHandle.Instance.GetYearInfo(index);
+            PictureHandle.Instance.GetYearInfo(datas[0], Canvas);
             _clickPoint  = Vector3.one * 1000000;//重置数据
         }
 

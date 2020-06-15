@@ -158,12 +158,12 @@ public class PictureHandle : MonoBehaviour
 
         HandleTextureArry(Texs);
 
-        //LoadYearInfo();
+        LoadYearInfo();
         // var temp = Common.Sample2D(1920, 1080, 1,10);
 
         // Debug.Log(temp.Count);
 
-        // UnityEngine.SceneManagement.SceneManager.LoadScene("test1");
+       //  UnityEngine.SceneManagement.SceneManager.LoadScene("test1");
 
 
     }
@@ -175,7 +175,7 @@ public class PictureHandle : MonoBehaviour
         GameObject temp = Instantiate(go, Canvas.transform);
 
         Item item = temp.GetComponent<Item>();
-
+      
         item.LoadData(_yesrsInfos[1].yearsEvents[1], TexArr);
     }
     // Update is called once per frame
@@ -217,9 +217,9 @@ public class PictureHandle : MonoBehaviour
     /// <summary>
     /// 根据图片索引拿到年代事件信息
     /// </summary>
-    public void GetYearInfo(int index)
+    public void GetYearInfo(PosAndDir pad, Canvas canvas)
     {
-        if (index < 0) return;
+        if (pad.picIndex < 0) return;
 
         YearsEvent ye = null;
         foreach (YearsInfo yearsInfo in _yesrsInfos)
@@ -228,7 +228,7 @@ public class PictureHandle : MonoBehaviour
             {
                 foreach (int inde in yearsEvent.PictureIndes)
                 {
-                    if (index == inde)
+                    if (pad.picIndex == inde)
                     {
                         ye = yearsEvent;
                         break;
@@ -239,7 +239,21 @@ public class PictureHandle : MonoBehaviour
 
         }
 
-        if (ye != null) Debug.Log(ye.ToString());
+        if(ye==null)throw new UnityException("没有找到相应的年代事件");
+
+        GameObject go = Resources.Load<GameObject>("Prefabs/Info");
+
+        GameObject temp = Instantiate(go, canvas.transform);
+
+        Item item = temp.GetComponent<Item>();
+
+        item.LoadData(ye, TexArr);
+
+        Vector3 screenPos = Camera.main.WorldToScreenPoint(pad.position);
+
+        item.GetComponent<RectTransform>().anchoredPosition = screenPos;
+
+        Debug.Log(ye.ToString());
     }
     /// <summary>
     /// 根据年代层次获得该层次所有的图片索引

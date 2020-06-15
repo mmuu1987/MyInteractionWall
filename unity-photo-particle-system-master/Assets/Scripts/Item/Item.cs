@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using UnityEngine.Video;
 
 public class Item : MonoBehaviour, IDragHandler, IPointerClickHandler
 {
@@ -16,6 +17,8 @@ public class Item : MonoBehaviour, IDragHandler, IPointerClickHandler
 
     private RawImage _image;
 
+    private RawImage _videoImage;
+
     private Text _describe;
 
     private List<int> textureIndex;
@@ -27,6 +30,11 @@ public class Item : MonoBehaviour, IDragHandler, IPointerClickHandler
     private Coroutine _coroutine;
 
     private WaitForSeconds _waitForSeconds;
+
+    private VideoPlayer _videoPlayer;
+
+    private string _mp4Url = "";
+
     
 	// Use this for initialization
 
@@ -35,7 +43,18 @@ public class Item : MonoBehaviour, IDragHandler, IPointerClickHandler
         _yearText = this.transform.Find("YearText").GetComponent<Text>();
         _image = this.transform.Find("Image").GetComponent<RawImage>();
         _describe = this.transform.Find("Scroll View/Viewport/Content/Describe").GetComponent<Text>();
+        _videoPlayer = this.transform.Find("VideoPlay").GetComponent<VideoPlayer>();
+        _videoImage = this.transform.Find("VideoPlay").GetComponent<RawImage>();
 
+        RenderTexture rt = new RenderTexture(650,500,0);
+
+        _videoPlayer.renderMode = VideoRenderMode.RenderTexture;
+
+        _videoPlayer.targetTexture = rt;
+
+        _videoImage.texture = rt;
+
+        _videoImage.gameObject.SetActive(false);
 
         _waitForSeconds = new WaitForSeconds(45f);
 
@@ -47,15 +66,46 @@ public class Item : MonoBehaviour, IDragHandler, IPointerClickHandler
              if (_curIndex < 0) _curIndex=0;
 
              _mat.SetInt("_Index", textureIndex[_curIndex]);
+             _videoPlayer.Pause();
+             _videoImage.gameObject.SetActive(false);
+             _image.gameObject.SetActive(true);
+            
+
          }));
          this.transform.Find("next").GetComponent<Button>().onClick.AddListener((() =>
          {
             // Debug.Log("next");
              _curIndex ++;
-             if (_curIndex >= textureIndex.Count) _curIndex--;
-             _mat.SetInt("_Index", textureIndex[_curIndex]);
-
-            
+             if (_curIndex >= textureIndex.Count)
+             {
+                 if (_curIndex == textureIndex.Count)
+                 {
+                     if (!string.IsNullOrEmpty(_mp4Url))
+                     {
+                         _videoImage.gameObject.SetActive(true);
+                         _image.gameObject.SetActive(false);
+                         _videoPlayer.Play();
+                     }
+                     else
+                     {
+                         _mat.SetInt("_Index", textureIndex[textureIndex.Count-1]);
+                         _videoImage.gameObject.SetActive(false);
+                         _image.gameObject.SetActive(true);
+                         _curIndex--;
+                     }
+                 }
+                 else
+                 {
+                     _curIndex--;
+                 }
+             }
+             else
+             {
+                 _mat.SetInt("_Index", textureIndex[_curIndex]);
+                 _videoImage.gameObject.SetActive(false);
+                 _image.gameObject.SetActive(true);
+                
+             }
          }));
 
          this.transform.Find("destroy").GetComponent<Button>().onClick.AddListener((() =>
@@ -64,6 +114,7 @@ public class Item : MonoBehaviour, IDragHandler, IPointerClickHandler
            if(_coroutine!=null)StopCoroutine(_coroutine);
              _coroutine = null;
              Destroy(this.gameObject);
+             
          }));
 
          _mat = Resources.Load<Material>("ItemShader");
@@ -127,10 +178,20 @@ public class Item : MonoBehaviour, IDragHandler, IPointerClickHandler
                          "12-052012-052012-05052012-052012-052012-052012-052012-052012-052012-052012-052012-05052012-" +
                          "052012-052012-052012-052012-052012-052012-052012-052012-05052012-052012-052012-052012-052012" +
                          "-052012-052012-052012-052012-0505";
+
         _describe.transform.GetComponent<ContentSizeFitter>().SetLayoutVertical(); 
+
         textureIndex = _yearsEvent.PictureIndes;
 
         _image.material = _mat;
+
+
+        _mp4Url = "file://C:/Users/Administrator/Desktop/ed16da766ff705c4ff02412d18740105.mp4";
+
+        if (!string.IsNullOrEmpty(_mp4Url))
+        {
+            _videoPlayer.url = _mp4Url;
+        }
 
         _mat.SetTexture("_TexArrOne", texArry);
 

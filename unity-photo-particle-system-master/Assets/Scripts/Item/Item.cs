@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using UnityEngine.Video;
-using DG.Tweening;
+
 
 public class Item : MonoBehaviour, IDragHandler, IPointerClickHandler
 {

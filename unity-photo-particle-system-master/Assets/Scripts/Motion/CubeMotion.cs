@@ -17,6 +17,8 @@ public class CubeMotion : MotionInputMoveBase
     {
         base.Init();
 
+        MotionType = MotionType.Cube;
+
         PosAndDir[] datas = new PosAndDir[ComputeBuffer.count];
 
         ComputeBuffer.GetData(datas);

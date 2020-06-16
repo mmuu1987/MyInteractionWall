@@ -66,13 +66,14 @@
             #endif
 			    v2f o;
 				float lerpValue = positionBuffer[instanceID].originalPos.w;//得到旋转的插值系数
+				float3 initialVelocity = positionBuffer[instanceID].initialVelocity;//获取宽高
 				float angle = -180* lerpValue;
 				float4 rot = rotate_angle_axis(angle/RadianRatio,float3(1,0,0));
 				float3 newVector = rotate_vector_at(v.vertex,float3(0,0,0),rot);
 
                 float3 localPosition = newVector * data.w;
-				localPosition.x *=_WHScale.x;
-				localPosition.y *=_WHScale.y;
+				localPosition.x *=_WHScale.x*initialVelocity.x;
+				localPosition.y *=_WHScale.y*initialVelocity.y;
                 float3 worldPosition = data.xyz + localPosition;
 				
 

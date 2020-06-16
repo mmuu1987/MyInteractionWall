@@ -15,6 +15,9 @@ public class LoopMotion : MotionInputMoveBase
     {
         base.Init();
 
+
+        MotionType = MotionType.Loop;
+
         _screenPosLeftDown = Camera.main.ScreenToWorldPoint(new Vector3(0, 0, Z - Camera.main.transform.position.z));
         _screenPosLeftUp = Camera.main.ScreenToWorldPoint(new Vector3(0, Height, Z - Camera.main.transform.position.z));
         _screenPosRightDown = Camera.main.ScreenToWorldPoint(new Vector3(Width, 0, Z - Camera.main.transform.position.z));

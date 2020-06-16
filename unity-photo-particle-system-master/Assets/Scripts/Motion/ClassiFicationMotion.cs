@@ -15,7 +15,7 @@ public class ClassiFicationMotion : MotionInputMoveBase
     {
         base.Init();
 
-        MotionType = MotionType.ClassiFicationMotion;
+
 
         _screenPosLeftDown = Camera.main.ScreenToWorldPoint(new Vector3(0, 0, Z - Camera.main.transform.position.z));
         _screenPosLeftUp = Camera.main.ScreenToWorldPoint(new Vector3(0, Height, Z - Camera.main.transform.position.z));
@@ -214,7 +214,7 @@ public class ClassiFicationMotion : MotionInputMoveBase
     /// </summary>
     public void ChangeState(int classNumber)
     {
-        if (MotionType != MotionType.ClassiFicationMotion) return;
+       
 
         PosAndDir[] datas = new PosAndDir[ComputeBuffer.count];
 

@@ -1,24 +1,15 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Drawing.Imaging;
-using System.IO;
 using UnityEngine;
 
-public static class Common
-{
-
-
-    public static MotionType MotionType;
-
+public static class Common  {
     public static float GetCross(Vector2 p1, Vector2 p2, Vector2 p)
     {
         return (p2.x - p1.x) * (p.y - p1.y) - (p.x - p1.x) * (p2.y - p1.y);
     }
     //计算一个点是否在矩形里  2d
-    public static bool ContainsQuadrangle(Vector2 leftDownP2, Vector2 leftUpP1, Vector2 rightDownP3, Vector2 rightUpP4, Vector2 p)
+  public  static bool ContainsQuadrangle(Vector2 leftDownP2, Vector2 leftUpP1, Vector2 rightDownP3, Vector2 rightUpP4, Vector2 p)
     {
 
         float value1 = GetCross(leftUpP1, leftDownP2, p);
@@ -64,10 +55,8 @@ public static class Common
 
         // grids记录了每个cell内的点在cells里的索引，-1表示没有点
         var grids = new int[rows, cols];
-        for (var i = 0; i < rows; ++i)
-        {
-            for (var j = 0; j < cols; ++j)
-            {
+        for (var i = 0; i < rows; ++i) {
+            for (var j = 0; j < cols; ++j) {
                 grids[i, j] = -1;
             }
         }
@@ -88,8 +77,7 @@ public static class Common
         active_list.Add(x0_idx);
 
         // STEP 2
-        while (active_list.Count > 0)
-        {
+        while (active_list.Count > 0) {
             // 随机选一个待处理的点xi
             var xi_idx = active_list[random.Next(active_list.Count)]; // 区间是[0,1)，不用担心溢出。
             var xi = cells[xi_idx];
@@ -97,20 +85,17 @@ public static class Common
 
             // 以xi为中点，随机找与xi距离在[r,2r)的点xk，并判断该点的合法性
             // 重复k次，如果都找不到，则把xi从active_list中去掉，认为xi附近已经没有合法点了
-            for (var i = 0; i < k; ++i)
-            {
+            for (var i = 0; i < k; ++i) {
                 var dir = UnityEngine.Random.insideUnitCircle;
                 var xk = xi + (dir.normalized * r + dir * r); // [r,2r)
-                if (xk.x < 0 || xk.x >= width || xk.y < 0 || xk.y >= height)
-                {
+                if (xk.x < 0 || xk.x >= width || xk.y < 0 || xk.y >= height) {
                     continue;
                 }
 
                 col = (int)Math.Floor(xk.x / cell_size);
                 row = (int)Math.Floor(xk.y / cell_size);
 
-                if (grids[row, col] != -1)
-                {
+                if (grids[row, col] != -1) {
                     continue;
                 }
 
@@ -122,27 +107,21 @@ public static class Common
                 var max_r = (int)Math.Floor((xk.y + r) / cell_size);
                 var min_c = (int)Math.Floor((xk.x - r) / cell_size);
                 var max_c = (int)Math.Floor((xk.x + r) / cell_size);
-                for (var or = min_r; or <= max_r; ++or)
-                {
-                    if (or < 0 || or >= rows)
-                    {
+                for (var or = min_r; or <= max_r; ++or) {
+                    if (or < 0 || or >= rows) {
                         continue;
                     }
 
-                    for (var oc = min_c; oc <= max_c; ++oc)
-                    {
-                        if (oc < 0 || oc >= cols)
-                        {
+                    for (var oc = min_c; oc <= max_c; ++oc) {
+                        if (oc < 0 || oc >= cols) {
                             continue;
                         }
 
                         var xj_idx = grids[or, oc];
-                        if (xj_idx != -1)
-                        {
+                        if (xj_idx != -1) {
                             var xj = cells[xj_idx];
                             var dist = (xj - xk).magnitude;
-                            if (dist < r)
-                            {
+                            if (dist < r) {
                                 ok = false;
                                 goto end_of_distance_check;
                             }
@@ -150,9 +129,8 @@ public static class Common
                     }
                 }
 
-            end_of_distance_check:
-                if (ok)
-                {
+                end_of_distance_check:
+                if (ok) {
                     var xk_idx = cells.Count;
                     cells.Add(xk);
 
@@ -164,8 +142,7 @@ public static class Common
                 }
             }
 
-            if (!found)
-            {
+            if (!found) {
                 active_list.Remove(xi_idx);
             }
         }
@@ -173,130 +150,9 @@ public static class Common
         return cells;
     }
 
-    /// <summary>
-    /// 根据图片路径返回图片的字节流byte[]
-    /// </summary>
-    /// <param name="imagePath">图片路径</param>
-    /// <returns>返回的字节流</returns>
-    private static byte[] GetImageByte(string imagePath)
-    {
-        FileStream files = new FileStream(imagePath, FileMode.Open);
-        byte[] imgByte = new byte[files.Length];
-        files.Read(imgByte, 0, imgByte.Length);
-        files.Close();
-        return imgByte;
-    }
-
-    /// <summary>
-    /// 缩放图像
-    /// </summary>
-    /// <param name="originalImagePath">图片原始路径</param>
-    /// <param name="width">缩放图的宽</param>
-    /// <param name="height">缩放图的高</param>
-    /// <param name="model">缩放模式</param>
-    /// <param name="size">原始尺寸</param>
-    public static byte [] MakeThumNail(string originalImagePath, int width, int height, string model,out Vector2 size)
-    {
-        System.Drawing.Image originalImage = System.Drawing.Image.FromFile(originalImagePath);
 
 
-        size.x = originalImage.Width;
-        size.y = originalImage.Height;
-
-        byte[] bytes;
-        MemoryStream ms = new MemoryStream();
-
-        if (width == originalImage.Width && height == originalImage.Height)
-        {
-            originalImage.Save(ms,ImageFormat.Jpeg);
-
-            bytes = ms.GetBuffer();
-            ms.Dispose();
-            return bytes;
-        }
-
-        int thumWidth = width;      //缩略图的宽度
-        int thumHeight = height;    //缩略图的高度
-
-        int x = 0;
-        int y = 0;
-
-        int originalWidth = originalImage.Width;    //原始图片的宽度
-        int originalHeight = originalImage.Height;  //原始图片的高度
-
-        switch (model)
-        {
-            case "HW":      //指定高宽缩放,可能变形
-                break;
-            case "W":       //指定宽度,高度按照比例缩放
-                thumHeight = originalImage.Height * width / originalImage.Width;
-                break;
-            case "H":       //指定高度,宽度按照等比例缩放
-                thumWidth = originalImage.Width * height / originalImage.Height;
-                break;
-            case "Cut":
-                if ((double)originalImage.Width / (double)originalImage.Height > (double)thumWidth / (double)thumHeight)
-                {
-                    originalHeight = originalImage.Height;
-                    originalWidth = originalImage.Height * thumWidth / thumHeight;
-                    y = 0;
-                    x = (originalImage.Width - originalWidth) / 2;
-                }
-                else
-                {
-                    originalWidth = originalImage.Width;
-                    originalHeight = originalWidth * height / thumWidth;
-                    x = 0;
-                    y = (originalImage.Height - originalHeight) / 2;
-                }
-                break;
-            default:
-                break;
-        }
-
-        //新建一个bmp图片
-        System.Drawing.Image bitmap = new System.Drawing.Bitmap(thumWidth, thumHeight);
-
-        //新建一个画板
-        System.Drawing.Graphics graphic = System.Drawing.Graphics.FromImage(bitmap);
-
-        //设置高质量查值法
-        graphic.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.High;
-
-        //设置高质量，低速度呈现平滑程度
-        graphic.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
-
-        //清空画布并以透明背景色填充
-        graphic.Clear(System.Drawing.Color.Transparent);
-
-        //在指定位置并且按指定大小绘制原图片的指定部分
-        graphic.DrawImage(originalImage, new System.Drawing.Rectangle(0, 0, thumWidth, thumHeight), new System.Drawing.Rectangle(x, y, originalWidth, originalHeight), System.Drawing.GraphicsUnit.Pixel);
-
-       
-        try
-        {
-           
-            bitmap.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg);
-
-            bytes = ms.GetBuffer();
-        }
-        catch (Exception ex)
-        {
-            throw ex;
-        }
-        finally
-        {
-            originalImage.Dispose();
-            bitmap.Dispose();
-            graphic.Dispose();
-            ms.Dispose();
-        }
-        return bytes;
-    }
-
-
-
-    #region Easing Curves
+  #region Easing Curves
 
     public static float Linear(float start, float end, float value)
     {

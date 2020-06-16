@@ -133,7 +133,7 @@ public class TextureInstanced : MonoBehaviour, IDragHandler, IEndDragHandler
 
     public Mesh InstanceMesh;
     public Material InstanceMaterial;
-    public  MotionType Type;
+    public MotionType _type;
     /// <summary>
     /// 每一列的元素个数
     /// </summary>
@@ -246,14 +246,9 @@ public class TextureInstanced : MonoBehaviour, IDragHandler, IEndDragHandler
 
     void Update()
     {
-
-
-
-
-
         InputManager.Instance.HandleInput();
         // UpdateBuffers();
-        UpdateBuffers(Type);
+        UpdateBuffers(_type);
         // Render
         Graphics.DrawMeshInstancedIndirect(InstanceMesh, 0, CurMaterial, InstanceMesh.bounds, argsBuffer, 0, null, ShadowCastingMode.Off, false);
     }
@@ -309,12 +304,12 @@ public class TextureInstanced : MonoBehaviour, IDragHandler, IEndDragHandler
 
     public void CubeType()
     {
-        Type = MotionType.Cube;
+        _type = MotionType.Cube;
     }
 
     public void LoopType()
     {
-        Type = MotionType.Loop;
+        _type = MotionType.Loop;
     }
     void UpdateBuffers(MotionType type)
     {
@@ -471,22 +466,20 @@ public class TextureInstanced : MonoBehaviour, IDragHandler, IEndDragHandler
     }
 
 
+   
 
-    private int depth = 2;
-    //private void OnGUI()
-    //{
-    //    if (GUI.Button(new Rect(0f, 0f, 300f, 300f), "test"))
-    //    {
-    //        MultiDepthMotion.ChangeState(depth);
-    //        depth--;
-    //        if (depth < 0) depth = 2;
-    //        //ClassiFicationMotion.ChangeState(1);
-    //    }
-    //    if (GUI.Button(new Rect(300f, 0f, 300f, 300f), "test2"))
-    //    {
+    private void OnGUI()
+    {
+        if (GUI.Button(new Rect(0f, 0f, 300f, 300f), "test"))
+        {
 
-           
-    //    }
-    //}
+           ClassiFicationMotion. ChangeState(1);
+        }
+        if (GUI.Button(new Rect(300f, 0f, 300f, 300f), "test2"))
+        {
+
+            MultiDepthMotion.ChangeState();
+        }
+    }
 
 }

@@ -4,7 +4,6 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using UnityEngine.Video;
-using DG.Tweening;
 
 public class Item : MonoBehaviour, IDragHandler, IPointerClickHandler
 {
@@ -129,8 +128,6 @@ public class Item : MonoBehaviour, IDragHandler, IPointerClickHandler
 	    _rectTransform = this.GetComponent<RectTransform>();
 
 	    _coroutine = StartCoroutine(WaitTimeDestroy());
-
-       
 	}
 	
 	// Update is called once per frame

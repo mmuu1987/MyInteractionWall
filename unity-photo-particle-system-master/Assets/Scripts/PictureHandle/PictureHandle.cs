@@ -1,18 +1,12 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Text;
 using UnityEngine;
 using UnityEngine.Rendering;
-using UnityEngine.UI;
 using UnityEngine.Video;
-using Debug = UnityEngine.Debug;
-using Graphics = UnityEngine.Graphics;
 
 
 /// <summary>
@@ -93,23 +87,13 @@ public class YearsEvent
     /// 描述该事件的视频
     /// </summary>
     public string YearEventVideo;
-    /// <summary>
-    /// 索引图片的长和宽
-    /// </summary>
-    public Dictionary<int, Vector2> PictureInfos;
 
     public YearsEvent()
     {
         PicturesPath = new List<string>();
         PictureIndes = new List<int>();
-        PictureInfos = new Dictionary<int, Vector2>();
     }
 
-    public void AddPictureInfo(int index,Vector2 size)
-    {
-        PictureIndes.Add(index);
-        PictureInfos.Add(index,size);
-    }
     public override string ToString()
     {
 
@@ -141,7 +125,7 @@ public class PictureHandle : MonoBehaviour
     public static PictureHandle Instance;
 
 
-    public RawImage TestImage;
+
 
     public Canvas Canvas;
 
@@ -174,12 +158,12 @@ public class PictureHandle : MonoBehaviour
 
         HandleTextureArry(Texs);
 
-        //LoadYearInfo();
+        LoadYearInfo();
         // var temp = Common.Sample2D(1920, 1080, 1,10);
 
         // Debug.Log(temp.Count);
 
-         UnityEngine.SceneManagement.SceneManager.LoadScene("test1");
+       //  UnityEngine.SceneManagement.SceneManager.LoadScene("test1");
 
 
     }
@@ -205,7 +189,7 @@ public class PictureHandle : MonoBehaviour
     /// 获取该层次的图片索引
     /// </summary>
     /// <returns></returns>
-    public int GetLevelIndex(int count, int level)
+    public int GetLevelIndex(int index, int level)
     {
 
         List<int> indexs;
@@ -225,38 +209,9 @@ public class PictureHandle : MonoBehaviour
                 Debug.Log("levle is " + level);
                 throw new UnityException("年代参数错误");
         }
-        //根据个数分配索引
-        int temp = count % indexs.Count;
+        int temp = index % indexs.Count;
 
         return indexs[temp];
-    }
-
-    /// <summary>
-    /// 获取该层次图片索引的宽高,并返回该索引
-    /// </summary>
-    /// <param name="count">图片所在的个数</param>
-    /// <param name="level">层级</param>
-    /// <param name="index">返回图片的索引</param>
-    /// <returns></returns>
-    public Vector2 GetLevelIndexSize(int count, int level,out int index)
-    {
-
-        index =GetLevelIndex(count, level);
-
-        foreach (YearsInfo yesrsInfo in _yesrsInfos)
-        {
-            foreach (YearsEvent @event in yesrsInfo.yearsEvents)
-            {
-                if (@event.PictureInfos.ContainsKey(index))
-                {
-                    return @event.PictureInfos[index];
-                }
-               
-            }
-        }
-
-        return Vector2.zero;
-
     }
 
     /// <summary>
@@ -298,7 +253,7 @@ public class PictureHandle : MonoBehaviour
 
         item.GetComponent<RectTransform>().anchoredPosition = screenPos;
 
-        //Debug.Log(ye.ToString());
+        Debug.Log(ye.ToString());
     }
     /// <summary>
     /// 根据年代层次获得该层次所有的图片索引
@@ -406,7 +361,7 @@ public class PictureHandle : MonoBehaviour
     /// </summary>
     public void LoadTextureAssets()
     {
-        //先默认为512*512的图片,原始图片的长宽我们在用另外的vector2保存
+        //先默认为512*512的图片
         //生成需要表现的图片
 
         int pictureIndex = 0;//产生的图片索引
@@ -419,9 +374,7 @@ public class PictureHandle : MonoBehaviour
                     if (File.Exists(s))
                     {
 
-                        Vector2 vector2;
-
-                        byte[] bytes = Common.MakeThumNail(s, 512, 512, "HW", out vector2);
+                        byte[] bytes = File.ReadAllBytes(s);
 
                         Texture2D tex = new Texture2D(512, 512, TextureFormat.DXT1, false);
 
@@ -430,12 +383,9 @@ public class PictureHandle : MonoBehaviour
                         tex.Compress(true);
 
                         tex.Apply();
-
                         Texs.Add(tex);
 
                         yearsEvent.PictureIndes.Add(pictureIndex);
-
-                        yearsEvent.AddPictureInfo(pictureIndex, vector2);
 
                         pictureIndex++;
                     }
@@ -487,37 +437,5 @@ public class PictureHandle : MonoBehaviour
         TexArr.filterMode = FilterMode.Bilinear;
     }
 
-    //private void OnGUI()
-    //{
-    //    if (GUI.Button(new Rect(0f, 0f, 300f, 300f), "Test"))
-    //    {
-    //        RestSizePicture();
-    //    }
-    //}
 
-    private void RestSizePicture()
-    {
-        string path = "D:\\介绍图片_001.jpg";
-
-        System.Diagnostics.Stopwatch watch = new Stopwatch();
-        Vector2 size = Vector2.zero;
-        watch.Start();
-        byte[] bytes = Common.MakeThumNail(path, 512, 512, "HW",out size);
-        //init();计算耗时的方法
-        watch.Stop();
-        var mSeconds = watch.ElapsedMilliseconds;
-        UnityEngine.Debug.Log("耗时：" + mSeconds + "  原始尺寸是 " + size);
-
-        Texture2D tex = new Texture2D(512, 512, TextureFormat.DXT5, false,true);
-
-        tex.LoadImage(bytes);
-
-        
-
-        tex.Apply();
-
-        TestImage.texture = tex;
-
-        TestImage.SetNativeSize();
-    }
 }

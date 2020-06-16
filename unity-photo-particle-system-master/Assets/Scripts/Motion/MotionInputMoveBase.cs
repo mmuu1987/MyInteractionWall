@@ -86,6 +86,8 @@ public class MotionInputMoveBase : MotionBase, IDragHandler, IEndDragHandler, IP
     /// 插值速度运动速度
     /// </summary>
     protected float MoveSpeed = 5f;
+
+    protected MotionType MotionType;
     protected override void Start()
     {
         dispatchID = ComputeShader.FindKernel(computeShaderName);

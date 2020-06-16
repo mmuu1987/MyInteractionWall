@@ -96,7 +96,7 @@ void CheckClickPoint(uint3 id)
 
    if(isContains)
    {
-    positionBuffer[id.x].position.w=2;
+   // positionBuffer[id.x].position.w=2;
 	clickPointsBuff[0] = positionBuffer[id.x];
    }
 }

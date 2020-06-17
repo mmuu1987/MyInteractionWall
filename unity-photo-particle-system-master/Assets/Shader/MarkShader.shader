@@ -60,7 +60,7 @@
 
 				mainTex.a = 1-mark.a;
 
-				if(Hollow.a>0)mainTex.rgb=Hollow.rgb;
+				if(Hollow.a>0.3)mainTex.rgb=Hollow.rgb;
 
 				col = mainTex;
 				

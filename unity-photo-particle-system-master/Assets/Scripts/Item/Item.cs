@@ -16,7 +16,7 @@ public class Item : MonoBehaviour, IDragHandler, IPointerClickHandler
 
     private Text _yearText;
 
-    private RawImage _image;
+    private Image _image;
 
     private RawImage _videoImage;
 
@@ -42,7 +42,7 @@ public class Item : MonoBehaviour, IDragHandler, IPointerClickHandler
     private void Awake()
     {
         _yearText = this.transform.Find("YearText").GetComponent<Text>();
-        _image = this.transform.Find("Image").GetComponent<RawImage>();
+        _image = this.transform.Find("Image").GetComponent<Image>();
         _describe = this.transform.Find("Scroll View/Viewport/Content/Describe").GetComponent<Text>();
         _videoPlayer = this.transform.Find("VideoPlay").GetComponent<VideoPlayer>();
         _videoImage = this.transform.Find("VideoPlay").GetComponent<RawImage>();
@@ -118,9 +118,10 @@ public class Item : MonoBehaviour, IDragHandler, IPointerClickHandler
              
          }));
 
-         _mat = Resources.Load<Material>("ItemShader");
+        
 
-        _image.material = _mat;
+
+  
 
         
     }
@@ -138,6 +139,7 @@ public class Item : MonoBehaviour, IDragHandler, IPointerClickHandler
 		
 	}
 
+  
 
     /// <summary>
     /// 等待一段时间，如果没有人接触，则自动毁掉
@@ -186,7 +188,11 @@ public class Item : MonoBehaviour, IDragHandler, IPointerClickHandler
 
         textureIndex = _yearsEvent.PictureIndes;
 
-        _image.material = _mat;
+        _mat = Resources.Load<Material>("ItemShader");
+
+         _mat = Instantiate(_mat);//拷贝一份
+
+         _image.material = _mat;
 
 
         _mp4Url = "file://C:/Users/Administrator/Desktop/ed16da766ff705c4ff02412d18740105.mp4";
@@ -207,8 +213,8 @@ public class Item : MonoBehaviour, IDragHandler, IPointerClickHandler
 
     private void OnDestroy()
     {
-        //Destroy(_mat,0.5f);
-        //_mat = null;
+        Destroy(_mat);
+        _mat = null;
     }
 
     public void OnPointerDown(PointerEventData eventData)

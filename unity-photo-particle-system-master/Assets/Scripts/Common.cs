@@ -36,7 +36,12 @@ public static class Common
         return true;
     }
 
+    public static IEnumerator WaitTime(float time,Action callBack)
+    {
+        yield return new WaitForSeconds(time);
 
+        if (callBack != null) callBack();
+    }
 
     public static List<Vector2> Sample2D(float width, float height, float r, int k = 30)
     {

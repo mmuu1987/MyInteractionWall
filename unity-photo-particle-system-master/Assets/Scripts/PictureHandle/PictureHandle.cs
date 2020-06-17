@@ -7,6 +7,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Text;
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.UI;
@@ -296,7 +297,16 @@ public class PictureHandle : MonoBehaviour
 
         Vector3 screenPos = Camera.main.WorldToScreenPoint(pad.position);
 
-        item.GetComponent<RectTransform>().anchoredPosition = screenPos;
+        RectTransform rectTransform = item.GetComponent<RectTransform>();
+
+        rectTransform.DOScale(1f, 0.75f);
+        //rectTransform.DOLocalRotate(new Vector3(0f, 360, 0f), 1f, RotateMode.LocalAxisAdd).OnComplete((() =>
+        //{
+        //    item.RotEnd();
+        //}));
+
+       
+        rectTransform.anchoredPosition = screenPos;
 
         //Debug.Log(ye.ToString());
     }

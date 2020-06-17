@@ -7,9 +7,84 @@
 		_BGColor("BGColor",color) = (1,1,1,1)
 		_RADIUSBUCE("_RADIUSBUCE",Range(0,0.5))=0.2
 		_WHScale("WHScale",vector)=(1,1,1,1)//目前只使用x y
+		_Margin("Margin",Range(0.01,0.5))=0.1
     }
  SubShader {
 	
+
+	//第一个描边PASS
+	    Pass {
+
+            Tags { "RenderType"="Opaque" "Queue"="Transparent"}
+
+			Blend SrcAlpha  OneMinusSrcAlpha
+            CGPROGRAM
+
+            #pragma vertex vert
+            #pragma fragment frag
+            #pragma target 4.5
+			//#pragma multi_compile_instancing
+            #include "UnityCG.cginc"
+          
+		   
+            sampler2D _MainTex;
+			fixed4 _BGColor;
+			float4 _WHScale;
+      	    float _Margin;
+		    struct PosDir
+		   {
+		      float4 position;
+              float4 velocity;
+		      float3 initialVelocity;
+              float4 originalPos;
+		      float3 moveTarget;
+			  float3 moveDir;
+			  float2 indexRC;
+			  int picIndex;
+			  int bigIndex;
+			  float4 uvOffset; 
+			  float4 uv2Offset; 
+		   };
+
+			#if SHADER_TARGET >= 45
+            StructuredBuffer<PosDir> positionBuffer;
+            #endif
+
+            struct v2f
+            {
+                float4 pos : SV_POSITION;
+			    float2 uv_MainTex : TEXCOORD0;
+            };
+            v2f vert (appdata_base v, uint instanceID : SV_InstanceID)
+            {
+           #if SHADER_TARGET >= 45
+                float4 data = positionBuffer[instanceID].position;
+            #else
+                float4 data = 0;
+            #endif
+			    v2f o;
+				
+				float3 initialVelocity = positionBuffer[instanceID].initialVelocity;//获取宽高
+                float3 localPosition = v.vertex.xyz * data.w ;
+				localPosition.x *=_WHScale.x*initialVelocity.x+_Margin;//_Margin向外拓展，用作描边
+				localPosition.y *=_WHScale.y*initialVelocity.y+_Margin;//_Margin向外拓展，用作描边  
+                float3 worldPosition = data.xyz + localPosition;
+
+
+                o.pos = mul(UNITY_MATRIX_VP, float4(worldPosition, 1.0f));
+				o.uv_MainTex = v.texcoord;
+                return o;
+            }
+
+            fixed4 frag (v2f i, uint instanceID : SV_InstanceID) : SV_Target
+            {
+               return _BGColor;
+            }
+
+            ENDCG
+        }
+
+
         Pass {
 
             Tags { "RenderType"="Opaque" "Queue"="Transparent"}

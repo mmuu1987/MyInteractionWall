@@ -180,7 +180,7 @@ public class PictureHandle : MonoBehaviour
 
         // Debug.Log(temp.Count);
 
-         UnityEngine.SceneManagement.SceneManager.LoadScene("test1");
+        // UnityEngine.SceneManagement.SceneManager.LoadScene("test1");
 
 
     }

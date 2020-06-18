@@ -17,9 +17,9 @@
 			#pragma fragment frag
 			// make fog work
 			#pragma multi_compile_fog
-			
+		    #pragma target 4.5
 			#include "UnityCG.cginc"
-
+			UNITY_DECLARE_TEX2DARRAY(_TexArrOne);
 			struct appdata
 			{
 				float4 vertex : POSITION;
@@ -32,7 +32,7 @@
 				
 				float4 vertex : SV_POSITION;
 			};
-			 UNITY_DECLARE_TEX2DARRAY(_TexArrOne);
+			 
 		    int _Index;
 			
 			v2f vert (appdata v)

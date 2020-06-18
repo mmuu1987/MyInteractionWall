@@ -82,29 +82,16 @@
             #pragma target 4.5
 			//#pragma multi_compile_instancing
             #include "UnityCG.cginc"
-          
+            #include "Assets/ComputeShader/GPUParticle.cginc"
 		    UNITY_DECLARE_TEX2DARRAY(_TexArr);
             sampler2D _MainTex;
 			fixed4 _Color;
 			float _RADIUSBUCE;
 			float4 _WHScale;
-      	  struct PosDir
-		   {
-		      float4 position;
-              float4 velocity;
-		      float3 initialVelocity;
-              float4 originalPos;
-		      float3 moveTarget;
-			  float3 moveDir;
-			  float2 indexRC;
-			  int picIndex;
-			  int bigIndex;
-			  float4 uvOffset; 
-			  float4 uv2Offset; 
-		   };
+      	 
 
 			#if SHADER_TARGET >= 45
-            StructuredBuffer<PosDir> positionBuffer;
+            StructuredBuffer<PosAndDir> positionBuffer;
 			StructuredBuffer<float4> colorBuffer;
             #endif
 

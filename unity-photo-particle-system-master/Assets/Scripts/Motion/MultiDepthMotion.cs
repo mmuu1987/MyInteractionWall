@@ -104,8 +104,6 @@ public class MultiDepthMotion : MotionInputMoveBase
 
         ComputeBuffer.GetData(datas);
 
-        //写死5个深度，每个深度一千个面片，这个类的运动，我们只要5000就可以了
-
         List<PosAndDir> temp = new List<PosAndDir>();
         List<PosAndDir> allDataList = new List<PosAndDir>();
 
@@ -193,7 +191,7 @@ public class MultiDepthMotion : MotionInputMoveBase
                     scaleY = 0.6f;
                 }
                 randomPos = Common.Sample2D((_screenPosRightDown.x - _screenPosLeftDown.x) * 1.5f, (_screenPosLeftUp.y - _screenPosLeftDown.y) * scaleY, s, 15);
-                Debug.Log("randomPos count is  " + randomPos.Count + " 层级为=> " + (k - 1));
+                //Debug.Log("randomPos count is  " + randomPos.Count + " 层级为=> " + (k - 1));
                 _depths[k - 1] = new DepthInfo(k - 1, tempZ, s, a);
             }
 

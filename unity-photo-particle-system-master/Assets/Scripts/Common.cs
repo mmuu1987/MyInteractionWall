@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.IO;
 using UnityEngine;
@@ -202,7 +201,7 @@ public static class Common
     /// <param name="size">原始尺寸</param>
     public static byte [] MakeThumNail(string originalImagePath, int width, int height, string model,out Vector2 size)
     {
-        System.Drawing.Image originalImage = System.Drawing.Image.FromFile(originalImagePath);
+       Image originalImage = Image.FromFile(originalImagePath);
 
 
         size.x = originalImage.Width;

@@ -236,21 +236,12 @@ public class TextureInstanced : MonoBehaviour, IDragHandler, IEndDragHandler
         argsBuffer = new ComputeBuffer(5, sizeof(uint), ComputeBufferType.IndirectArguments);
 
         CreateBuffers();
-
-
-       
-
         // StartCoroutine(LoadVideo(path));
     }
 
 
     void Update()
     {
-
-
-
-
-
         InputManager.Instance.HandleInput();
         // UpdateBuffers();
         UpdateBuffers(Type);

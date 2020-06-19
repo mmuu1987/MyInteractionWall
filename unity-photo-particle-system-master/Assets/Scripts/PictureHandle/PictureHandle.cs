@@ -15,124 +15,6 @@ using UnityEngine.Video;
 using Debug = UnityEngine.Debug;
 using Graphics = UnityEngine.Graphics;
 
-
-/// <summary>
-/// 年代信息类
-/// </summary>
-
-public class YearsInfo
-{
-    public string Years;
-    /// <summary>
-    /// 该年代的事件个数
-    /// </summary>
-    public int EventCount;
-
-    public List<YearsEvent> yearsEvents;
-
-
-    public YearsInfo()
-    {
-        yearsEvents = new List<YearsEvent>();
-    }
-
-    public override string ToString()
-    {
-        StringBuilder sb = new StringBuilder();
-
-        sb.Append("\r\n");
-        sb.Append("\r\n");
-        sb.Append("Years is  " + Years + "  \r\n");
-        sb.Append("EventCount is  " + EventCount + " \r\n");
-        foreach (YearsEvent yearsEvent in yearsEvents)
-        {
-            sb.Append(yearsEvent.ToString());
-        }
-        sb.Append("\r\n");
-        sb.Append("\r\n");
-        return sb.ToString();
-    }
-}
-
-/// <summary>
-/// 年代事件类
-/// </summary>
-public class YearsEvent
-{
-    /// <summary>
-    /// 所属年代
-    /// </summary>
-    public string Years;
-
-    /// <summary>
-    /// 事件顺序位置索引，比如该年的第一个事件，或者第二个事件
-    /// </summary>
-    public int IndexPos;
-
-    /// <summary>
-    /// 图片索引集合
-    /// </summary>
-    public List<int> PictureIndes;
-
-    /// <summary>
-    /// 该年代的事件描述
-    /// </summary>
-    public string Describe;
-
-    /// <summary>
-    /// 该年代的事件描述路径
-    /// </summary>
-    public string DescribePath;
-
-
-    /// <summary>
-    /// 该事件下的图片描述集合，存的是路径
-    /// </summary>
-    public List<string> PicturesPath;
-
-    /// <summary>
-    /// 描述该事件的视频
-    /// </summary>
-    public string YearEventVideo;
-    /// <summary>
-    /// 索引图片的长和宽
-    /// </summary>
-    public Dictionary<int, Vector2> PictureInfos;
-
-    public YearsEvent()
-    {
-        PicturesPath = new List<string>();
-        PictureIndes = new List<int>();
-        PictureInfos = new Dictionary<int, Vector2>();
-    }
-
-    public void AddPictureInfo(int index,Vector2 size)
-    {
-        PictureIndes.Add(index);
-        PictureInfos.Add(index,size);
-    }
-    public override string ToString()
-    {
-
-
-        StringBuilder sb = new StringBuilder();
-
-        sb.Append("\r\n");
-        sb.Append("\r\n");
-        sb.Append("Years is  " + Years + " \r\n");
-        sb.Append("IndexPos is  " + IndexPos + " \r\n");
-        sb.Append("DescribePath is  " + DescribePath + " \r\n");
-        foreach (string s in PicturesPath)
-        {
-            sb.Append("PicturesPath is " + s + "\r\n");
-        }
-        sb.Append("YearEventVideo is  " + YearEventVideo + "\r\n");
-        sb.Append("\r\n");
-        sb.Append("\r\n");
-
-        return sb.ToString();
-    }
-}
 /// <summary>
 /// 处理图片，整理，分类
 /// </summary>
@@ -530,4 +412,148 @@ public class PictureHandle : MonoBehaviour
 
         TestImage.SetNativeSize();
     }
+
+
+
+}
+
+
+
+/// <summary>
+/// 年代信息类
+/// </summary>
+
+public class YearsInfo
+{
+    public string Years;
+    /// <summary>
+    /// 该年代的事件个数
+    /// </summary>
+    public int EventCount;
+
+    public List<YearsEvent> yearsEvents;
+
+
+    public YearsInfo()
+    {
+        yearsEvents = new List<YearsEvent>();
+    }
+
+    public override string ToString()
+    {
+        StringBuilder sb = new StringBuilder();
+
+        sb.Append("\r\n");
+        sb.Append("\r\n");
+        sb.Append("Years is  " + Years + "  \r\n");
+        sb.Append("EventCount is  " + EventCount + " \r\n");
+        foreach (YearsEvent yearsEvent in yearsEvents)
+        {
+            sb.Append(yearsEvent.ToString());
+        }
+        sb.Append("\r\n");
+        sb.Append("\r\n");
+        return sb.ToString();
+    }
+}
+
+/// <summary>
+/// 年代事件类
+/// </summary>
+public class YearsEvent
+{
+    /// <summary>
+    /// 所属年代
+    /// </summary>
+    public string Years;
+
+    /// <summary>
+    /// 事件顺序位置索引，比如该年的第一个事件，或者第二个事件
+    /// </summary>
+    public int IndexPos;
+
+    /// <summary>
+    /// 图片索引集合
+    /// </summary>
+    public List<int> PictureIndes;
+
+    /// <summary>
+    /// 该年代的事件描述
+    /// </summary>
+    public string Describe;
+
+    /// <summary>
+    /// 该年代的事件描述路径
+    /// </summary>
+    public string DescribePath;
+
+
+    /// <summary>
+    /// 该事件下的图片描述集合，存的是路径
+    /// </summary>
+    public List<string> PicturesPath;
+
+    /// <summary>
+    /// 描述该事件的视频
+    /// </summary>
+    public string YearEventVideo;
+    /// <summary>
+    /// 索引图片的长和宽
+    /// </summary>
+    public Dictionary<int, Vector2> PictureInfos;
+
+    public YearsEvent()
+    {
+        PicturesPath = new List<string>();
+        PictureIndes = new List<int>();
+        PictureInfos = new Dictionary<int, Vector2>();
+    }
+
+    public void AddPictureInfo(int index, Vector2 size)
+    {
+        PictureIndes.Add(index);
+        PictureInfos.Add(index, size);
+    }
+    public override string ToString()
+    {
+
+
+        StringBuilder sb = new StringBuilder();
+
+        sb.Append("\r\n");
+        sb.Append("\r\n");
+        sb.Append("Years is  " + Years + " \r\n");
+        sb.Append("IndexPos is  " + IndexPos + " \r\n");
+        sb.Append("DescribePath is  " + DescribePath + " \r\n");
+        foreach (string s in PicturesPath)
+        {
+            sb.Append("PicturesPath is " + s + "\r\n");
+        }
+        sb.Append("YearEventVideo is  " + YearEventVideo + "\r\n");
+        sb.Append("\r\n");
+        sb.Append("\r\n");
+
+        return sb.ToString();
+    }
+}
+
+/// <summary>
+/// 任务信息
+/// </summary>
+public class PersonInfo
+{
+    public string PersonName;
+
+    public string PicturePath;
+
+    public int PictureIndex;
+
+    public string DescribeFilePath;
+
+    public string Describe;
+
+    /// <summary>
+    /// 介绍角色的视频  
+    /// </summary>
+    public string YearEventVideo;
 }

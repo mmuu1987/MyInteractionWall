@@ -19,5 +19,6 @@ public class HeadItem : MonoBehaviour {
     {
         this.GetComponent<RectTransform>().DOSizeDelta(new Vector2(405f, 1259f), 0.75f).SetEase(Ease.InCubic).SetDelay(1f);
         this.transform.Find("DownMotion").GetComponent<RectTransform>().DOSizeDelta(new Vector2(405f, 180f), 0.75f).SetEase(Ease.InCubic).SetDelay(1.2f);
+        
     }
 }

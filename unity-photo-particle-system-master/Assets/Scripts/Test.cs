@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Security.AccessControl;
+using DG.Tweening;
 using UnityEngine;
 using mattatz;
 using UnityEngine.EventSystems;
@@ -35,8 +36,8 @@ public class Test : MonoBehaviour, IDragHandler, IEndDragHandler
 	// Use this for initialization
 	void Start ()
 	{
-        HandleTextureArry(Texture2DOne, "_TexArrOne");
-        HandleTextureArry(Texture2DTwo, "_TexArrTwo");
+       // HandleTextureArry(Texture2DOne, "_TexArrOne");
+       // HandleTextureArry(Texture2DTwo, "_TexArrTwo");
 	}
     private void HandleTextureArry(List<Texture2D> textures,string texsName)
     {
@@ -156,10 +157,108 @@ public class Test : MonoBehaviour, IDragHandler, IEndDragHandler
         return vector3S;
 
     }
-	// Update is called once per frame
-	void Update () {
-		
-	}
+    public Transform Head;
+
+    /// <summary>
+    /// 需要旋转的角度
+    /// </summary>
+    private float _angle;
+
+    /// <summary>
+    /// 插值系数
+    /// </summary>
+    private float _timeTemp = 2f;
+    /// <summary>
+    /// 插值速度
+    /// </summary>
+    public float speed = 0.01f;
+
+    public float Distance = 2f;
+
+    /// <summary>
+    /// 相机到头部的向量
+    /// </summary>
+    private Vector3 _camToheadDir;
+    /// <summary>
+    /// 相机到头部的相对高度
+    /// </summary>
+    private float _height;
+
+
+    private void LoadPPTPicture()
+    {
+        string path = "D:\\test.pptx";
+    }
+
+    private void MoveToHead()
+    {
+        Transform cam = Camera.main.transform;
+
+        _camToheadDir = Head.position - cam.position;
+
+        _camToheadDir = new Vector3(_camToheadDir.x, 0f, _camToheadDir.z);
+
+        Vector3 headDir = -new Vector3(Head.forward.x, 0f, Head.forward.z);
+
+        _angle = Vector3.Angle(_camToheadDir, headDir);
+
+        Vector3 dir = Vector3.Cross(_camToheadDir, headDir);//叉乘主要判断在脸部的左边还是右边
+
+        if (dir.y > 0)
+        {
+            _angle *= -1;
+        }
+        Debug.Log(_angle);
+         
+        _timeTemp = 0f;
+
+        Distance = _camToheadDir.magnitude;
+
+        //算出角度后，再重新获取完整的向量
+        _camToheadDir = Head.position - cam.position;
+
+        _height = cam.position.y - Head.position.y;
+    }
+
+
+    // Update is called once per frame
+    void Update()
+    {
+
+
+
+        if (_timeTemp <= 1)
+        {
+            _timeTemp += Time.deltaTime * speed;
+
+            Transform cam = Camera.main.transform;
+            
+            
+            //角度插值系数
+            float lerpValue = Mathf.Lerp(0f, _angle, _timeTemp);
+            Debug.Log(lerpValue);
+            //高度插值系数
+            float tempHeight = Mathf.Lerp(0f, _height, _timeTemp);
+            //距离插值系数
+            float dis = Mathf.Lerp(Distance, 3, _timeTemp);
+
+
+            Vector3 dir = _camToheadDir + new Vector3(0f, tempHeight, 0f);
+
+            dir = dir.normalized;
+
+            Quaternion r = Quaternion.Euler(new Vector3(0f, -lerpValue, 0f));//正数顺时针，负数逆时针
+
+            Vector3 newDir = r * -dir;//旋转向量
+
+            cam.position = Head.position + newDir * dis;
+
+
+            //旋转相对容易，难得是位置
+            cam.transform.forward = Vector3.Lerp(cam.transform.forward, (-newDir).normalized, _timeTemp);//使相机慢慢朝向脸 timeTemp可另外使用一个变量参数
+
+        }
+    }
 
     public void OnDrag(PointerEventData eventData)
     {
@@ -221,8 +320,8 @@ public class Test : MonoBehaviour, IDragHandler, IEndDragHandler
         if (GUI.Button(new Rect(0f, 0f, 100f, 100f), "Test"))
         {
 
-            MyScreenToWorldPoint(new Vector3(300, 400, 200));
-
+          //  MyScreenToWorldPoint(new Vector3(300, 400, 200));
+            MoveToHead();
 
         }
     }

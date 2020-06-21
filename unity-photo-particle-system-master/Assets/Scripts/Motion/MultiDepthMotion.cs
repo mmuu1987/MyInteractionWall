@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Xml.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -113,7 +114,7 @@ public class MultiDepthMotion : MotionInputMoveBase
         for (int i = 0; i < datas.Length; i++)
         {
             PosAndDir data = datas[i];
-            if (i < 300)
+            if (i < Common.PictureCount*3)
             {
                 temp.Add(data);//编号一样的单独拿出来
             }
@@ -141,11 +142,12 @@ public class MultiDepthMotion : MotionInputMoveBase
         float scaleY = 1;//y轴位置屏幕有内容的比率
         float delay = 0f;
         List<Vector2> randomPos = new List<Vector2>();
+
         for (int j = 0; j < newData.Length; j++)
         {
 
 
-            if (j % 100 == 0)
+            if (j % Common.PictureCount == 0)
             {
                 k++;
                 float tempZ = k * z - 6;
@@ -164,19 +166,19 @@ public class MultiDepthMotion : MotionInputMoveBase
                 {
                     s = 1f;
                     a = 1f;
-                    scaleY = 1f;
+                    scaleY = 0.8f;
                 }
                 else if (k == 2)
                 {
                     s = 1.2f;
-                    a = 0.45f;
-                    scaleY = 0.9f;
+                    a = 0.35f;
+                    scaleY = 0.6f;
                 }
                 else if (k == 3)
                 {
                     s = 1.4f;
-                    a = 0.25f;
-                    scaleY = 0.8f;
+                    a = 0.15f;
+                    scaleY = 0.5f;
                 }
                 else if (k == 4)
                 {
@@ -190,35 +192,68 @@ public class MultiDepthMotion : MotionInputMoveBase
                     a = 0.25f;
                     scaleY = 0.6f;
                 }
-                randomPos = Common.Sample2D((_screenPosRightDown.x - _screenPosLeftDown.x) * 1.5f, (_screenPosLeftUp.y - _screenPosLeftDown.y) * scaleY, s, 15);
-                //Debug.Log("randomPos count is  " + randomPos.Count + " 层级为=> " + (k - 1));
+                randomPos = Common.Sample2D((_screenPosRightDown.x - _screenPosLeftDown.x) *4, (_screenPosLeftUp.y - _screenPosLeftDown.y) * scaleY, s+0.75f, 25);
+                Debug.Log("randomPos count is  " + randomPos.Count + " 层级为=> " + (k - 1));
                 _depths[k - 1] = new DepthInfo(k - 1, tempZ, s, a);
             }
 
 
 
-            float rangeZ = Random.Range(-0.3f, 0.3f);//在同一层次，再随机不同的深度位置，不至于重叠一起，显得错落有致
+            float rangeZ = Random.Range(-0.2f, 0.2f);//在同一层次，再随机不同的深度位置，不至于重叠一起，显得错落有致
 
 
             Vector4 posTemp = newData[j].position;
             newData[j].position = new Vector4(posTemp.x, posTemp.y, posTemp.z, 1);
 
 
-            Vector2 randomPoint = randomPos[j % randomPos.Count];
+            Vector2 randomPoint;
 
-            randomPoint = new Vector2(randomPoint.x + _screenPosLeftDown.x, randomPoint.y + _screenPosLeftDown.y);
+            if (randomPos.Count > 0)
+            {
+             int rangIndex = Random.Range(0, randomPos.Count);
+
+             randomPoint = randomPos[rangIndex];
+
+             randomPos.RemoveAt(rangIndex);
+            }
+            else//如果多出来，则放到看不到的地方
+            {
+                randomPoint = new Vector2(_screenPosLeftDown.x,Random.Range(1000f,2000f));
+            }
+           
+
+           // Vector2 randomPoint = randomPos[j % randomPos.Count];
+
+            //计算Y轴的位置(1 - scaleY)为空余的位置(1 - scaleY)/2f上下空余的位置，(1 - scaleY)/2f*(_screenPosLeftUp.y - _screenPosLeftDown.y)空余位置的距离
+            float heightTmep = (1 - scaleY)/2f*(_screenPosLeftUp.y - _screenPosLeftDown.y);
+
+            randomPoint = new Vector2(randomPoint.x + _screenPosLeftDown.x, randomPoint.y + _screenPosLeftDown.y + heightTmep);
 
             newData[j].moveTarget = new Vector3(randomPoint.x, randomPoint.y, rangeZ);
             newData[j].uvOffset = new Vector4(1f, 1f, 0f, 0f);
             newData[j].uv2Offset = new Vector4(1f, 1f, 0f, 0f);
 
             int picIndex = 0;
-            Vector2 size = PictureHandle.Instance.GetLevelIndexSize(j, k - 1, out picIndex);
-            newData[j].initialVelocity = new Vector3(size.x / 512f, size.y / 512f, 0f);//填充真实宽高
+            Vector2 size = PictureHandle.Instance.GetLevelIndexSize(j, k - 1, out picIndex);//得到缩放尺寸
+
+            float xScale = size.x/512f;
+            float yScale = size.y/512f;
+            float proportion = size.x/size.y;
+            if (xScale >= 2 || yScale >= 2)
+            {
+                //如果超过2倍大小，则强制缩放到一倍大小以内，并以宽度为准，等比例减少
+                int a = (int)xScale;
+                xScale = xScale - (a) + 2f;
+
+                yScale = xScale / proportion;
+            }
+            
+
+            newData[j].initialVelocity = new Vector3(xScale, yScale, 0f);//填充真实宽高
             newData[j].picIndex = picIndex;
             newData[j].bigIndex = picIndex;
             //x存储层次的索引,y存储透明度,   z存储，x轴右边的边界值，为正数   
-            newData[j].velocity = new Vector4(k - 1, 1f, _screenPosRightDown.x * 1.5f, 0);
+            newData[j].velocity = new Vector4(k - 1, 1f, _screenPosRightDown.x * 4f, 0);
             Vector4 otherData = new Vector4();
             newData[j].originalPos = otherData;
         }
@@ -235,9 +270,14 @@ public class MultiDepthMotion : MotionInputMoveBase
 
         ComputeShader.SetBuffer(dispatchID, "depthBuffer", _depthBuffer);
         ComputeShader.SetBuffer(dispatchID, "positionBuffer", ComputeBuffer);
-        ComputeShader.SetBuffer(InitID, "positionBuffer", ComputeBuffer);
+
+        //ComputeShader.SetBuffer(InitID, "positionBuffer", ComputeBuffer);
+        //ComputeShader.SetBuffer(InitID, "depthBuffer", _depthBuffer);
+
         TextureInstanced.Instance.CurMaterial.SetBuffer("positionBuffer", ComputeBuffer);
         TextureInstanced.Instance.CurMaterial.SetTexture("_TexArr", TextureInstanced.Instance.TexArr);
+
+
         MoveSpeed = 50f;//更改更快的插值速度
         ComputeShader.SetFloat("MoveSpeed", MoveSpeed);
         ComputeShader.SetFloat("dis", 2);
@@ -259,8 +299,7 @@ public class MultiDepthMotion : MotionInputMoveBase
 
     }
 
-    private List<Vector2> _poss = new List<Vector2>();
-
+   
     /// <summary>
     /// 当前在最前面的深度，默认是0
     /// </summary>

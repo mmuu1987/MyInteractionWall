@@ -218,6 +218,9 @@ public class Test : MonoBehaviour, IDragHandler, IEndDragHandler
         _camToheadDir = Head.position - cam.position;
 
         _height = cam.position.y - Head.position.y;
+
+          GameObject go = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            go.transform.position = cam.position;
     }
 
 
@@ -256,6 +259,9 @@ public class Test : MonoBehaviour, IDragHandler, IEndDragHandler
 
             //旋转相对容易，难得是位置
             cam.transform.forward = Vector3.Lerp(cam.transform.forward, (-newDir).normalized, _timeTemp);//使相机慢慢朝向脸 timeTemp可另外使用一个变量参数
+
+            GameObject go = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            go.transform.position = cam.position;
 
         }
     }

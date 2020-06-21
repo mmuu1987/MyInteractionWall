@@ -12,6 +12,20 @@ public static class Common
 
     public static MotionType MotionType;
 
+    /// <summary>
+    /// 图片的宽
+    /// </summary>
+    public static int PictureWidth = 512;
+    /// <summary>
+    /// 图片的高
+    /// </summary>
+    public static int PictureHeight = 512;
+
+    /// <summary>
+    /// 每个层次的图片个数
+    /// </summary>
+    public static int PictureCount = 200;
+
     public static float GetCross(Vector2 p1, Vector2 p2, Vector2 p)
     {
         return (p2.x - p1.x) * (p.y - p1.y) - (p.x - p1.x) * (p2.y - p1.y);
@@ -41,7 +55,14 @@ public static class Common
 
         if (callBack != null) callBack();
     }
-
+    /// <summary>
+    /// 计算在长和宽的矩形里，半径为R的物体能塞多少个，并且不会重叠
+    /// </summary>
+    /// <param name="width">矩形的长</param>
+    /// <param name="height">矩形的宽</param>
+    /// <param name="r">小物体半径</param>
+    /// <param name="k">计算次数，值越大，越密集，计算量就越大</param>
+    /// <returns></returns>
     public static List<Vector2> Sample2D(float width, float height, float r, int k = 30)
     {
         return Sample2D((int)DateTime.Now.Ticks, width, height, r, k);

@@ -33,6 +33,8 @@ public class HonorWallItem : MonoBehaviour
         {
             EventTriggerListener.Get(image.gameObject).SetEventHandle(EnumTouchEventType.OnClick, OnClick);
         }
+
+        
     }
 
     private void OnClick(GameObject _listener, object _args, params object[] _params)
@@ -76,7 +78,7 @@ public class HonorWallItem : MonoBehaviour
 
                 image.rectTransform.anchoredPosition = pos;
 
-                if (image.rectTransform.anchoredPosition.y <= -itemHeight)
+                if (image.rectTransform.anchoredPosition.y <= MinPos)
                 {
                     image.rectTransform.anchoredPosition = new Vector3(pos.x, MaxPos, pos.z);
                 }

@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using DG.Tweening;
+using Microsoft.Win32.SafeHandles;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.UI;
@@ -33,10 +34,12 @@ public class PictureHandle : MonoBehaviour
     List<YearsInfo> _yesrsInfos = new List<YearsInfo>();
 
     public List<Texture2D> Texs = new List<Texture2D>();
+    public List<Texture2D> PersonTexs = new List<Texture2D>(); 
 
     private List<int> _index20012009;
     private List<int> _index20102019;
     private List<int> _index2020Max;
+    private List<PersonInfo> _personInfos = new List<PersonInfo>();
 
     private void Awake()
     {
@@ -49,7 +52,7 @@ public class PictureHandle : MonoBehaviour
     {
         LoadPicture();
         LoadTextureAssets();
-
+        LoadPersonInfo();
         _index20012009 = GetYearIndex(1);
         _index20102019 = GetYearIndex(2);
         _index2020Max = GetYearIndex(3);
@@ -62,7 +65,7 @@ public class PictureHandle : MonoBehaviour
 
         // Debug.Log(temp.Count);
 
-        // UnityEngine.SceneManagement.SceneManager.LoadScene("test1");
+         UnityEngine.SceneManagement.SceneManager.LoadScene("test1");
 
 
     }
@@ -108,10 +111,9 @@ public class PictureHandle : MonoBehaviour
                 Debug.Log("levle is " + level);
                 throw new UnityException("年代参数错误");
         }
-        //根据个数分配索引
-        int temp = count % indexs.Count;
-
-        return indexs[temp];
+            //根据个数分配索引
+            int temp = count % indexs.Count;
+            return indexs[temp];
     }
 
     /// <summary>
@@ -233,6 +235,8 @@ public class PictureHandle : MonoBehaviour
                 }
             }
         }
+
+
         return indes;
     }
     /// <summary>
@@ -240,7 +244,7 @@ public class PictureHandle : MonoBehaviour
     /// </summary>
     public void LoadPicture()
     {
-        string path = Application.streamingAssetsPath + "/Picture";
+        string path = Application.streamingAssetsPath + "/大事记";
 
         DirectoryInfo directoryInfo = new DirectoryInfo(path);
 
@@ -252,6 +256,11 @@ public class PictureHandle : MonoBehaviour
             YearsInfo tempYearsInfo = new YearsInfo();
 
             tempYearsInfo.Years = info.Name;
+
+            if (info.Name == "2004")
+            {
+                Debug.Log(info.Name);
+            }
 
             tempYearsInfo.EventCount = temps.Length;
 
@@ -268,6 +277,8 @@ public class PictureHandle : MonoBehaviour
 
                 FileInfo[] fileInfos = temp.GetFiles();
 
+                
+
                 foreach (FileInfo fileInfo in fileInfos)
                 {
                     if (fileInfo.Extension == ".txt")
@@ -275,13 +286,19 @@ public class PictureHandle : MonoBehaviour
 
                         yearsEvent.DescribePath = fileInfo.FullName;
                     }
-                    else if (fileInfo.Extension == ".jpg")
+                    else if (fileInfo.Extension == ".jpg" || fileInfo.Extension == ".JPG")
                     {
+                       
                         yearsEvent.PicturesPath.Add(fileInfo.FullName);
                     }
                     else if (fileInfo.Extension == ".mp4")
                     {
                         yearsEvent.YearEventVideo = fileInfo.FullName;
+                    }
+                    else if (fileInfo.Extension == ".png" || fileInfo.Extension == ".PNG")
+                    {
+                        yearsEvent.PicturesPath.Add(fileInfo.FullName);
+                       // Debug.Log(fileInfo.FullName);
                     }
                 }
                 tempYearsInfo.yearsEvents.Add(yearsEvent);
@@ -291,6 +308,93 @@ public class PictureHandle : MonoBehaviour
         }
 
 
+    }
+
+    /// <summary>
+    /// 加载人物信息
+    /// </summary>
+    public void LoadPersonInfo()
+    {
+        string path = Application.streamingAssetsPath + "/Person";
+
+        DirectoryInfo directoryInfo = new DirectoryInfo(path);
+
+        DirectoryInfo[] infos = directoryInfo.GetDirectories();//获取角色目录数
+        foreach (DirectoryInfo info in infos)
+        {
+
+            PersonInfo personInfo = new PersonInfo { PersonName = info.Name };
+
+
+            FileInfo[] fileInfos = info.GetFiles();
+
+            foreach (FileInfo fileInfo in fileInfos)
+            {
+                if (fileInfo.Extension == ".txt")
+                {
+                    personInfo.DescribeFilePath = fileInfo.FullName;
+                }
+                else if (fileInfo.Extension == ".jpg")
+                {
+                    personInfo.PicturePath = fileInfo.FullName;
+                }
+                else if (fileInfo.Extension == ".mp4")
+                {
+                    personInfo.YearEventVideo = fileInfo.FullName;
+                }
+                else if (fileInfo.Extension == ".png")
+                {
+                    personInfo.PicturePath = fileInfo.FullName;
+                }
+            }
+            _personInfos.Add(personInfo);
+        }
+        //加载图片
+        //加载文本
+        int index = 0;
+        foreach (PersonInfo personInfo in _personInfos)
+        {
+            if (!string.IsNullOrEmpty(personInfo.DescribeFilePath))
+            {
+                byte[] bytes = File.ReadAllBytes(personInfo.DescribeFilePath);
+
+                string str = Encoding.UTF8.GetString(bytes);
+
+                personInfo.Describe = str;
+            }
+
+            if (!string.IsNullOrEmpty(personInfo.PicturePath))
+            {
+                 string s =personInfo.PicturePath;
+
+                if (File.Exists(s))
+                {
+                    Vector2 vector2;
+
+                    byte[] bytes = Common.MakeThumNail(s, 512, 512, "HW", out vector2);
+
+                    Texture2D tex = new Texture2D(512, 512, TextureFormat.DXT1, false);
+
+                    tex.LoadImage(bytes);
+
+                    tex.Compress(true);
+
+                    tex.Apply();
+
+                    PersonTexs.Add(tex);
+
+                    personInfo.PictureIndex = index;
+
+                    index++;
+
+                }
+                else Debug.LogError("没有找到头像文件");
+
+
+            }
+        }
+        Debug.Log(PersonTexs.Count);
+        
     }
 
     /// <summary>
@@ -306,14 +410,40 @@ public class PictureHandle : MonoBehaviour
         {
             foreach (YearsEvent yearsEvent in yesrsInfo.yearsEvents)
             {
+                if (yearsEvent.PicturesPath.Count <= 0)//如果没有图片，我们生成一个logo的先填充
+                {
+                    string s = Application.streamingAssetsPath + "/logo.png";
+
+                    Vector2 vector2;
+
+                    byte[] bytes = Common.MakeThumNail(s, Common.PictureWidth, Common.PictureHeight, "HW", out vector2);
+
+                    Texture2D tex = new Texture2D(512, 512, TextureFormat.DXT1, false);
+
+                    tex.LoadImage(bytes);
+
+                    tex.Compress(true);
+
+                    tex.Apply();
+
+                    Texs.Add(tex);
+
+                    yearsEvent.PictureIndes.Add(pictureIndex);
+
+                    yearsEvent.AddPictureInfo(pictureIndex, vector2);
+
+                    pictureIndex++;
+                }
+                else
                 foreach (string s in yearsEvent.PicturesPath)
                 {
-                    if (File.Exists(s))
+                    
+                     if (File.Exists(s))
                     {
 
                         Vector2 vector2;
 
-                        byte[] bytes = Common.MakeThumNail(s, 512, 512, "HW", out vector2);
+                        byte[] bytes = Common.MakeThumNail(s, Common.PictureWidth, Common.PictureHeight, "HW", out vector2);
 
                         Texture2D tex = new Texture2D(512, 512, TextureFormat.DXT1, false);
 
@@ -339,6 +469,10 @@ public class PictureHandle : MonoBehaviour
         // Debug.Log(Texs.Count);
     }
 
+    private void LoadTexture()
+    {
+        
+    }
     public void DestroyTexture()
     {
         foreach (Texture2D texture2D in Texs)
@@ -538,22 +672,35 @@ public class YearsEvent
 }
 
 /// <summary>
-/// 任务信息
+/// 人物信息
 /// </summary>
 public class PersonInfo
 {
+    /// <summary>
+    /// 人物名字
+    /// </summary>
     public string PersonName;
-
+    /// <summary>
+    /// 人物图片路径
+    /// </summary>
     public string PicturePath;
-
+    /// <summary>
+    /// 人物图片所在数组中的索引
+    /// </summary>
     public int PictureIndex;
-
+    /// <summary>
+    /// 人物描述文本的路径
+    /// </summary>
     public string DescribeFilePath;
-
+    /// <summary>
+    /// 人物的描述
+    /// </summary>
     public string Describe;
 
     /// <summary>
     /// 介绍角色的视频  
     /// </summary>
     public string YearEventVideo;
+
+   
 }

@@ -212,10 +212,12 @@ public class Test : MonoBehaviour, IDragHandler, IEndDragHandler
          
         _timeTemp = 0f;
 
-        Distance = _camToheadDir.magnitude;
+       
 
         //算出角度后，再重新获取完整的向量
         _camToheadDir = Head.position - cam.position;
+
+        Distance = _camToheadDir.magnitude;
 
         _height = cam.position.y - Head.position.y;
 

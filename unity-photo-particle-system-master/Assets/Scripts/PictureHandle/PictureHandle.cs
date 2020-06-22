@@ -41,6 +41,8 @@ public class PictureHandle : MonoBehaviour
     private List<int> _index2020Max;
     private List<PersonInfo> _personInfos = new List<PersonInfo>();
 
+    private GameObject _info;
+
     private void Awake()
     {
         if (Instance != null) throw new UnityException("单例错误");
@@ -60,12 +62,16 @@ public class PictureHandle : MonoBehaviour
 
         HandleTextureArry(Texs);
 
+
+        _info = Resources.Load<GameObject>("Prefabs/Info");
+        //预制体缩放，后面用来做缩放动画
+        _info.transform.localScale = Vector3.one*0.35f;
         //LoadYearInfo();
         // var temp = Common.Sample2D(1920, 1080, 1,10);
 
         // Debug.Log(temp.Count);
 
-         UnityEngine.SceneManagement.SceneManager.LoadScene("test1");
+         //UnityEngine.SceneManagement.SceneManager.LoadScene("test1");
 
 
     }
@@ -171,9 +177,10 @@ public class PictureHandle : MonoBehaviour
 
         if(ye==null)throw new UnityException("没有找到相应的年代事件");
 
-        GameObject go = Resources.Load<GameObject>("Prefabs/Info");
 
-        GameObject temp = Instantiate(go, canvas.transform);
+
+
+        GameObject temp = Instantiate(_info, canvas.transform);
 
         Item item = temp.GetComponent<Item>();
 
@@ -182,7 +189,7 @@ public class PictureHandle : MonoBehaviour
         Vector3 screenPos = Camera.main.WorldToScreenPoint(pad.position);
 
         RectTransform rectTransform = item.GetComponent<RectTransform>();
-
+       // rectTransform.SetSiblingIndex(2);
         rectTransform.DOScale(1f, 0.75f);
         //rectTransform.DOLocalRotate(new Vector3(0f, 360, 0f), 1f, RotateMode.LocalAxisAdd).OnComplete((() =>
         //{
@@ -315,7 +322,7 @@ public class PictureHandle : MonoBehaviour
     /// </summary>
     public void LoadPersonInfo()
     {
-        string path = Application.streamingAssetsPath + "/Person";
+        string path = Application.streamingAssetsPath + "/卓越风采";
 
         DirectoryInfo directoryInfo = new DirectoryInfo(path);
 

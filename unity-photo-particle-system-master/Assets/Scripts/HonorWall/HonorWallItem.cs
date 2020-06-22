@@ -11,13 +11,16 @@ public class HonorWallItem : MonoBehaviour
 
     public float speed = 10f;
 
-    private float itemHeight;
-
-    private List<Image> images;
+    private List<Image> _images;
 
     public float MinPos = -612.666f;
 
     public float MaxPos =3306.6f;
+
+    /// <summary>
+    /// 可以点击的
+    /// </summary>
+    public List<Image>  ButtonImages= new List<Image>();
 
     private void Awake()
     {
@@ -25,25 +28,27 @@ public class HonorWallItem : MonoBehaviour
 
         Image[] tems = this.transform.GetComponentsInChildren<Image>();
 
-        images = new List<Image>(tems);
+        _images = new List<Image>(tems);
 
-        itemHeight = images[0].rectTransform.sizeDelta.y;
+   
 
-        foreach (Image image in images)
+        foreach (Image image in _images)
         {
-            EventTriggerListener.Get(image.gameObject).SetEventHandle(EnumTouchEventType.OnClick, OnClick);
+            if (image.sprite == null)
+            {
+                EventTriggerListener.Get(image.gameObject).SetEventHandle(EnumTouchEventType.OnClick, OnClick);
+                ButtonImages.Add(image);
+            }
         }
-
-        
     }
 
     private void OnClick(GameObject _listener, object _args, params object[] _params)
     {
         Sprite sprite = _listener.GetComponent<Image>().sprite;
 
-        if (sprite != null)
+        if (sprite != null && sprite.name!="logo")
         {
-            int index = int.Parse(sprite.name);
+            int index = int.Parse(_listener.name);
 
             Debug.Log("index is " + index);
         }
@@ -55,7 +60,7 @@ public class HonorWallItem : MonoBehaviour
 
     private void Update()
     {
-        foreach (Image image in images)
+        foreach (Image image in _images)
         {
 
             Vector3 pos = image.rectTransform.anchoredPosition;

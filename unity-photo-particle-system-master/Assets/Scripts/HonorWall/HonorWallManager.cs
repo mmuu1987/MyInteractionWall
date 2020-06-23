@@ -45,9 +45,18 @@ public class HonorWallManager : MonoBehaviour
         {
             int index = i % infos.Count;
 
+            Sprite temp = infos[index].headTex;
+
+            if (temp == null)
+            {
+                Debug.Log(index);
+            }
+
             images[i].sprite = infos[index].headTex;
 
+            if(images[i].sprite !=null)
             images[i].name = images[i].sprite.name;
+
 
         }
     }
@@ -64,8 +73,8 @@ public class HonorWallManager : MonoBehaviour
 
         if (targetPos.x < 3840f) targetPos.x += 350f;
         if (targetPos.x > 3840f) targetPos.x -= 350f;
-        if (targetPos.y < 1300f) targetPos.y = 1300f;
-        if (targetPos.y > 2940f) targetPos.y = 2940f;
+        if (targetPos.y < 1600f) targetPos.y = 1600;
+        if (targetPos.y > 3240) targetPos.y = 3240;
 
         item.RectTransform.DOAnchorPos(targetPos, 0.5f).SetEase(Ease.InOutQuad);
         item.RectTransform.DOScale(Vector3.one, 0.5f).SetEase(Ease.InOutQuad);

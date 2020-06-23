@@ -267,10 +267,7 @@ public class PictureHandle : MonoBehaviour
 
             tempYearsInfo.Years = info.Name;
 
-            if (info.Name == "2004")
-            {
-                Debug.Log(info.Name);
-            }
+         
 
             tempYearsInfo.EventCount = temps.Length;
 

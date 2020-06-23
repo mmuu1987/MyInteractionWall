@@ -41,8 +41,8 @@ public class HeadItem : MonoBehaviour
 
     public void DoAnimation()
     {
-        AnimatonRt.DOSizeDelta(new Vector2(668, 1120f), 0.75f).SetEase(Ease.InCubic).SetDelay(0.85f);
-        
+        AnimatonRt.DOSizeDelta(new Vector2(668, 1400f), 1f).SetEase(Ease.InCubic);
+
     }
 
     /// <summary>

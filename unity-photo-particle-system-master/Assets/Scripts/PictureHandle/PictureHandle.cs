@@ -34,12 +34,15 @@ public class PictureHandle : MonoBehaviour
     List<YearsInfo> _yesrsInfos = new List<YearsInfo>();
 
     public List<Texture2D> Texs = new List<Texture2D>();
-    public List<Texture2D> PersonTexs = new List<Texture2D>(); 
+   
 
     private List<int> _index20012009;
     private List<int> _index20102019;
     private List<int> _index2020Max;
-    private List<PersonInfo> _personInfos = new List<PersonInfo>();
+
+    public List<PersonInfo> PersonInfos = new List<PersonInfo>();
+
+  
 
     private GameObject _info;
 
@@ -71,9 +74,9 @@ public class PictureHandle : MonoBehaviour
 
         // Debug.Log(temp.Count);
 
-         //UnityEngine.SceneManagement.SceneManager.LoadScene("test1");
+         UnityEngine.SceneManagement.SceneManager.LoadScene("test1");
 
-
+        //
     }
 
     private void LoadYearInfo()
@@ -354,12 +357,12 @@ public class PictureHandle : MonoBehaviour
                     personInfo.PicturePath = fileInfo.FullName;
                 }
             }
-            _personInfos.Add(personInfo);
+            PersonInfos.Add(personInfo);
         }
         //加载图片
         //加载文本
         int index = 0;
-        foreach (PersonInfo personInfo in _personInfos)
+        foreach (PersonInfo personInfo in PersonInfos)
         {
             if (!string.IsNullOrEmpty(personInfo.DescribeFilePath))
             {
@@ -388,9 +391,13 @@ public class PictureHandle : MonoBehaviour
 
                     tex.Apply();
 
-                    PersonTexs.Add(tex);
+                 
 
                     personInfo.PictureIndex = index;
+
+                    Sprite sprite = Sprite.Create(tex, new Rect(0, 0, tex.width, tex.height), new Vector2(0.5f, 0.5f));
+                    sprite.name = index.ToString();
+                    personInfo.headTex = sprite;
 
                     index++;
 
@@ -400,7 +407,7 @@ public class PictureHandle : MonoBehaviour
 
             }
         }
-        Debug.Log(PersonTexs.Count);
+       
         
     }
 
@@ -709,5 +716,10 @@ public class PersonInfo
     /// </summary>
     public string YearEventVideo;
 
-   
+    /// <summary>
+    /// 头像
+    /// </summary>
+    public Sprite headTex;
+
+
 }

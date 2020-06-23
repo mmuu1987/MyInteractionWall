@@ -1,12 +1,17 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class HonorWallManager : MonoBehaviour {
+public class HonorWallManager : MonoBehaviour
+{
 
 
+    public HeadItem HonorItem;
 
+    public Canvas Canvas;
 
     private void Start()
     {
@@ -19,6 +24,13 @@ public class HonorWallManager : MonoBehaviour {
         //获取所有的头像组件，该组件还没赋值头像
         HonorWallItem[] items = this.GetComponentsInChildren<HonorWallItem>();
 
+
+        //绑定点击事件
+        foreach (HonorWallItem item in items)
+        {
+            item.ClickEvent += ClickEvent;
+        }
+
         List<Image> images = new List<Image>();
 
         foreach (HonorWallItem item in items)
@@ -26,24 +38,49 @@ public class HonorWallManager : MonoBehaviour {
             images.AddRange(item.ButtonImages);
         }
 
-        List<Texture2D> texs = PictureHandle.Instance.PersonTexs;
-        List<Sprite> sprites = new List<Sprite>();
-       
-
-        //把图片转成精灵  
-        foreach (Texture2D texture2D in texs)
-        {
-            Sprite s = Sprite.Create(texture2D, new Rect(0, 0, texture2D.width, texture2D.height), new Vector2(0.5f, 0.5f));
-            sprites.Add(s);
-        }
+        List<PersonInfo> infos = PictureHandle.Instance.PersonInfos;
+      
 
         for (int i = 0; i < images.Count; i++)
         {
-            int index = i % sprites.Count;
+            int index = i % infos.Count;
 
-            images[i].sprite = sprites[index];
-            images[i].name = index.ToString();
+            images[i].sprite = infos[index].headTex;
+
+            images[i].name = images[i].sprite.name;
 
         }
+    }
+
+    private void ClickEvent(int index, PointerEventData data)
+    {
+        Debug.Log("点击的索引是  " + index + "position is " + data.position);
+
+        HeadItem item = Instantiate(HonorItem, Canvas.transform);
+
+        item.RectTransform.anchoredPosition = data.position;
+
+        Vector3 targetPos = data.position;
+
+        if (targetPos.x < 3840f) targetPos.x += 350f;
+        if (targetPos.x > 3840f) targetPos.x -= 350f;
+        if (targetPos.y < 1300f) targetPos.y = 1300f;
+        if (targetPos.y > 2940f) targetPos.y = 2940f;
+
+        item.RectTransform.DOAnchorPos(targetPos, 0.5f).SetEase(Ease.InOutQuad);
+        item.RectTransform.DOScale(Vector3.one, 0.5f).SetEase(Ease.InOutQuad);
+
+        //加载内容
+
+        foreach (PersonInfo personInfo in PictureHandle.Instance.PersonInfos)
+        {
+            if (personInfo.PictureIndex == index)
+            {
+                item.SetData(personInfo);
+                break;
+            }
+        }
+
+
     }
 }

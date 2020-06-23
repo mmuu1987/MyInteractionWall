@@ -1,6 +1,8 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using XHFrameWork;
 
@@ -16,6 +18,8 @@ public class HonorWallItem : MonoBehaviour
     public float MinPos = -612.666f;
 
     public float MaxPos =3306.6f;
+
+    public event Action<int, PointerEventData> ClickEvent;
 
     /// <summary>
     /// 可以点击的
@@ -50,7 +54,8 @@ public class HonorWallItem : MonoBehaviour
         {
             int index = int.Parse(_listener.name);
 
-            Debug.Log("index is " + index);
+
+            if (ClickEvent != null) ClickEvent(index, (PointerEventData)_args);
         }
         else Debug.Log(_listener.name);
 

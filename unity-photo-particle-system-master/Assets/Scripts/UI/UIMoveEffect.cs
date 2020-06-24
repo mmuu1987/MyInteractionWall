@@ -36,7 +36,7 @@ public class UIMoveEffect : MonoBehaviour {
     {
         string str = _listener.name;
 
-        str = str.Substring(0, 1);//拿到索引
+        str = str.Substring(0, 1);//拿到索引   
 
         int index = int.Parse(str);
 

@@ -63,7 +63,7 @@ public class HonorWallManager : MonoBehaviour
 
     private void ClickEvent(int index, PointerEventData data)
     {
-        Debug.Log("点击的索引是  " + index + "position is " + data.position);
+        //Debug.Log("点击的索引是  " + index + "position is " + data.position);
 
         HeadItem item = Instantiate(HonorItem, Canvas.transform);
 

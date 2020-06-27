@@ -193,7 +193,7 @@ public class MultiDepthMotion : MotionInputMoveBase
                     scaleY = 0.6f;
                 }
                 randomPos = Common.Sample2D((_screenPosRightDown.x - _screenPosLeftDown.x) *4, (_screenPosLeftUp.y - _screenPosLeftDown.y) * scaleY, s+0.75f, 25);
-                Debug.Log("randomPos count is  " + randomPos.Count + " 层级为=> " + (k - 1));
+                //Debug.Log("randomPos count is  " + randomPos.Count + " 层级为=> " + (k - 1));
                 _depths[k - 1] = new DepthInfo(k - 1, tempZ, s, a);
             }
 

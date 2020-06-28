@@ -34,7 +34,7 @@ public class PictureHandle : MonoBehaviour
     List<YearsInfo> _yesrsInfos = new List<YearsInfo>();
 
     public List<Texture2D> Texs = new List<Texture2D>();
-   
+
 
     private List<int> _index20012009;
     private List<int> _index20102019;
@@ -42,7 +42,7 @@ public class PictureHandle : MonoBehaviour
 
     public List<PersonInfo> PersonInfos = new List<PersonInfo>();
 
-  
+
 
     private GameObject _info;
 
@@ -57,6 +57,7 @@ public class PictureHandle : MonoBehaviour
     {
         LoadPicture();
         LoadTextureAssets();
+        LoadCompanyIntroductionPic();
         LoadPersonInfo();
         _index20012009 = GetYearIndex(1);
         _index20102019 = GetYearIndex(2);
@@ -68,13 +69,13 @@ public class PictureHandle : MonoBehaviour
 
         _info = Resources.Load<GameObject>("Prefabs/Info");
         //预制体缩放，后面用来做缩放动画
-        _info.transform.localScale = Vector3.one*0.35f;
+        _info.transform.localScale = Vector3.one * 0.35f;
         //LoadYearInfo();
         // var temp = Common.Sample2D(1920, 1080, 1,10);
 
         // Debug.Log(temp.Count);
 
-         UnityEngine.SceneManagement.SceneManager.LoadScene("test1");
+        UnityEngine.SceneManagement.SceneManager.LoadScene("test1");
 
         //
     }
@@ -86,7 +87,7 @@ public class PictureHandle : MonoBehaviour
         GameObject temp = Instantiate(go, Canvas.transform);
 
         Item item = temp.GetComponent<Item>();
-      
+
         item.LoadData(_yesrsInfos[1].yearsEvents[1], TexArr);
     }
     // Update is called once per frame
@@ -120,9 +121,9 @@ public class PictureHandle : MonoBehaviour
                 Debug.Log("levle is " + level);
                 throw new UnityException("年代参数错误");
         }
-            //根据个数分配索引
-            int temp = count % indexs.Count;
-            return indexs[temp];
+        //根据个数分配索引
+        int temp = count % indexs.Count;
+        return indexs[temp];
     }
 
     /// <summary>
@@ -132,10 +133,10 @@ public class PictureHandle : MonoBehaviour
     /// <param name="level">层级</param>
     /// <param name="index">返回图片的索引</param>
     /// <returns></returns>
-    public Vector2 GetLevelIndexSize(int count, int level,out int index)
+    public Vector2 GetLevelIndexSize(int count, int level, out int index)
     {
 
-        index =GetLevelIndex(count, level);
+        index = GetLevelIndex(count, level);
 
         foreach (YearsInfo yesrsInfo in _yesrsInfos)
         {
@@ -145,7 +146,7 @@ public class PictureHandle : MonoBehaviour
                 {
                     return @event.PictureInfos[index];
                 }
-               
+
             }
         }
 
@@ -178,7 +179,7 @@ public class PictureHandle : MonoBehaviour
 
         }
 
-        if(ye==null)throw new UnityException("没有找到相应的年代事件");
+        if (ye == null) throw new UnityException("没有找到相应的年代事件");
 
 
 
@@ -192,14 +193,14 @@ public class PictureHandle : MonoBehaviour
         Vector3 screenPos = Camera.main.WorldToScreenPoint(pad.position);
 
         RectTransform rectTransform = item.GetComponent<RectTransform>();
-       // rectTransform.SetSiblingIndex(2);
+        // rectTransform.SetSiblingIndex(2);
         rectTransform.DOScale(1f, 0.75f);
         //rectTransform.DOLocalRotate(new Vector3(0f, 360, 0f), 1f, RotateMode.LocalAxisAdd).OnComplete((() =>
         //{
         //    item.RotEnd();
         //}));
 
-       
+
         rectTransform.anchoredPosition = screenPos;
 
         //Debug.Log(ye.ToString());
@@ -267,7 +268,7 @@ public class PictureHandle : MonoBehaviour
 
             tempYearsInfo.Years = info.Name;
 
-         
+
 
             tempYearsInfo.EventCount = temps.Length;
 
@@ -284,7 +285,7 @@ public class PictureHandle : MonoBehaviour
 
                 FileInfo[] fileInfos = temp.GetFiles();
 
-                
+
 
                 foreach (FileInfo fileInfo in fileInfos)
                 {
@@ -295,7 +296,7 @@ public class PictureHandle : MonoBehaviour
                     }
                     else if (fileInfo.Extension == ".jpg" || fileInfo.Extension == ".JPG")
                     {
-                       
+
                         yearsEvent.PicturesPath.Add(fileInfo.FullName);
                     }
                     else if (fileInfo.Extension == ".mp4")
@@ -305,7 +306,7 @@ public class PictureHandle : MonoBehaviour
                     else if (fileInfo.Extension == ".png" || fileInfo.Extension == ".PNG")
                     {
                         yearsEvent.PicturesPath.Add(fileInfo.FullName);
-                       // Debug.Log(fileInfo.FullName);
+                        // Debug.Log(fileInfo.FullName);
                     }
                 }
                 tempYearsInfo.yearsEvents.Add(yearsEvent);
@@ -315,6 +316,71 @@ public class PictureHandle : MonoBehaviour
         }
 
 
+    }
+
+    public void LoadCompanyIntroductionPic()
+    {
+
+        
+
+        AllTexList = new List<List<Texture2D>>();
+
+        string path1 = Application.streamingAssetsPath + "/公司介绍/企业介绍";
+
+        AllTexList.Add(LoadCompanyIntroductionPic(path1));
+
+        string path2 = Application.streamingAssetsPath + "/公司介绍/基本信息";
+        AllTexList.Add(LoadCompanyIntroductionPic(path2));
+
+        string path3 = Application.streamingAssetsPath + "/公司介绍/股东概况";
+        AllTexList.Add(LoadCompanyIntroductionPic(path3));
+
+        string path4 = Application.streamingAssetsPath + "/公司介绍/荣誉奖项";
+        AllTexList.Add(LoadCompanyIntroductionPic(path4));
+
+        string path5 = Application.streamingAssetsPath + "/公司介绍/产品体系";
+        AllTexList.Add(LoadCompanyIntroductionPic(path5));
+
+        string path6 = Application.streamingAssetsPath + "/公司介绍/服务体系";
+        AllTexList.Add(LoadCompanyIntroductionPic(path6));
+    }
+
+    public List<List<Texture2D>> AllTexList { get; set; }
+
+    /// <summary>
+    /// 导入公司介绍图片
+    /// </summary>
+    public List<Texture2D> LoadCompanyIntroductionPic(string path)
+    {
+        //string str1 = Application.streamingAssetsPath + "/公司介绍/企业介绍";
+
+        List<Texture2D> texs = new List<Texture2D>();
+
+        DirectoryInfo info = new DirectoryInfo(path);
+
+        FileInfo[] files = info.GetFiles();
+
+        foreach (FileInfo file in files)
+        {
+            if (file.FullName.Contains("meta")) continue;
+
+            if (File.Exists(file.FullName))
+            {
+                byte[] bytes = File.ReadAllBytes(file.FullName);
+
+                Texture2D tex = new Texture2D(512, 512, TextureFormat.DXT1, false);
+
+                tex.LoadImage(bytes);
+
+                tex.Compress(true);
+
+                tex.Apply();
+
+                texs.Add(tex);
+            }
+        }
+
+        return texs;
     }
 
     /// <summary>
@@ -372,7 +438,7 @@ public class PictureHandle : MonoBehaviour
 
             if (!string.IsNullOrEmpty(personInfo.PicturePath))
             {
-                 string s =personInfo.PicturePath;
+                string s = personInfo.PicturePath;
 
                 if (File.Exists(s))
                 {
@@ -388,7 +454,7 @@ public class PictureHandle : MonoBehaviour
 
                     tex.Apply();
 
-                 
+
 
                     personInfo.PictureIndex = index;
 
@@ -404,8 +470,8 @@ public class PictureHandle : MonoBehaviour
 
             }
         }
-       
-        
+
+
     }
 
     /// <summary>
@@ -446,34 +512,34 @@ public class PictureHandle : MonoBehaviour
                     pictureIndex++;
                 }
                 else
-                foreach (string s in yearsEvent.PicturesPath)
-                {
-                    
-                     if (File.Exists(s))
+                    foreach (string s in yearsEvent.PicturesPath)
                     {
 
-                        Vector2 vector2;
+                        if (File.Exists(s))
+                        {
 
-                        byte[] bytes = Common.MakeThumNail(s, Common.PictureWidth, Common.PictureHeight, "HW", out vector2);
+                            Vector2 vector2;
 
-                        Texture2D tex = new Texture2D(512, 512, TextureFormat.DXT1, false);
+                            byte[] bytes = Common.MakeThumNail(s, Common.PictureWidth, Common.PictureHeight, "HW", out vector2);
 
-                        tex.LoadImage(bytes);
+                            Texture2D tex = new Texture2D(512, 512, TextureFormat.DXT1, false);
 
-                        tex.Compress(true);
+                            tex.LoadImage(bytes);
 
-                        tex.Apply();
+                            tex.Compress(true);
 
-                        Texs.Add(tex);
+                            tex.Apply();
 
-                        yearsEvent.PictureIndes.Add(pictureIndex);
+                            Texs.Add(tex);
 
-                        yearsEvent.AddPictureInfo(pictureIndex, vector2);
+                            yearsEvent.PictureIndes.Add(pictureIndex);
 
-                        pictureIndex++;
+                            yearsEvent.AddPictureInfo(pictureIndex, vector2);
+
+                            pictureIndex++;
+                        }
+
                     }
-
-                }
             }
         }
 
@@ -482,7 +548,7 @@ public class PictureHandle : MonoBehaviour
 
     private void LoadTexture()
     {
-        
+
     }
     public void DestroyTexture()
     {
@@ -539,17 +605,17 @@ public class PictureHandle : MonoBehaviour
         System.Diagnostics.Stopwatch watch = new Stopwatch();
         Vector2 size = Vector2.zero;
         watch.Start();
-        byte[] bytes = Common.MakeThumNail(path, 512, 512, "HW",out size);
+        byte[] bytes = Common.MakeThumNail(path, 512, 512, "HW", out size);
         //init();计算耗时的方法
         watch.Stop();
         var mSeconds = watch.ElapsedMilliseconds;
         UnityEngine.Debug.Log("耗时：" + mSeconds + "  原始尺寸是 " + size);
 
-        Texture2D tex = new Texture2D(512, 512, TextureFormat.DXT5, false,true);
+        Texture2D tex = new Texture2D(512, 512, TextureFormat.DXT5, false, true);
 
         tex.LoadImage(bytes);
 
-        
+
 
         tex.Apply();
 

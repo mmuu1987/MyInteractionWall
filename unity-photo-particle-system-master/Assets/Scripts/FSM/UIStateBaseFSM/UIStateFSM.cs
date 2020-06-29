@@ -33,7 +33,8 @@ public class UIStateFSM : FsmState<UIControl>
         {
             trigger.enabled = true;
         }
-       
+        if (Parent != null)
+            Parent.gameObject.SetActive(true);
     }
 
     public override void Exit()

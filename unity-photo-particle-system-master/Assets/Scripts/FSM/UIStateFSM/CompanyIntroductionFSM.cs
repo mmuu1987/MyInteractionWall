@@ -66,12 +66,12 @@ public class CompanyIntroductionFSM : UIStateFSM
         Product = Parent.transform.Find("5产品体系").GetComponent<Button>();
         Service = Parent.transform.Find("6服务体系").GetComponent<Button>();
 
-        IntroduceTexs = PictureHandle.Instance.AllTexList[0];
-        InfoTexs = PictureHandle.Instance.AllTexList[1];
-        ShareholderTexs = PictureHandle.Instance.AllTexList[2];
-        HonorTexs = PictureHandle.Instance.AllTexList[3];
-        ProductTexs = PictureHandle.Instance.AllTexList[4];
-        ServiceTexs = PictureHandle.Instance.AllTexList[5];
+        IntroduceTexs = PictureHandle.Instance.CompanyAllTexList[0];
+        InfoTexs = PictureHandle.Instance.CompanyAllTexList[1];
+        ShareholderTexs = PictureHandle.Instance.CompanyAllTexList[2];
+        HonorTexs = PictureHandle.Instance.CompanyAllTexList[3];
+        ProductTexs = PictureHandle.Instance.CompanyAllTexList[4];
+        ServiceTexs = PictureHandle.Instance.CompanyAllTexList[5];
 
 
         ShowImage = Parent.parent.Find("ShowImage").GetComponent<RawImage>();
@@ -138,7 +138,6 @@ public class CompanyIntroductionFSM : UIStateFSM
         _curTex = IntroduceTexs;
         _curIndex = -1;
         Next(null,null);
-        Parent.gameObject.SetActive(true);
         Parent.parent.gameObject.SetActive(true);//父级别也要显示
     }
 
@@ -164,6 +163,7 @@ public class CompanyIntroductionFSM : UIStateFSM
     public override void Exit()
     {
         base.Exit();
+       
     }
 
    

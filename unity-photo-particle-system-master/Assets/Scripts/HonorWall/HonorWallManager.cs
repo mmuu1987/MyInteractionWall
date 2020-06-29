@@ -38,7 +38,7 @@ public class HonorWallManager : MonoBehaviour
             images.AddRange(item.ButtonImages);
         }
 
-        List<PersonInfo> infos = PictureHandle.Instance.PersonInfos;
+        List<PersonInfo> infos = PictureHandle.Instance.PersonInfos[0];
       
 
         for (int i = 0; i < images.Count; i++)
@@ -81,7 +81,7 @@ public class HonorWallManager : MonoBehaviour
 
         //加载内容
 
-        foreach (PersonInfo personInfo in PictureHandle.Instance.PersonInfos)
+        foreach (PersonInfo personInfo in PictureHandle.Instance.PersonInfos[0])
         {
             if (personInfo.PictureIndex == index)
             {

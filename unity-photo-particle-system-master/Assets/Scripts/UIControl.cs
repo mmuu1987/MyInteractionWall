@@ -43,6 +43,10 @@ public class UIControl : MonoBehaviour
     /// 关闭公司介绍，私享传家  所共用的界面
     /// </summary>
     public Button CloseButton;
+    /// <summary>
+    /// 私享传家按钮
+    /// </summary>
+    public Button PrivateHeirsBtn;
 
     /// <summary>
     /// 荣誉墙
@@ -59,7 +63,7 @@ public class UIControl : MonoBehaviour
         _Machine = new UIStateMachine(this);
 
         DicUI.Add(UIState.CompanyIntroduction, new CompanyIntroductionFSM(this.transform.Find("CompanyIntroduction/CompanyIntroduction")));
-        DicUI.Add(UIState.PrivateHeirs, new PrivateHeirsFSM(null));
+        DicUI.Add(UIState.PrivateHeirs, new PrivateHeirsFSM(this.transform.Find("CompanyIntroduction/PrivateHeirs")));
         DicUI.Add(UIState.OutstandingStyle, new OutstandingStyleFSM(null) );
         DicUI.Add(UIState.Close, new CloseFSM(null));
 
@@ -68,6 +72,11 @@ public class UIControl : MonoBehaviour
         CompanyIntroductionBtn.onClick.AddListener((() =>
         {
             _Machine.ChangeState(DicUI[UIState.CompanyIntroduction]);
+        }));
+
+        PrivateHeirsBtn.onClick.AddListener((() =>
+        {
+            _Machine.ChangeState(DicUI[UIState.PrivateHeirs]);
         }));
 
         CloseButton.onClick.AddListener((() =>

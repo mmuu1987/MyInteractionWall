@@ -48,6 +48,17 @@ public class UIControl : MonoBehaviour
     /// </summary>
     public Button PrivateHeirsBtn;
 
+    public Button OutstandingStyleBtn;
+
+    public Button Btn2000_2009;
+
+    public Button Btn2010_2019;
+
+    public Button Btn2020;
+
+
+    public MultiDepthMotion MultiDepthMotion;
+
     /// <summary>
     /// 荣誉墙
     /// </summary>
@@ -64,7 +75,7 @@ public class UIControl : MonoBehaviour
 
         DicUI.Add(UIState.CompanyIntroduction, new CompanyIntroductionFSM(this.transform.Find("CompanyIntroduction/CompanyIntroduction")));
         DicUI.Add(UIState.PrivateHeirs, new PrivateHeirsFSM(this.transform.Find("CompanyIntroduction/PrivateHeirs")));
-        DicUI.Add(UIState.OutstandingStyle, new OutstandingStyleFSM(null) );
+        DicUI.Add(UIState.OutstandingStyle, new OutstandingStyleFSM(this.transform.Find("CompanyIntroduction/OutstandingStyle")));
         DicUI.Add(UIState.Close, new CloseFSM(null));
 
         _Machine.SetCurrentState(DicUI[UIState.Close]);
@@ -79,9 +90,37 @@ public class UIControl : MonoBehaviour
             _Machine.ChangeState(DicUI[UIState.PrivateHeirs]);
         }));
 
+        OutstandingStyleBtn.onClick.AddListener((() =>
+        {
+            _Machine.ChangeState(DicUI[UIState.OutstandingStyle]);
+        }));
+
         CloseButton.onClick.AddListener((() =>
         {
             _Machine.ChangeState(DicUI[UIState.Close]);
+        }));
+        Btn2000_2009.onClick.AddListener((() =>
+        {
+            MultiDepthMotion.ChangeState(0);
+            Btn2000_2009.transform.Find("Tip").gameObject.SetActive(true);
+            Btn2010_2019.transform.Find("Tip").gameObject.SetActive(false);
+            Btn2020.transform.Find("Tip").gameObject.SetActive(false);
+        }));
+
+        Btn2010_2019.onClick.AddListener((() =>
+        {
+            MultiDepthMotion.ChangeState(1);
+            Btn2000_2009.transform.Find("Tip").gameObject.SetActive(false);
+            Btn2010_2019.transform.Find("Tip").gameObject.SetActive(true);
+            Btn2020.transform.Find("Tip").gameObject.SetActive(false);
+        }));
+
+        Btn2020.onClick.AddListener((() =>
+        {
+            MultiDepthMotion.ChangeState(2);
+            Btn2000_2009.transform.Find("Tip").gameObject.SetActive(false);
+            Btn2010_2019.transform.Find("Tip").gameObject.SetActive(false);
+            Btn2020.transform.Find("Tip").gameObject.SetActive(true);
         }));
     }
     

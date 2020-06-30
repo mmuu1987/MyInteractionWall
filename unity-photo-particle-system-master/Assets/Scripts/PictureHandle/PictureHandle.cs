@@ -82,16 +82,7 @@ public class PictureHandle : MonoBehaviour
         //
     }
 
-    private void LoadYearInfo()
-    {
-        GameObject go = Resources.Load<GameObject>("Prefabs/Info");
-
-        GameObject temp = Instantiate(go, Canvas.transform);
-
-        Item item = temp.GetComponent<Item>();
-
-        item.LoadData(_yesrsInfos[1].yearsEvents[1], TexArr);
-    }
+   
     // Update is called once per frame
     void Update()
     {
@@ -188,7 +179,7 @@ public class PictureHandle : MonoBehaviour
 
         Item item = temp.GetComponent<Item>();
 
-        item.LoadData(ye, TexArr);
+        item.LoadData(ye, TexArr,pad.initialVelocity);
 
         Vector3 screenPos = Camera.main.WorldToScreenPoint(pad.position);
 

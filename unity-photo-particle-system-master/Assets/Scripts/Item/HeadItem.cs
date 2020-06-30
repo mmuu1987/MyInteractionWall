@@ -23,6 +23,9 @@ public class HeadItem : MonoBehaviour
 
     private Coroutine _coroutine;
 
+    /// <summary>
+    /// 
+    /// </summary>
     private void Awake()
     {
         RectTransform = this.GetComponent<RectTransform>();

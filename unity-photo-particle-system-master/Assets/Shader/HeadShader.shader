@@ -6,13 +6,40 @@
 		_Mark ("Mark", 2D) = "white" {}
 		_Hollow ("Hollow", 2D) = "white" {}
 		_Range("Range",Range(0,1))=0.1
+		//MASK SUPPORT ADD
+		_StencilComp ("Stencil Comparison", Float) = 8
+        _Stencil ("Stencil ID", Float) = 0
+        _StencilOp ("Stencil Operation", Float) = 0
+        _StencilWriteMask ("Stencil Write Mask", Float) = 255
+        _StencilReadMask ("Stencil Read Mask", Float) = 255
+        _ColorMask ("Color Mask", Float) = 15
+		//MASK SUPPORT END
 	}
 	SubShader
 	{
-		Tags { "RenderType"="Opaque" }
+		 Tags { "RenderType"="Transparent" "Queue"="Transparent"}
+
+
+
+		 //MASK SUPPORT ADD
+		Stencil
+{
+    Ref [_Stencil]
+    Comp [_StencilComp]
+    Pass [_StencilOp] 
+    ReadMask [_StencilReadMask]
+    WriteMask [_StencilWriteMask]
+}
+
+        ColorMask [_ColorMask]
+	//MASK SUPPORT END
+
 		LOD 100
 		ZWrite Off
         Blend SrcAlpha OneMinusSrcAlpha 
+
+		
+
 		Pass
 		{
 			CGPROGRAM

@@ -70,6 +70,8 @@ public class Item : MonoBehaviour, IDragHandler, IPointerClickHandler
              _videoPlayer.Pause();
              _videoImage.gameObject.SetActive(false);
              _image.gameObject.SetActive(true);
+
+             _image.SetNativeSize();
             
 
          }));
@@ -107,6 +109,8 @@ public class Item : MonoBehaviour, IDragHandler, IPointerClickHandler
                  _image.gameObject.SetActive(true);
                 
              }
+
+             _image.SetNativeSize();
          }));
 
          this.transform.Find("destroy").GetComponent<Button>().onClick.AddListener((() =>
@@ -119,7 +123,6 @@ public class Item : MonoBehaviour, IDragHandler, IPointerClickHandler
          }));
 
         
-
 
   
 
@@ -169,7 +172,7 @@ public class Item : MonoBehaviour, IDragHandler, IPointerClickHandler
     /// <summary>
     /// 导入数据
     /// </summary>
-    public void LoadData(YearsEvent yearsEvent,Texture2DArray texArry)
+    public void LoadData(YearsEvent yearsEvent,Texture2DArray texArry,Vector2 scale)
     {
         _yearsEvent = yearsEvent;
 
@@ -202,6 +205,44 @@ public class Item : MonoBehaviour, IDragHandler, IPointerClickHandler
         _image.Rebuild(CanvasUpdate.LatePreRender);
 
         _curIndex = 0;
+
+        Vector2 size = _image.rectTransform.sizeDelta;//max 800  600
+
+        Vector2  newSize = new Vector2(size.x * scale.x,size.y *scale.y);//1500:2000
+
+
+        float newWidth = newSize.x;
+
+        float newHeight = newSize.y;
+
+        if (newSize.x > newSize.y)
+        {
+            if (newSize.x > 800)
+            {
+                float a = newSize.x/800f;
+
+                 newWidth = 800f;
+
+                 newHeight = newSize.y/a;
+            }
+        }
+        else if (newSize.x <= newSize.y)
+        {
+            if (newSize.y > 600f)
+            {
+                float a = newSize.y / 600f;
+
+                 newWidth = newSize.x/a;
+
+                 newHeight = 600f;
+            }
+        }
+
+
+
+        _image.rectTransform.sizeDelta = new Vector2(newWidth,newHeight)  ;
+        _image.SetNativeSize();
+
     }
 
     private void OnDestroy()

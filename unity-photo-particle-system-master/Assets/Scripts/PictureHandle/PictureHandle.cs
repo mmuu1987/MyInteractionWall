@@ -284,6 +284,12 @@ public class PictureHandle : MonoBehaviour
                     {
 
                         yearsEvent.DescribePath = fileInfo.FullName;
+
+                        byte[] bytes = File.ReadAllBytes(fileInfo.FullName);
+
+                        string str = Encoding.UTF8.GetString(bytes);
+
+                        yearsEvent.Describe = str;
                     }
                     else if (fileInfo.Extension == ".jpg" || fileInfo.Extension == ".JPG")
                     {
@@ -456,8 +462,10 @@ public class PictureHandle : MonoBehaviour
                 byte[] bytes = File.ReadAllBytes(personInfo.DescribeFilePath);
 
                 string str = Encoding.UTF8.GetString(bytes);
+                
 
                 personInfo.Describe = str;
+
             }
 
             if (!string.IsNullOrEmpty(personInfo.PicturePath))

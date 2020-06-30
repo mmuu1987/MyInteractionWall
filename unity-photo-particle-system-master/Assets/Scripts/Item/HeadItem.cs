@@ -32,9 +32,11 @@ public class HeadItem : MonoBehaviour
 
         _personName = this.transform.Find("HeadItem/Parent/PersonName").GetComponent<Text>();
 
-        _personInfo = this.transform.Find("HeadItem/Parent/Text").GetComponent<Text>();
+        _personInfo = this.transform.Find("HeadItem/Parent/Scroll View/Viewport/Content/Describe").GetComponent<Text>();
 
-        _head = this.transform.Find("head").GetComponent<Image>(); 
+        _head = this.transform.Find("head").GetComponent<Image>();
+
+        this.transform.localScale = Vector3.one*0.1f;
     }
     private void Start()
     {
@@ -53,6 +55,9 @@ public class HeadItem : MonoBehaviour
     /// </summary>
     public void SetData(PersonInfo info)
     {
+
+
+        Debug.Log(info.PersonName + "    " + info.Describe);
         _personName.text = info.PersonName;
 
         _personInfo.text = info.Describe;

@@ -61,7 +61,7 @@ public class HonorWallManager : MonoBehaviour
         }
     }
 
-    private void ClickEvent(int index, PointerEventData data)
+    private void ClickEvent(int index, PointerEventData data,Vector3 targetPos)
     {
         //Debug.Log("点击的索引是  " + index + "position is " + data.position);
 
@@ -69,15 +69,18 @@ public class HonorWallManager : MonoBehaviour
 
         item.RectTransform.anchoredPosition = data.position;
 
-        Vector3 targetPos = data.position;
+        //Vector3 targetPos = data.position;
 
-        if (targetPos.x < 3840f) targetPos.x += 350f;
-        if (targetPos.x > 3840f) targetPos.x -= 350f;
-        if (targetPos.y < 1600f) targetPos.y = 1600;
-        if (targetPos.y > 3240) targetPos.y = 3240;
+        //if (targetPos.x < 3840f) targetPos.x += 350f;
+        //if (targetPos.x > 3840f) targetPos.x -= 350f;
+        //if (targetPos.y < 1600f) targetPos.y = 1600;
+        //if (targetPos.y > 3240) targetPos.y = 3240;
 
+        targetPos.y = 3100f;
         item.RectTransform.DOAnchorPos(targetPos, 0.5f).SetEase(Ease.InOutQuad);
-        item.RectTransform.DOScale(Vector3.one, 0.5f).SetEase(Ease.InOutQuad);
+
+
+        item.RectTransform.DOScale(Vector3.one*2, 0.5f).SetEase(Ease.InOutQuad);
 
         //加载内容
 

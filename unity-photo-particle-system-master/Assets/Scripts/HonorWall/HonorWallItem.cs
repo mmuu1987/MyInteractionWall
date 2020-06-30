@@ -19,7 +19,7 @@ public class HonorWallItem : MonoBehaviour
 
     public float MaxPos =3306.6f;
 
-    public event Action<int, PointerEventData> ClickEvent;
+    public event Action<int, PointerEventData,Vector3> ClickEvent;
 
     /// <summary>
     /// 可以点击的
@@ -55,7 +55,7 @@ public class HonorWallItem : MonoBehaviour
             int index = int.Parse(_listener.name);
 
 
-            if (ClickEvent != null) ClickEvent(index, (PointerEventData)_args);
+            if (ClickEvent != null) ClickEvent(index, (PointerEventData)_args,this.GetComponent<RectTransform>().anchoredPosition);
         }
         else Debug.Log(_listener.name);
 

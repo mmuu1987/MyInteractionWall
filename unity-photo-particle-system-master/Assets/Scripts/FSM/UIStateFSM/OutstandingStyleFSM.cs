@@ -94,6 +94,7 @@ public class OutstandingStyleFSM : UIStateFSM
             _ryGrid.parent.parent.gameObject.SetActive(true);
             _dbGrid.parent.parent.gameObject.SetActive(false);
             _sbwGrid.parent.parent.gameObject.SetActive(false);
+            _introduce.gameObject.SetActive(false);
             SetHighlight(HonorListBtn.transform);
         }));
 
@@ -102,6 +103,7 @@ public class OutstandingStyleFSM : UIStateFSM
             _ryGrid.parent.parent.gameObject.SetActive(false);
             _dbGrid.parent.parent.gameObject.SetActive(true);
             _sbwGrid.parent.parent.gameObject.SetActive(false);
+            _introduce.gameObject.SetActive(false);
             SetHighlight(StandardList.transform);
         }));
 
@@ -110,6 +112,7 @@ public class OutstandingStyleFSM : UIStateFSM
             _ryGrid.parent.parent.gameObject.SetActive(false);
             _dbGrid.parent.parent.gameObject.SetActive(false);
             _sbwGrid.parent.parent.gameObject.SetActive(true);
+            _introduce.gameObject.SetActive(false);
             SetHighlight(DoubleMillion.transform);
         }));
 

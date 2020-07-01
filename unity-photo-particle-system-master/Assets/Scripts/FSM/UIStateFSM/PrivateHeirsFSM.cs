@@ -45,6 +45,9 @@ public class PrivateHeirsFSM : UIStateFSM
 
     private string _mp4Url;
     private List<Image> _highlights;
+
+    private Transform _previous;
+    private Transform _next;
     public PrivateHeirsFSM(Transform go) : base(go)
     {
         _highlights = new List<Image>();
@@ -64,6 +67,9 @@ public class PrivateHeirsFSM : UIStateFSM
         ValueAddTex = PictureHandle.Instance.PrivateHeirsAllTexList[1];
 
         DawanTex = PictureHandle.Instance.PrivateHeirsAllTexList[2];
+
+
+      
 
         BrandIntroductionBtn.onClick.AddListener((() =>
         {
@@ -107,17 +113,16 @@ public class PrivateHeirsFSM : UIStateFSM
     {
         base.Enter();
 
-        Transform previous = Target.transform.Find("CompanyIntroduction/Previous");
+        _previous = Target.transform.Find("CompanyIntroduction/Previous");
 
-        Transform next = Target.transform.Find("CompanyIntroduction/Next");
+        _next = Target.transform.Find("CompanyIntroduction/Next");
 
-        EventTriggerListener.Get(previous.gameObject).SetEventHandle(EnumTouchEventType.OnClick, Previous);
+        EventTriggerListener.Get(_previous.gameObject).SetEventHandle(EnumTouchEventType.OnClick, Previous);
 
-        EventTriggerListener.Get(next.gameObject).SetEventHandle(EnumTouchEventType.OnClick, Next);
+        EventTriggerListener.Get(_next.gameObject).SetEventHandle(EnumTouchEventType.OnClick, Next);
 
         _curTex = brandTex;
-        _curIndex = -1;
-        Next(null, null);
+        BrandIntroductionBtn.onClick.Invoke();
         Parent.parent.gameObject.SetActive(true);//父级别也要显示
         _videoImage.rectTransform.localScale = Vector3.zero;
 
@@ -129,6 +134,19 @@ public class PrivateHeirsFSM : UIStateFSM
         _curTex = texs;
         _curIndex = 0;
         ShowImage.texture = _curTex[_curIndex];
+
+        if (_curTex.Count == 1)
+        {
+            _previous.gameObject.SetActive(false);
+            _next.gameObject.SetActive(false);
+        }
+        else
+        {
+
+            _previous.gameObject.SetActive(true);
+            _next.gameObject.SetActive(true);
+
+        }
 
     }
 
@@ -185,6 +203,11 @@ public class PrivateHeirsFSM : UIStateFSM
 
         }
 
+        if (_curIndex == _curTex.Count - 1)
+        {
+            _previous.gameObject.SetActive(true);
+            _next.gameObject.SetActive(false);
+        }
 
     }
 
@@ -198,6 +221,12 @@ public class PrivateHeirsFSM : UIStateFSM
       //  _videoPlayer.Pause();
         _videoImage.rectTransform.localScale = Vector3.zero;
         ShowImage.gameObject.SetActive(true);
+
+        if (_curIndex == 0)
+        {
+            _previous.gameObject.SetActive(false);
+            _next.gameObject.SetActive(true);
+        }
     }
 
 

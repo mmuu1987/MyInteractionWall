@@ -7,7 +7,7 @@ using XHFrameWork;
 public class CompanyIntroductionFSM : UIStateFSM
 {
 
-   
+
     /// <summary>
     /// 公司介绍
     /// </summary>
@@ -58,7 +58,11 @@ public class CompanyIntroductionFSM : UIStateFSM
     private List<Image> _highlights;
 
     private int _curIndex;
-    public CompanyIntroductionFSM(Transform go,params  object [] args) : base(go)
+    private Transform _previous;
+    private Transform _next;
+
+    public CompanyIntroductionFSM(Transform go, params  object[] args)
+        : base(go)
     {
 
 
@@ -92,33 +96,33 @@ public class CompanyIntroductionFSM : UIStateFSM
             SetBtn(InfoTexs);
             SetHighlight(Info.transform);
 
-        })); 
+        }));
 
         Shareholder.onClick.AddListener((() =>
         {
             SetBtn(ShareholderTexs);
             SetHighlight(Shareholder.transform);
 
-        })); 
+        }));
 
         Honor.onClick.AddListener((() =>
         {
             SetBtn(HonorTexs);
             SetHighlight(Honor.transform);
 
-        })); 
+        }));
 
         Product.onClick.AddListener((() =>
         {
             SetBtn(ProductTexs);
             SetHighlight(Product.transform);
-        })); 
+        }));
 
         Service.onClick.AddListener((() =>
         {
             SetBtn(ServiceTexs);
             SetHighlight(Service.transform);
-        })); 
+        }));
         _highlights.Add(Introduce.transform.Find("Image").GetComponent<Image>());
         _highlights.Add(Info.transform.Find("Image").GetComponent<Image>());
         _highlights.Add(Shareholder.transform.Find("Image").GetComponent<Image>());
@@ -127,14 +131,28 @@ public class CompanyIntroductionFSM : UIStateFSM
         _highlights.Add(Service.transform.Find("Image").GetComponent<Image>());
 
         SetHighlight(Introduce.transform);
-        
+
     }
 
-    private void SetBtn(List<Texture2D> texs )
+    private void SetBtn(List<Texture2D> texs)
     {
         _curTex = texs;
         _curIndex = 0;
         ShowImage.texture = _curTex[_curIndex];
+
+
+        if (_curTex.Count == 1)
+        {
+            _previous.gameObject.SetActive(false);
+            _next.gameObject.SetActive(false);
+        }
+        else
+        {
+
+            _previous.gameObject.SetActive(true);
+            _next.gameObject.SetActive(true);
+
+        }
 
     }
 
@@ -159,19 +177,20 @@ public class CompanyIntroductionFSM : UIStateFSM
     {
         base.Enter();
 
-        Transform previous = Target.transform.Find("CompanyIntroduction/Previous");
+        _previous = Target.transform.Find("CompanyIntroduction/Previous");
 
-        Transform next = Target.transform.Find("CompanyIntroduction/Next");
+        _next = Target.transform.Find("CompanyIntroduction/Next");
 
-        EventTriggerListener.Get(previous.gameObject).SetEventHandle(EnumTouchEventType.OnClick, Previous);
+        EventTriggerListener.Get(_previous.gameObject).SetEventHandle(EnumTouchEventType.OnClick, Previous);
 
-        EventTriggerListener.Get(next.gameObject).SetEventHandle(EnumTouchEventType.OnClick, Next);
+        EventTriggerListener.Get(_next.gameObject).SetEventHandle(EnumTouchEventType.OnClick, Next);
 
 
         _curTex = IntroduceTexs;
-        _curIndex = -1;
-        Next(null,null);
+        Introduce.onClick.Invoke();
         Parent.parent.gameObject.SetActive(true);//父级别也要显示
+
+     
     }
 
     private void Next(GameObject _listener, object _args, params object[] _params)
@@ -181,23 +200,42 @@ public class CompanyIntroductionFSM : UIStateFSM
         {
             _curIndex--;
         }
+      
         ShowImage.texture = _curTex[_curIndex];
+
+        if (_curIndex == _curTex.Count-1)
+        {
+            _previous.gameObject.SetActive(true);
+            _next.gameObject.SetActive(false);
+        }
+      
     }
 
     private void Previous(GameObject _listener, object _args, params object[] _params)
     {
         //Debug.Log("previous");
         _curIndex--;
-        if (_curIndex < 0) _curIndex = 0;
+        if (_curIndex < 0)
+        {
+            _curIndex = 0;
+        }
 
         ShowImage.texture = _curTex[_curIndex];
+
+        if (_curIndex == 0)
+        {
+            _previous.gameObject.SetActive(false);
+            _next.gameObject.SetActive(true);
+        }
+
+     
     }
 
     public override void Exit()
     {
         base.Exit();
-       
+
     }
 
-   
+
 }

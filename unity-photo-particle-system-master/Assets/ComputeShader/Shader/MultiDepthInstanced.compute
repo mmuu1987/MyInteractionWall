@@ -178,7 +178,7 @@ void OldMethods(uint3 id )
    
    float3 depthDir = float3(0,0,z);
 
-   float3 moveDir = float3(-0.0055,0,0);
+   float3 moveDir = float3(-0.0155,0,0);
 
    moveTarget +=  moveDir;
 

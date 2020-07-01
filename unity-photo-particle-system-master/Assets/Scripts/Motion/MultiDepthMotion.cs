@@ -138,7 +138,7 @@ public class MultiDepthMotion : MotionInputMoveBase
         _clickPointBuff.SetData(clickPoint);
 
         int k = 0;
-        float z = 2;
+        float z = 6;
         float scaleY = 1;//y轴位置屏幕有内容的比率
         float delay = 0f;
         List<Vector2> randomPos = new List<Vector2>();
@@ -149,9 +149,10 @@ public class MultiDepthMotion : MotionInputMoveBase
 
             if (j % Common.PictureCount == 0)
             {
+              
+                //距离相机的深度值
+                float tempZ = k * z - 4;
                 k++;
-                float tempZ = k * z - 6;
-
                 _screenPosLeftDown = Camera.main.ScreenToWorldPoint(new Vector3(0, 0, tempZ - Camera.main.transform.position.z));
                 _screenPosLeftUp = Camera.main.ScreenToWorldPoint(new Vector3(0, Height, tempZ - Camera.main.transform.position.z));
                 _screenPosRightDown = Camera.main.ScreenToWorldPoint(new Vector3(Width, 0, tempZ - Camera.main.transform.position.z));
@@ -166,19 +167,19 @@ public class MultiDepthMotion : MotionInputMoveBase
                 {
                     s = 1f;
                     a = 1f;
-                    scaleY = 0.8f;
+                    scaleY = 0.55f;
                 }
                 else if (k == 2)
                 {
                     s = 1.2f;
-                    a = 0.35f;
-                    scaleY = 0.6f;
+                    a = 0.45f;
+                    scaleY = 0.25f;
                 }
                 else if (k == 3)
                 {
                     s = 1.4f;
-                    a = 0.15f;
-                    scaleY = 0.5f;
+                    a = 0.25f;
+                    scaleY = 0.18f;
                 }
                 else if (k == 4)
                 {
@@ -192,8 +193,8 @@ public class MultiDepthMotion : MotionInputMoveBase
                     a = 0.25f;
                     scaleY = 0.6f;
                 }
-                randomPos = Common.Sample2D((_screenPosRightDown.x - _screenPosLeftDown.x) *4, (_screenPosLeftUp.y - _screenPosLeftDown.y) * scaleY, s+0.75f, 25);
-                //Debug.Log("randomPos count is  " + randomPos.Count + " 层级为=> " + (k - 1));
+                randomPos = Common.Sample2D((_screenPosRightDown.x - _screenPosLeftDown.x) *(7-k), (_screenPosLeftUp.y - _screenPosLeftDown.y) * scaleY, s+0.75f, 25);
+                Debug.Log("randomPos count is  " + randomPos.Count + " 层级为=> " + (k - 1) + "   tempZ is=>" + tempZ);
                 _depths[k - 1] = new DepthInfo(k - 1, tempZ, s, a);
             }
 
@@ -227,7 +228,7 @@ public class MultiDepthMotion : MotionInputMoveBase
             //计算Y轴的位置(1 - scaleY)为空余的位置(1 - scaleY)/2f上下空余的位置，(1 - scaleY)/2f*(_screenPosLeftUp.y - _screenPosLeftDown.y)空余位置的距离
             float heightTmep = (1 - scaleY)/2f*(_screenPosLeftUp.y - _screenPosLeftDown.y);
 
-            randomPoint = new Vector2(randomPoint.x + _screenPosLeftDown.x, randomPoint.y + _screenPosLeftDown.y + heightTmep);
+            randomPoint = new Vector2(randomPoint.x + _screenPosLeftDown.x*2, randomPoint.y + _screenPosLeftDown.y + heightTmep);
 
             newData[j].moveTarget = new Vector3(randomPoint.x, randomPoint.y, rangeZ);
             newData[j].uvOffset = new Vector4(1f, 1f, 0f, 0f);

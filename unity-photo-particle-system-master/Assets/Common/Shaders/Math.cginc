@@ -102,4 +102,21 @@ float4 matrix_to_quaternion(float4x4 m) {
 	return q;
 }
 
+
+
+ float EaseInQuad(float start, float end, float value)
+    {
+        end -= start;
+        return end * value * value + start;
+    }
+
+   float EaseOutQuad(float start, float end, float value)
+    {
+        end -= start;
+        return -end * value * (value - 2) + start;
+    }
+
+   
+
+
 #endif // _MATH_INCLUDED_

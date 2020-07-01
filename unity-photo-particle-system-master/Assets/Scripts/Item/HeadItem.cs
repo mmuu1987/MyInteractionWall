@@ -23,6 +23,7 @@ public class HeadItem : MonoBehaviour
 
     private Coroutine _coroutine;
 
+   
     /// <summary>
     /// 
     /// </summary>
@@ -35,6 +36,12 @@ public class HeadItem : MonoBehaviour
         _personInfo = this.transform.Find("HeadItem/Parent/Scroll View/Viewport/Content/Describe").GetComponent<Text>();
 
         _head = this.transform.Find("head").GetComponent<Image>();
+
+
+        this.transform.Find("HeadItem/Parent/Close").GetComponent<Button>().onClick.AddListener((() =>
+        {
+            Destroy(this.gameObject);
+        }));
 
         this.transform.localScale = Vector3.one*0.1f;
     }

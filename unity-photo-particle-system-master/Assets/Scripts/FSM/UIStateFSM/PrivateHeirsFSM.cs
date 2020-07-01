@@ -43,11 +43,13 @@ public class PrivateHeirsFSM : UIStateFSM
 
     private VideoPlayer _videoPlayer;
 
-    private string _mp4Url = @"file://F:/WZS_FILE/gitHub/MyInteractionWall/unity-photo-particle-system-master/Assets/StreamingAssets/私享传家/品牌介绍/传家新视频.mp4";
+    private string _mp4Url;
     private List<Image> _highlights;
     public PrivateHeirsFSM(Transform go) : base(go)
     {
         _highlights = new List<Image>();
+
+        _mp4Url = "file://" + Application.streamingAssetsPath + "/私享传家/品牌介绍/传家新视频.mp4";
 
         BrandIntroductionBtn = Parent.transform.Find("1品牌介绍").GetComponent<Button>();
 

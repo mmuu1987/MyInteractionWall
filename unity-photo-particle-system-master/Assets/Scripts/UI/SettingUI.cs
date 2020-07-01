@@ -46,7 +46,7 @@ public class SettingUI : MonoBehaviour
 
         EnterGame.onClick.AddListener((() =>
         {
-            UnityEngine.SceneManagement.SceneManager.LoadScene("demo1");
+            UnityEngine.SceneManagement.SceneManager.LoadScene("zxdp");
         }));
 
 	    AutoEnterGame();
@@ -64,7 +64,7 @@ public class SettingUI : MonoBehaviour
 
 
 
-      StartCoroutine(Common.WaitTime(10f, (() =>
+      StartCoroutine(Common.WaitTime(1f, (() =>
      {
          if (isClick)
          {

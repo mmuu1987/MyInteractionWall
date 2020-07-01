@@ -15,7 +15,7 @@
 	//第一个描边PASS
 	    Pass {
 
-            Tags { "RenderType"="Opaque" "Queue"="Transparent"}
+            Tags { "RenderType"="Transparent" "Queue"="Transparent"}
 
 			Blend SrcAlpha  OneMinusSrcAlpha
             CGPROGRAM
@@ -87,7 +87,7 @@
 
         Pass {
 
-            Tags { "RenderType"="Opaque" "Queue"="Transparent"}
+            Tags { "RenderType"="Transparent" "Queue"="Transparent"}
 			cull Off
 			Blend SrcAlpha  OneMinusSrcAlpha
             CGPROGRAM
@@ -214,11 +214,12 @@
 				}
 				 
 				}
+
 				col = lerp(col,col2,f);
             #else
                  col = _Color;
             #endif
-               return fixed4(col.xyz,alpha);
+               return fixed4(col.rgb,alpha);
             }
 
             ENDCG

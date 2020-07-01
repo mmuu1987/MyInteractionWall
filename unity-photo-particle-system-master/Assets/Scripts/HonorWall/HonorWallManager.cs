@@ -76,7 +76,7 @@ public class HonorWallManager : MonoBehaviour
         //if (targetPos.y < 1600f) targetPos.y = 1600;
         //if (targetPos.y > 3240) targetPos.y = 3240;
 
-        targetPos.y = 3100f;
+        targetPos.y = 3200f;
         item.RectTransform.DOAnchorPos(targetPos, 0.5f).SetEase(Ease.InOutQuad);
 
 

@@ -77,7 +77,7 @@ public class PictureHandle : MonoBehaviour
 
         // Debug.Log(temp.Count);
 
-        UnityEngine.SceneManagement.SceneManager.LoadScene("demo1");
+        //UnityEngine.SceneManagement.SceneManager.LoadScene("demo1");
 
         //
     }

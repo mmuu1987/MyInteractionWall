@@ -44,9 +44,10 @@ public class PrivateHeirsFSM : UIStateFSM
     private VideoPlayer _videoPlayer;
 
     private string _mp4Url = @"file://F:/WZS_FILE/gitHub/MyInteractionWall/unity-photo-particle-system-master/Assets/StreamingAssets/私享传家/品牌介绍/传家新视频.mp4";
-
+    private List<Image> _highlights;
     public PrivateHeirsFSM(Transform go) : base(go)
     {
+        _highlights = new List<Image>();
 
         BrandIntroductionBtn = Parent.transform.Find("1品牌介绍").GetComponent<Button>();
 
@@ -65,16 +66,19 @@ public class PrivateHeirsFSM : UIStateFSM
         BrandIntroductionBtn.onClick.AddListener((() =>
         {
             SetBtn(brandTex);
+            SetHighlight(BrandIntroductionBtn.transform);
         }));
 
         DawanDistrictBtn.onClick.AddListener((() =>
         {
             SetBtn(DawanTex);
+            SetHighlight(DawanDistrictBtn.transform);
         }));
 
         ValueAddedServices.onClick.AddListener((() =>
         {
             SetBtn(ValueAddTex);
+            SetHighlight(ValueAddedServices.transform);
         }));
 
         _videoImage = Parent.transform.Find("VideoPlay").GetComponent<RawImage>();
@@ -89,7 +93,12 @@ public class PrivateHeirsFSM : UIStateFSM
 
         _videoImage.texture = rt;
 
-       
+        _highlights.Add(BrandIntroductionBtn.transform.Find("Image").GetComponent<Image>());
+        _highlights.Add(ValueAddedServices.transform.Find("Image").GetComponent<Image>());
+        _highlights.Add(DawanDistrictBtn.transform.Find("Image").GetComponent<Image>());
+
+
+        SetHighlight(BrandIntroductionBtn.transform);
     }
 
     public override void Enter()
@@ -109,6 +118,9 @@ public class PrivateHeirsFSM : UIStateFSM
         Next(null, null);
         Parent.parent.gameObject.SetActive(true);//父级别也要显示
         _videoImage.rectTransform.localScale = Vector3.zero;
+
+
+     
     }
     private void SetBtn(List<Texture2D> texs)
     {
@@ -116,6 +128,24 @@ public class PrivateHeirsFSM : UIStateFSM
         _curIndex = 0;
         ShowImage.texture = _curTex[_curIndex];
 
+    }
+
+    /// <summary>
+    /// 设置高亮
+    /// </summary>
+    public void SetHighlight(Transform parent)
+    {
+        foreach (Image image in _highlights)
+        {
+            if (image.transform.parent == parent)
+            {
+                image.gameObject.SetActive(true);
+            }
+            else
+            {
+                image.gameObject.SetActive(false);
+            }
+        }
     }
     private void Next(GameObject _listener, object _args, params object[] _params)
     {

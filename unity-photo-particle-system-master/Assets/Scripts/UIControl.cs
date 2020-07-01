@@ -31,7 +31,9 @@ public enum UIState
 /// </summary>
 public class UIControl : MonoBehaviour
 {
-
+    /// <summary>
+    /// 荣誉墙按钮
+    /// </summary>
     public Button HonorWallBtn;
 
     /// <summary>
@@ -67,8 +69,17 @@ public class UIControl : MonoBehaviour
     public UIStateMachine _Machine;
 
     public Dictionary<UIState, UIStateFSM> DicUI;
+
+    public Sprite HonorWallBtnLeft;
+    public Sprite HonorWallBtnRight;
+
     private void Awake()
     {
+
+
+
+        Screen.SetResolution(7680, 3240, true, 60);
+
         DicUI = new Dictionary<UIState, UIStateFSM>();
 
         _Machine = new UIStateMachine(this);
@@ -137,11 +148,13 @@ public class UIControl : MonoBehaviour
 		    {
 		        HonorWall.DOLocalMoveX(0f, 0.5f).SetEase(Ease.InOutQuad);
                 btRt.DOAnchorPosX(245.5f, 0.5f).SetEase(Ease.InOutQuad);
+                HonorWallBtn.transform.Find("Image").GetComponent<Image>().sprite = HonorWallBtnLeft;
 		    }
 		    else
 		    {
 		        HonorWall.DOLocalMoveX(-7680, 0.5f).SetEase(Ease.InOutQuad);
                 btRt.DOAnchorPosX(0f, 0.5f).SetEase(Ease.InOutQuad);
+                HonorWallBtn.transform.Find("Image").GetComponent<Image>().sprite = HonorWallBtnRight;
 		    }
 
           

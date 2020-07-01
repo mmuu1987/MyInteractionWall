@@ -41,12 +41,17 @@ public class OutstandingStyleFSM : UIStateFSM
     private Text _intrName;
 
     private Text _intrDes;
+
+
+    private List<Image> _highlights;
+
     /// <summary>
     ///  
     /// </summary>
     /// <param name="go"></param>
     public OutstandingStyleFSM(Transform go) : base(go)
     {
+        _highlights = new List<Image>();
         _ryGrid = Parent.Find("ry/Viewport/Content");
 
         _dbGrid = Parent.Find("db/Viewport/Content");
@@ -89,6 +94,7 @@ public class OutstandingStyleFSM : UIStateFSM
             _ryGrid.parent.parent.gameObject.SetActive(true);
             _dbGrid.parent.parent.gameObject.SetActive(false);
             _sbwGrid.parent.parent.gameObject.SetActive(false);
+            SetHighlight(HonorListBtn.transform);
         }));
 
         StandardList.onClick.AddListener((() =>
@@ -96,6 +102,7 @@ public class OutstandingStyleFSM : UIStateFSM
             _ryGrid.parent.parent.gameObject.SetActive(false);
             _dbGrid.parent.parent.gameObject.SetActive(true);
             _sbwGrid.parent.parent.gameObject.SetActive(false);
+            SetHighlight(StandardList.transform);
         }));
 
         DoubleMillion.onClick.AddListener((() =>
@@ -103,12 +110,20 @@ public class OutstandingStyleFSM : UIStateFSM
             _ryGrid.parent.parent.gameObject.SetActive(false);
             _dbGrid.parent.parent.gameObject.SetActive(false);
             _sbwGrid.parent.parent.gameObject.SetActive(true);
+            SetHighlight(DoubleMillion.transform);
         }));
 
         Parent.Find("introduce/Close").GetComponent<Button>().onClick.AddListener((() =>
        {
            _introduce.gameObject.SetActive(false);
        }));
+
+        _highlights.Add(HonorListBtn.transform.Find("Image").GetComponent<Image>());
+        _highlights.Add(StandardList.transform.Find("Image").GetComponent<Image>());
+        _highlights.Add(DoubleMillion.transform.Find("Image").GetComponent<Image>());
+
+
+        SetHighlight(HonorListBtn.transform);
 
     }
 
@@ -139,7 +154,23 @@ public class OutstandingStyleFSM : UIStateFSM
      
     }
 
-   
+    /// <summary>
+    /// 设置高亮
+    /// </summary>
+    public void SetHighlight(Transform parent)
+    {
+        foreach (Image image in _highlights)
+        {
+            if (image.transform.parent == parent)
+            {
+                image.gameObject.SetActive(true);
+            }
+            else
+            {
+                image.gameObject.SetActive(false);
+            }
+        }
+    }
 
     private void ShowInfo(PersonInfo info)
     {
@@ -158,11 +189,18 @@ public class OutstandingStyleFSM : UIStateFSM
         Parent.parent.gameObject.SetActive(true);//父级别也要显示
         ShowImage.gameObject.SetActive(false);
         _introduce.gameObject.SetActive(false);
+
+        Target.transform.Find("CompanyIntroduction/Previous").gameObject.SetActive(false);
+
+        Target.transform.Find("CompanyIntroduction/Next").gameObject.SetActive(false);
     }
 
     public override void Exit()
     {
         base.Exit();
         ShowImage.gameObject.SetActive(true);
+        Target.transform.Find("CompanyIntroduction/Previous").gameObject.SetActive(true);
+
+        Target.transform.Find("CompanyIntroduction/Next").gameObject.SetActive(true);
     }
 }

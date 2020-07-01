@@ -55,9 +55,14 @@ public class CompanyIntroductionFSM : UIStateFSM
     /// </summary>
     private RawImage ShowImage;
 
+    private List<Image> _highlights;
+
     private int _curIndex;
     public CompanyIntroductionFSM(Transform go,params  object [] args) : base(go)
     {
+
+
+        _highlights = new List<Image>();
 
         Introduce = Parent.transform.Find("1集团介绍").GetComponent<Button>();
         Info = Parent.transform.Find("2基本信息").GetComponent<Button>();
@@ -79,39 +84,49 @@ public class CompanyIntroductionFSM : UIStateFSM
         Introduce.onClick.AddListener((() =>
         {
             SetBtn(IntroduceTexs);
-
+            SetHighlight(Introduce.transform);
         }));
 
         Info.onClick.AddListener((() =>
         {
             SetBtn(InfoTexs);
+            SetHighlight(Info.transform);
 
         })); 
 
         Shareholder.onClick.AddListener((() =>
         {
             SetBtn(ShareholderTexs);
+            SetHighlight(Shareholder.transform);
 
         })); 
 
         Honor.onClick.AddListener((() =>
         {
             SetBtn(HonorTexs);
+            SetHighlight(Honor.transform);
 
         })); 
 
         Product.onClick.AddListener((() =>
         {
             SetBtn(ProductTexs);
-
+            SetHighlight(Product.transform);
         })); 
 
         Service.onClick.AddListener((() =>
         {
             SetBtn(ServiceTexs);
-
+            SetHighlight(Service.transform);
         })); 
+        _highlights.Add(Introduce.transform.Find("Image").GetComponent<Image>());
+        _highlights.Add(Info.transform.Find("Image").GetComponent<Image>());
+        _highlights.Add(Shareholder.transform.Find("Image").GetComponent<Image>());
+        _highlights.Add(Honor.transform.Find("Image").GetComponent<Image>());
+        _highlights.Add(Product.transform.Find("Image").GetComponent<Image>());
+        _highlights.Add(Service.transform.Find("Image").GetComponent<Image>());
 
+        SetHighlight(Introduce.transform);
         
     }
 
@@ -121,6 +136,24 @@ public class CompanyIntroductionFSM : UIStateFSM
         _curIndex = 0;
         ShowImage.texture = _curTex[_curIndex];
 
+    }
+
+    /// <summary>
+    /// 设置高亮
+    /// </summary>
+    public void SetHighlight(Transform parent)
+    {
+        foreach (Image image in _highlights)
+        {
+            if (image.transform.parent == parent)
+            {
+                image.gameObject.SetActive(true);
+            }
+            else
+            {
+                image.gameObject.SetActive(false);
+            }
+        }
     }
     public override void Enter()
     {

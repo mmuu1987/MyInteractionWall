@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Xml.Linq;
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -199,14 +200,13 @@ public class MultiDepthMotion : MotionInputMoveBase
             }
 
 
-
+            
             float rangeZ = Random.Range(-0.2f, 0.2f);//在同一层次，再随机不同的深度位置，不至于重叠一起，显得错落有致
 
 
             Vector4 posTemp = newData[j].position;
             newData[j].position = new Vector4(posTemp.x, posTemp.y, posTemp.z, 1);
-
-
+           
             Vector2 randomPoint;
 
             if (randomPos.Count > 0)
@@ -259,6 +259,8 @@ public class MultiDepthMotion : MotionInputMoveBase
             newData[j].originalPos = otherData;
         }
         TextureInstanced.Instance.ChangeInstanceMat(CurMaterial);
+        CurMaterial.enableInstancing = true;
+        
         TextureInstanced.Instance.CurMaterial.SetVector("_WHScale", new Vector4(1f, 1f, 1f, 1f));
 
 
@@ -389,7 +391,11 @@ public class MultiDepthMotion : MotionInputMoveBase
 
         ComputeShader.SetVector("clickPoint", _clickPoint);
         ComputeShader.SetFloat("deltaTime", Time.deltaTime);
-
+        //Camera.main.ResetTransparencySortSettings();
+        //Camera.main.transparencySortAxis = Vector3.right;
+        //Camera.main.transparencySortMode = TransparencySortMode.CustomAxis;
+      
+       
         Dispatch(dispatchID, system);
 
         if (_clickPoint.z < 1000000)//相当于有点击事件才触发

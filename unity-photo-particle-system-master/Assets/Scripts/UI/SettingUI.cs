@@ -56,6 +56,7 @@ public class SettingUI : MonoBehaviour
 
 	}
 
+   
     /// <summary>
     /// 自动进入游戏
     /// </summary>

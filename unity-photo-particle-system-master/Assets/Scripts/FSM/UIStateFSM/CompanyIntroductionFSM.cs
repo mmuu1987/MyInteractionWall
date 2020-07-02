@@ -149,7 +149,7 @@ public class CompanyIntroductionFSM : UIStateFSM
         else
         {
 
-            _previous.gameObject.SetActive(true);
+            _previous.gameObject.SetActive(false);
             _next.gameObject.SetActive(true);
 
         }
@@ -208,6 +208,11 @@ public class CompanyIntroductionFSM : UIStateFSM
             _previous.gameObject.SetActive(true);
             _next.gameObject.SetActive(false);
         }
+        else
+        {
+            _previous.gameObject.SetActive(true);
+            _next.gameObject.SetActive(true);
+        }
       
     }
 
@@ -225,6 +230,11 @@ public class CompanyIntroductionFSM : UIStateFSM
         if (_curIndex == 0)
         {
             _previous.gameObject.SetActive(false);
+            _next.gameObject.SetActive(true);
+        }
+        else
+        {
+            _previous.gameObject.SetActive(true);
             _next.gameObject.SetActive(true);
         }
 

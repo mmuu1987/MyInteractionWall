@@ -377,6 +377,7 @@ public class TextureInstanced : MonoBehaviour, IDragHandler, IEndDragHandler
 
 
         CurMaterial.SetBuffer("positionBuffer", positionBuffer);
+        
       //  CurMaterial.SetBuffer("colorBuffer", colorBuffer);
 
 

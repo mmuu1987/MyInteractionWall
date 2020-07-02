@@ -11,13 +11,19 @@
     }
  SubShader {
 	
+	      
+		  
+		   cull Off
+		 
+			 Blend SrcAlpha  OneMinusSrcAlpha
 
 	//第一个描边PASS
 	    Pass {
 
-            Tags { "RenderType"="Transparent" "Queue"="Transparent"}
+		   Tags { "Queue"="Transparent"   "RenderType"="Transparent"   "IgnoreProjection" = "True"}
+		   ZWrite off
 
-			Blend SrcAlpha  OneMinusSrcAlpha
+		
             CGPROGRAM
 
             #pragma vertex vert
@@ -25,35 +31,24 @@
             #pragma target 4.5
 			//#pragma multi_compile_instancing
             #include "UnityCG.cginc"
-          
+            #include "Assets/Common/Shaders/Math.cginc"
+			#include "Assets/ComputeShader/GPUParticle.cginc"
 		   
             sampler2D _MainTex;
 			fixed4 _BGColor;
 			float4 _WHScale;
       	    float _Margin;
-		    struct PosDir
-		   {
-		      float4 position;
-              float4 velocity;
-		      float3 initialVelocity;
-              float4 originalPos;
-		      float3 moveTarget;
-			  float3 moveDir;
-			  float2 indexRC;
-			  int picIndex;
-			  int bigIndex;
-			  float4 uvOffset; 
-			  float4 uv2Offset; 
-		   };
+		 
 
 			#if SHADER_TARGET >= 45
-            StructuredBuffer<PosDir> positionBuffer;
+            StructuredBuffer<PosAndDir> positionBuffer;
             #endif
 
             struct v2f
             {
                 float4 pos : SV_POSITION;
 			    float2 uv_MainTex : TEXCOORD0;
+				uint index:SV_InstanceID;//告诉片元，输送实例ID
             };
             v2f vert (appdata_base v, uint instanceID : SV_InstanceID)
             {
@@ -68,9 +63,10 @@
                 float3 localPosition = v.vertex.xyz * data.w ;
 				localPosition.x *=_WHScale.x*initialVelocity.x+_Margin;//_Margin向外拓展，用作描边
 				localPosition.y *=_WHScale.y*initialVelocity.y+_Margin;//_Margin向外拓展，用作描边  
+				localPosition.z+=0.0001f;//不至于重叠
                 float3 worldPosition = data.xyz + localPosition;
 
-
+				o.index = instanceID;
                 o.pos = mul(UNITY_MATRIX_VP, float4(worldPosition, 1.0f));
 				o.uv_MainTex = v.texcoord;
                 return o;
@@ -78,7 +74,10 @@
 
             fixed4 frag (v2f i, uint instanceID : SV_InstanceID) : SV_Target
             {
-               return _BGColor;
+
+		       float4 velocity =  positionBuffer[instanceID].velocity;
+			   float alpha = velocity.y;
+               return fixed4(_BGColor.r,_BGColor.g,_BGColor.b,alpha);
             }
 
             ENDCG
@@ -87,20 +86,21 @@
 
         Pass {
 
-            Tags { "RenderType"="Transparent" "Queue"="Transparent"}
-			cull Off
-			Blend SrcAlpha  OneMinusSrcAlpha
+           Tags { "Queue"="Transparent"   "RenderType"="Transparent"   "IgnoreProjection" = "True"}
+		   ZWrite on
+		
             CGPROGRAM
 
             #pragma vertex vert
             #pragma fragment frag
             #pragma target 4.5
-			//#pragma multi_compile_instancing
+			//#pragma multi_compile_instancing  
             #include "UnityCG.cginc"
             #include "Assets/Common/Shaders/Math.cginc"
 			#include "Assets/ComputeShader/GPUParticle.cginc"
 
 		    UNITY_DECLARE_TEX2DARRAY(_TexArr);
+
             sampler2D _MainTex;
 			fixed4 _Color;
 			float _RADIUSBUCE;
@@ -142,7 +142,7 @@
 
 				
 
-				o.pos = UnityObjectToClipPos(float4(worldPosition,1));
+				o.pos = UnityObjectToClipPos(float4(worldPosition,v.vertex.w));
               
 			    o.angle = angle;
 				o.uv_MainTex = v.texcoord;
@@ -205,8 +205,8 @@
 				{
 				if(length( abs( i.RadiusBuceVU)-float2(0.5-_RADIUSBUCE,0.5-_RADIUSBUCE)) <_RADIUSBUCE)
 				{
-				 col = UNITY_SAMPLE_TEX2DARRAY(_TexArr, float3(i.uv_MainTex, index));
-				 col2 = UNITY_SAMPLE_TEX2DARRAY(_TexArr, float3(i.uv_MainTex, index2));
+				   col = UNITY_SAMPLE_TEX2DARRAY(_TexArr, float3(i.uv_MainTex, index));
+				   col2 = UNITY_SAMPLE_TEX2DARRAY(_TexArr, float3(i.uv_MainTex, index2));
 				}
 				else
 				{

@@ -190,9 +190,16 @@ public class PictureHandle : MonoBehaviour
         //{
         //    item.RotEnd();
         //}));
-
-
         rectTransform.anchoredPosition = screenPos;
+
+        if (screenPos.y >= 2300) screenPos.y = 2300f;
+        if (screenPos.y <= 1100) screenPos.y = 1100f;
+        if (screenPos.x >= 6500) screenPos.x = 6500;
+        if (screenPos.x <= 1000) screenPos.x = 1000f;
+
+
+        rectTransform.DOAnchorPos(screenPos,0.35f);
+       
 
         //Debug.Log(ye.ToString());
     }

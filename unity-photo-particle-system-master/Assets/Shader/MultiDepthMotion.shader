@@ -15,13 +15,14 @@
 		  
 		   cull Off
 		 
-			 Blend SrcAlpha  OneMinusSrcAlpha
+			
 
 	//第一个描边PASS
 	    Pass {
 
 		   Tags { "Queue"="Transparent"   "RenderType"="Transparent"   "IgnoreProjection" = "True"}
 		   ZWrite off
+		    Blend SrcAlpha  OneMinusSrcAlpha
 
 		
             CGPROGRAM
@@ -88,7 +89,7 @@
 
            Tags { "Queue"="Transparent"   "RenderType"="Transparent"   "IgnoreProjection" = "True"}
 		   ZWrite on
-		
+		  Blend SrcAlpha  OneMinusSrcAlpha
             CGPROGRAM
 
             #pragma vertex vert

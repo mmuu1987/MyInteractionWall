@@ -149,7 +149,7 @@ public class PictureHandle : MonoBehaviour
     /// <summary>
     /// 根据图片索引拿到年代事件信息
     /// </summary>
-    public void GetYearInfo(PosAndDir pad, Canvas canvas)
+    public void GetYearInfo(PosAndDir pad, Transform canvas)
     {
         if (pad.picIndex < 0) return;
 
@@ -192,10 +192,10 @@ public class PictureHandle : MonoBehaviour
         //}));
         rectTransform.anchoredPosition = screenPos;
 
-        if (screenPos.y >= 2300) screenPos.y = 2300f;
-        if (screenPos.y <= 1100) screenPos.y = 1100f;
-        if (screenPos.x >= 6500) screenPos.x = 6500;
-        if (screenPos.x <= 1000) screenPos.x = 1000f;
+        if (screenPos.y >= 2300f) screenPos.y = 2300f;
+        if (screenPos.y <= 1100f) screenPos.y = 1100f;
+        if (screenPos.x >= 6500f) screenPos.x = 6500f;
+        if (screenPos.x <= 1000f) screenPos.x = 1000f;
 
 
         rectTransform.DOAnchorPos(screenPos,0.35f);
@@ -534,7 +534,7 @@ public class PictureHandle : MonoBehaviour
 
                     byte[] bytes = Common.MakeThumNail(s, Common.PictureWidth, Common.PictureHeight, "HW", out vector2);
 
-                    Texture2D tex = new Texture2D(512, 512, TextureFormat.DXT1, false);
+                    Texture2D tex = new Texture2D(Common.PictureWidth, Common.PictureHeight, TextureFormat.DXT1, false);
 
                     tex.LoadImage(bytes);
 
@@ -561,7 +561,7 @@ public class PictureHandle : MonoBehaviour
 
                             byte[] bytes = Common.MakeThumNail(s, Common.PictureWidth, Common.PictureHeight, "HW", out vector2);
 
-                            Texture2D tex = new Texture2D(512, 512, TextureFormat.DXT1, false);
+                            Texture2D tex = new Texture2D(Common.PictureWidth, Common.PictureHeight, TextureFormat.DXT1, false);
 
                             tex.LoadImage(bytes);
 

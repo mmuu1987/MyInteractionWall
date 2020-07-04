@@ -203,7 +203,7 @@ public class MultiDepthMotion : MotionInputMoveBase
 
 
             
-            float rangeZ = Random.Range(-0.2f, 0.2f);//在同一层次，再随机不同的深度位置，不至于重叠一起，显得错落有致
+            float rangeZ = Random.Range(0, 3f);//在同一层次，再随机不同的深度位置，不至于重叠一起，显得错落有致
 
 
             Vector4 posTemp = newData[j].position;

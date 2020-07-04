@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
+using NUnit.Framework.Constraints;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -87,7 +88,7 @@ public class UIControl : MonoBehaviour
         DicUI.Add(UIState.CompanyIntroduction, new CompanyIntroductionFSM(this.transform.Find("CompanyIntroduction/CompanyIntroduction")));
         DicUI.Add(UIState.PrivateHeirs, new PrivateHeirsFSM(this.transform.Find("CompanyIntroduction/PrivateHeirs")));
         DicUI.Add(UIState.OutstandingStyle, new OutstandingStyleFSM(this.transform.Find("CompanyIntroduction/OutstandingStyle")));
-        DicUI.Add(UIState.Close, new CloseFSM(null));
+        DicUI.Add(UIState.Close, new CloseFSM(this.transform.Find("CompanyIntroduction/Close")));
 
         _Machine.SetCurrentState(DicUI[UIState.Close]);
 
@@ -143,18 +144,33 @@ public class UIControl : MonoBehaviour
 
             RectTransform btRt = HonorWallBtn.GetComponent<RectTransform>();
 
+
            
-		    if (HonorWall.position.x < 0)
+		    if (HonorWall.position.x < 0)//打开荣誉墙
 		    {
 		        HonorWall.DOLocalMoveX(0f, 0.5f).SetEase(Ease.InOutQuad);
                 btRt.DOAnchorPosX(245.5f, 0.5f).SetEase(Ease.InOutQuad);
                 HonorWallBtn.transform.Find("Image").GetComponent<Image>().sprite = HonorWallBtnLeft;
+
+		        Item[] items = this.transform.GetComponentsInChildren<Item>();
+
+                foreach (Item item in items)
+		        {
+		            Destroy(item.gameObject);
+		        }
 		    }
-		    else
+		    else//关闭荣誉墙
 		    {
 		        HonorWall.DOLocalMoveX(-7680, 0.5f).SetEase(Ease.InOutQuad);
                 btRt.DOAnchorPosX(0f, 0.5f).SetEase(Ease.InOutQuad);
                 HonorWallBtn.transform.Find("Image").GetComponent<Image>().sprite = HonorWallBtnRight;
+
+                HeadItem[] items = this.transform.GetComponentsInChildren<HeadItem>();
+
+                foreach (HeadItem item in items)
+                {
+                    Destroy(item.gameObject);
+                }
 		    }
 
           

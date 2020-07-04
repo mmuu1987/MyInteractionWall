@@ -203,6 +203,38 @@ public class PictureHandle : MonoBehaviour
 
         //Debug.Log(ye.ToString());
     }
+
+    public YearsEvent GetYearInfo(PosAndDir pad )
+    {
+        if (pad.picIndex < 0) return null;
+
+        YearsEvent ye = null;
+        foreach (YearsInfo yearsInfo in _yesrsInfos)
+        {
+            foreach (var yearsEvent in yearsInfo.yearsEvents)
+            {
+                foreach (int inde in yearsEvent.PictureIndes)
+                {
+                    if (pad.picIndex == inde)
+                    {
+                        ye = yearsEvent;
+                        break;
+                    }
+                }
+            }
+
+        }
+
+        if (ye == null) throw new UnityException("没有找到相应的年代事件");
+
+
+
+
+        return ye;
+
+
+        //Debug.Log(ye.ToString());
+    }
     /// <summary>
     /// 根据年代层次获得该层次所有的图片索引
     /// </summary>
@@ -298,7 +330,7 @@ public class PictureHandle : MonoBehaviour
 
                         yearsEvent.Describe = str;
                     }
-                    else if (fileInfo.Extension == ".jpg" || fileInfo.Extension == ".JPG")
+                    else if (fileInfo.Extension == ".jpg" || fileInfo.Extension == ".JPG" || fileInfo.Extension == ".jpeg")
                     {
 
                         yearsEvent.PicturesPath.Add(fileInfo.FullName);
@@ -324,9 +356,9 @@ public class PictureHandle : MonoBehaviour
 
     public void LoadCompanyIntroductionPic()
     {
-        CompanyAllTexList = new List<List<Texture2D>>();
+        CompanyAllTexList = new List<CompanyInfo>();
 
-        string path1 = Application.streamingAssetsPath + "/公司介绍/企业介绍";
+        string path1 = Application.streamingAssetsPath + "/公司介绍/集团介绍";
 
         CompanyAllTexList.Add(LoadCompanyIntroductionPic(path1));
 
@@ -348,13 +380,13 @@ public class PictureHandle : MonoBehaviour
 
     public void LoadPrivateHeirsPic()
     {
-        PrivateHeirsAllTexList = new List<List<Texture2D>>();
+        PrivateHeirsAllTexList = new List<CompanyInfo>();
 
         string path1 = Application.streamingAssetsPath + "/私享传家/品牌介绍";
 
         PrivateHeirsAllTexList.Add(LoadCompanyIntroductionPic(path1));
 
-        string path2 = Application.streamingAssetsPath + "/私享传家/传家增值服务介绍";
+        string path2 = Application.streamingAssetsPath + "/私享传家/尊享服务";
         PrivateHeirsAllTexList.Add(LoadCompanyIntroductionPic(path2));
 
         string path3 = Application.streamingAssetsPath + "/私享传家/大湾区高净值中心";
@@ -362,18 +394,22 @@ public class PictureHandle : MonoBehaviour
 
     }
 
-    public List<List<Texture2D>> CompanyAllTexList { get; set; }
+    public List<CompanyInfo> CompanyAllTexList { get; set; }
 
-    public List<List<Texture2D>> PrivateHeirsAllTexList;
+    public List<CompanyInfo> PrivateHeirsAllTexList;
 
     /// <summary>
     /// 导入公司介绍图片
     /// </summary>
-    public List<Texture2D> LoadCompanyIntroductionPic(string path)
+    public CompanyInfo LoadCompanyIntroductionPic(string path)
     {
         //string str1 = Application.streamingAssetsPath + "/公司介绍/企业介绍";
 
+        CompanyInfo companyInfo = new CompanyInfo();
+
         List<Texture2D> texs = new List<Texture2D>();
+
+        List<string> videoPaths = new List<string>();
 
         DirectoryInfo info = new DirectoryInfo(path);
 
@@ -384,7 +420,7 @@ public class PictureHandle : MonoBehaviour
             if (file.FullName.Contains("meta")) continue;
 
             if (file.Extension == ".jpg" || file.Extension == ".JPG" || file.Extension == ".png" ||
-                file.Extension == ".PNG")
+                file.Extension == ".PNG" ||file.Extension == ".jpeg")
             {
                 if (File.Exists(file.FullName))
                 {
@@ -401,20 +437,26 @@ public class PictureHandle : MonoBehaviour
                     texs.Add(tex);
                 }
             }
+            if (file.Extension == ".mp4")
+            {
+               
+                videoPaths.Add(  file.FullName);
+            }
 
           
         }
-
-        return texs;
+        companyInfo.TexInfo = texs;
+        companyInfo.VideoInfo = videoPaths;
+        return companyInfo;
     }
 
     public void LoadPersonInfo()
     {
-       string path1 = Application.streamingAssetsPath + "/卓越风采/MDRT荣誉榜";
+        string path1 = Application.streamingAssetsPath + "/卓越风采/MDRT荣誉榜";
        PersonInfos.Add(LoadPersonInfo(path1));
-       string path2 = Application.streamingAssetsPath + "/卓越风采/MDRT达标榜";
+       string path2 = Application.streamingAssetsPath + "/卓越风采/2020年MDRT达标榜";
        PersonInfos.Add(LoadPersonInfo(path2));
-       string path3 = Application.streamingAssetsPath + "/卓越风采/双百万达成";
+       string path3 = Application.streamingAssetsPath + "/卓越风采/双百万储备力量";
        PersonInfos.Add(LoadPersonInfo(path3));
     }
 
@@ -824,4 +866,14 @@ public class PersonInfo
     public Sprite headTex;
 
 
+}
+
+/// <summary>
+/// 公司介绍信息
+/// </summary>
+public class CompanyInfo
+{
+    public List<Texture2D> TexInfo;
+
+    public List<string> VideoInfo;
 }

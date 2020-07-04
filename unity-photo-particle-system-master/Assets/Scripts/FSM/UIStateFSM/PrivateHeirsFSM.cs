@@ -1,5 +1,7 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Video;
@@ -20,7 +22,9 @@ public class PrivateHeirsFSM : UIStateFSM
     /// </summary>
     public Button ValueAddedServices;
 
-    public List<Texture2D> brandTex;
+    private List<Texture2D> _brandTex;
+
+  
 
     public List<Texture2D> DawanTex;
 
@@ -38,25 +42,20 @@ public class PrivateHeirsFSM : UIStateFSM
 
     private int _curIndex;
 
-    private RawImage _videoImage;
   
 
-    private VideoPlayer _videoPlayer;
-
-    private string _mp4Url;
+   
     private List<Image> _highlights;
 
     private Transform _previous;
     private Transform _next;
 
-    private Dictionary<string, Texture2D> _videoDic; 
+   
     public PrivateHeirsFSM(Transform go) : base(go)
     {
         _highlights = new List<Image>();
 
-        _videoDic = new Dictionary<string, Texture2D>();
-
-        _mp4Url = "file://" + Application.streamingAssetsPath + "/私享传家/品牌介绍/传家新视频.mp4";
+     
 
         BrandIntroductionBtn = Parent.transform.Find("1品牌介绍").GetComponent<Button>();
 
@@ -66,18 +65,18 @@ public class PrivateHeirsFSM : UIStateFSM
 
         ShowImage = Parent.parent.Find("ShowImage").GetComponent<RawImage>();
 
-        brandTex = PictureHandle.Instance.PrivateHeirsAllTexList[0];
+        _brandTex = PictureHandle.Instance.PrivateHeirsAllTexList[0].TexInfo;
 
-        ValueAddTex = PictureHandle.Instance.PrivateHeirsAllTexList[1];
+        ValueAddTex = PictureHandle.Instance.PrivateHeirsAllTexList[1].TexInfo;
 
-        DawanTex = PictureHandle.Instance.PrivateHeirsAllTexList[2];
+        DawanTex = PictureHandle.Instance.PrivateHeirsAllTexList[2].TexInfo;
 
 
       
 
         BrandIntroductionBtn.onClick.AddListener((() =>
         {
-            SetBtn(brandTex);
+            SetBtn(_brandTex);
             SetHighlight(BrandIntroductionBtn.transform);
         }));
 
@@ -93,17 +92,7 @@ public class PrivateHeirsFSM : UIStateFSM
             SetHighlight(ValueAddedServices.transform);
         }));
 
-        _videoImage = Parent.transform.Find("VideoPlay").GetComponent<RawImage>();
-
-        _videoPlayer = _videoImage.GetComponent<VideoPlayer>();
-
-        RenderTexture rt = new RenderTexture(1280, 720, 0);
-
-        _videoPlayer.renderMode = VideoRenderMode.RenderTexture;
-
-        _videoPlayer.targetTexture = rt;
-
-        _videoImage.texture = rt;
+       
 
         _highlights.Add(BrandIntroductionBtn.transform.Find("Image").GetComponent<Image>());
         _highlights.Add(ValueAddedServices.transform.Find("Image").GetComponent<Image>());
@@ -112,17 +101,14 @@ public class PrivateHeirsFSM : UIStateFSM
 
         SetHighlight(BrandIntroductionBtn.transform);
 
-        if (!string.IsNullOrEmpty(_mp4Url))
-        {
-            //加载视频贴图
-            Texture2D tex = Resources.Load<Texture2D>("暂停");
-            tex.name = "video";
-            brandTex.Add(tex);
-            _videoDic.Add(_mp4Url,tex);
-        }
-       
+
+        AddVideoTex(_brandTex, PictureHandle.Instance.PrivateHeirsAllTexList[0].VideoInfo);
+        AddVideoTex(DawanTex, PictureHandle.Instance.PrivateHeirsAllTexList[1].VideoInfo);
+        AddVideoTex(ValueAddTex, PictureHandle.Instance.PrivateHeirsAllTexList[2].VideoInfo);
 
     }
+
+  
 
     public override void Enter()
     {
@@ -136,10 +122,10 @@ public class PrivateHeirsFSM : UIStateFSM
 
         EventTriggerListener.Get(_next.gameObject).SetEventHandle(EnumTouchEventType.OnClick, Next);
 
-        _curTex = brandTex;
+        _curTex = _brandTex;
         BrandIntroductionBtn.onClick.Invoke();
         Parent.parent.gameObject.SetActive(true);//父级别也要显示
-        _videoImage.rectTransform.localScale = Vector3.zero;
+      
 
 
      
@@ -149,7 +135,7 @@ public class PrivateHeirsFSM : UIStateFSM
         _curTex = texs;
         _curIndex = 0;
         ShowImage.texture = _curTex[_curIndex];
-        CheckVideoTex(null);
+        CheckVideoTex(null, ShowImage.gameObject);
 
         if (_curTex.Count == 1)
         {
@@ -192,7 +178,7 @@ public class PrivateHeirsFSM : UIStateFSM
         }
 
         ShowImage.texture = _curTex[_curIndex];
-        CheckVideoTex(_curTex[_curIndex]);
+        CheckVideoTex(_curTex[_curIndex], ShowImage.gameObject);
         
 
         if (_curIndex == _curTex.Count - 1)
@@ -208,26 +194,7 @@ public class PrivateHeirsFSM : UIStateFSM
       
         
     }
-    /// <summary>
-    /// 检测是否是视频贴图，如果是，则播放视频
-    /// </summary>
-    private void CheckVideoTex(Texture2D tex)
-    {
-
-
-        if (tex!=null && tex.name == "video")
-        {
-            ShowImage.gameObject.SetActive(false);
-            _videoPlayer.transform.localScale = Vector3.one*0.35f;
-            _videoPlayer.Play();
-        }
-        else
-        {
-            _videoPlayer.transform.localScale = Vector3.zero;
-            ShowImage.gameObject.SetActive(true);
-           
-        }
-    }
+   
     private void Previous(GameObject _listener, object _args, params object[] _params)
     {
         //Debug.Log("previous");
@@ -238,7 +205,7 @@ public class PrivateHeirsFSM : UIStateFSM
         }
 
         ShowImage.texture = _curTex[_curIndex];
-        CheckVideoTex(_curTex[_curIndex]);
+        CheckVideoTex(_curTex[_curIndex], ShowImage.gameObject);
         if (_curIndex == 0)
         {
             _previous.gameObject.SetActive(false);

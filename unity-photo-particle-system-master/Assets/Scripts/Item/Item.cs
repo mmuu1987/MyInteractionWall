@@ -6,7 +6,7 @@ using UnityEngine.UI;
 using UnityEngine.Video;
 
 
-public class Item : MonoBehaviour, IDragHandler, IPointerClickHandler
+public class Item : MonoBehaviour, IDragHandler, IPointerClickHandler,IPointerDownHandler,IPointerUpHandler
 {
 
 
@@ -41,6 +41,9 @@ public class Item : MonoBehaviour, IDragHandler, IPointerClickHandler
 
     private void Awake()
     {
+        _touchIds = new Dictionary<int, ClickData>();
+
+       // _touchIds.Add(10,new ClickData());
         _yearText = this.transform.Find("YearText").GetComponent<Text>();
         _image = this.transform.Find("Image").GetComponent<Image>();
         _describe = this.transform.Find("Scroll View/Viewport/Content/Describe").GetComponent<Text>();
@@ -138,8 +141,10 @@ public class Item : MonoBehaviour, IDragHandler, IPointerClickHandler
 	}
 	
 	// Update is called once per frame
-	void Update () {
-		
+	void Update ()
+	{
+
+	    Scale();
 	}
 
   
@@ -154,12 +159,7 @@ public class Item : MonoBehaviour, IDragHandler, IPointerClickHandler
 
         Destroy(this.gameObject);
     }
-    public void OnDrag(PointerEventData eventData)
-    {
-        Vector3 clickPos = eventData.delta;
-
-        _rectTransform.position += clickPos;
-    }
+   
 
     public void OnPointerClick(PointerEventData eventData)
     {
@@ -189,6 +189,12 @@ public class Item : MonoBehaviour, IDragHandler, IPointerClickHandler
          _mat = Instantiate(_mat);//拷贝一份
 
          _image.material = _mat;
+
+        if (yearsEvent.PictureIndes.Count == 2)
+        {
+             this.transform.Find("previous").gameObject.SetActive(false);
+             this.transform.Find("next").gameObject.SetActive(false);
+        }
 
 
         _mp4Url = "";
@@ -250,9 +256,107 @@ public class Item : MonoBehaviour, IDragHandler, IPointerClickHandler
         Destroy(_mat);
         _mat = null;
     }
+    /// <summary>
+    /// 触摸数据int为id,vector,4为屏幕位置，加 点击的 时间点
+    /// </summary>
+    private Dictionary<int, ClickData> _touchIds;
 
+    /// <summary>
+    /// 两个触摸点的距离
+    /// </summary>
+    private float _distanceScale = -1f;
+    /// <summary>
+    /// 缩放缓存
+    /// </summary>
+    private float _scaleTemp = 1f;
     public void OnPointerDown(PointerEventData eventData)
     {
-        throw new System.NotImplementedException();
+        if (!_touchIds.ContainsKey(eventData.pointerId))
+        {
+            Vector3 pos = eventData.position;
+            ClickData data = new ClickData();
+            data.Position = pos;
+            data.ClickTime = 0;
+            _touchIds.Add(eventData.pointerId, data);
+        }
+
+        if (_touchIds.Count >= 2)
+        {
+            //算出两个触摸点的距离
+            int n = 0;
+            Vector3 pos1 = Vector3.zero;
+            Vector3 pos2 = Vector3.zero;
+            foreach (KeyValuePair<int, ClickData> id in _touchIds)
+            {
+                if (n == 0) pos1 = id.Value.Position;
+                if (n == 1)
+                {
+                    pos2 = id.Value.Position;
+                    break;
+                }
+                n++;
+            }
+            _distanceScale = Vector3.Distance(pos1, pos2);
+        }
+    }
+
+    private void Scale()
+    {
+        if (_touchIds.Count >= 2 && _distanceScale>0)
+        {
+            float dis = 0;
+
+            //算出两个触摸点的距离
+            int n = 0;
+            Vector3 pos1 = Vector3.zero;
+            Vector3 pos2 = Vector3.zero;
+            foreach (KeyValuePair<int, ClickData> id in _touchIds)
+            {
+                if (n == 0) pos1 = id.Value.Position;
+                if (n == 1)
+                {
+                    pos2 = id.Value.Position;
+                    break;
+                }
+                n++;
+            }
+            dis = Vector3.Distance(pos1, pos2);
+
+            float scale = dis/_distanceScale;
+
+            float value = scale*_scaleTemp;
+
+            if (value >= 2) value = 2f;
+            if (value <= 0.35f) value = 0.35f;
+            this.transform.localScale = new Vector3(value, value, value);
+        }
+    }
+    public void OnPointerUp(PointerEventData eventData)
+    {
+        if (_touchIds.ContainsKey(eventData.pointerId))
+        {
+            _touchIds.Remove(eventData.pointerId);
+        }
+        if (_touchIds.Count <= 1)
+        {
+            _distanceScale = -1;
+            _scaleTemp = this.transform.localScale.x;
+        }
+    }
+
+    public void OnDrag(PointerEventData eventData)
+    {
+        Vector3 clickPos = eventData.delta;
+
+        if(_touchIds.Count<=1)//一个触摸点的才可以移动，两个就不行
+        _rectTransform.position += clickPos;
+
+        if (_touchIds.ContainsKey(eventData.pointerId))
+        {
+            Vector3 pos = eventData.position;
+            _touchIds[eventData.pointerId].Position = pos;//保留初始点击时间
+        }
+
+
     }
 }

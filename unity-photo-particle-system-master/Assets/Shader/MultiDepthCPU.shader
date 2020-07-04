@@ -5,6 +5,7 @@
 		_Index("Index",int) = 1
 		_TexArrOne ("Texture Array", 2DArray) = "" {}
 		_Alpha("alpha",Range(0,1))=1
+		_Year("Year",2D)="" {}
 	}
 	SubShader
 	{
@@ -38,10 +39,27 @@
 			 
 		 
 			float _Alpha;
+			sampler2D _Year;
 			v2f vert (appdata v)
 			{
 				v2f o;
-				v.vertex.xy*=1.03f;
+				if(v.vertex.x>0)
+				{
+				  v.vertex.x+=0.015;
+				}
+				else
+				{
+				   v.vertex.x-=0.015;
+				}
+
+				if(v.vertex.y>0)
+				{
+				  v.vertex.y+=0.2;
+				}
+				else
+				{
+				   v.vertex.y-=0.03;
+				}
 				o.vertex = UnityObjectToClipPos(v.vertex);
 				o.uv = v.uv;
 				
@@ -50,7 +68,18 @@
 			
 			fixed4 frag (v2f i) : SV_Target
 			{
-				return fixed4(1,1,1,_Alpha);
+
+			   fixed4  col = fixed4(1,1,1,1);
+
+			   fixed4 texCol = tex2D(_Year,i.uv);
+			   if(texCol.a>0.1f) 
+			   {
+			     col.rgb = texCol.rgb;
+			   }
+
+				return fixed4(col.rgb,_Alpha);
+
+
 			}
 			ENDCG
 		}

@@ -17,7 +17,7 @@ public class MultiDepthPictureMove
 
     public MultiDepthPictureMove(PosAndDir [] datas,DepthInfo [] infos,Canvas canvas )
     {
-
+        
         //触摸点最大为十个
         List<Vector3> clicks = new List<Vector3>();
 
@@ -42,6 +42,9 @@ public class MultiDepthPictureMove
 
         foreach (PosAndDir data in datas)
         {
+           if(data.moveTarget.y>=1000)continue;
+
+
             GameObject go = Object.Instantiate(item);
 
             Material newMat = Object.Instantiate(mat);

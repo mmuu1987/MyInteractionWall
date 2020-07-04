@@ -75,12 +75,12 @@ public class CompanyIntroductionFSM : UIStateFSM
         Product = Parent.transform.Find("5产品体系").GetComponent<Button>();
         Service = Parent.transform.Find("6服务体系").GetComponent<Button>();
 
-        IntroduceTexs = PictureHandle.Instance.CompanyAllTexList[0];
-        InfoTexs = PictureHandle.Instance.CompanyAllTexList[1];
-        ShareholderTexs = PictureHandle.Instance.CompanyAllTexList[2];
-        HonorTexs = PictureHandle.Instance.CompanyAllTexList[3];
-        ProductTexs = PictureHandle.Instance.CompanyAllTexList[4];
-        ServiceTexs = PictureHandle.Instance.CompanyAllTexList[5];
+        IntroduceTexs = PictureHandle.Instance.CompanyAllTexList[0].TexInfo;
+        InfoTexs = PictureHandle.Instance.CompanyAllTexList[1].TexInfo;
+        ShareholderTexs = PictureHandle.Instance.CompanyAllTexList[2].TexInfo;
+        HonorTexs = PictureHandle.Instance.CompanyAllTexList[3].TexInfo;
+        ProductTexs = PictureHandle.Instance.CompanyAllTexList[4].TexInfo;
+        ServiceTexs = PictureHandle.Instance.CompanyAllTexList[5].TexInfo;
 
 
         ShowImage = Parent.parent.Find("ShowImage").GetComponent<RawImage>();
@@ -132,6 +132,12 @@ public class CompanyIntroductionFSM : UIStateFSM
 
         SetHighlight(Introduce.transform);
 
+        AddVideoTex(IntroduceTexs, PictureHandle.Instance.CompanyAllTexList[0].VideoInfo);
+        AddVideoTex(InfoTexs, PictureHandle.Instance.CompanyAllTexList[1].VideoInfo);
+        AddVideoTex(ShareholderTexs, PictureHandle.Instance.CompanyAllTexList[2].VideoInfo);
+        AddVideoTex(HonorTexs, PictureHandle.Instance.CompanyAllTexList[3].VideoInfo);
+        AddVideoTex(ProductTexs, PictureHandle.Instance.CompanyAllTexList[4].VideoInfo);
+        AddVideoTex(ServiceTexs, PictureHandle.Instance.CompanyAllTexList[5].VideoInfo);
     }
 
     private void SetBtn(List<Texture2D> texs)
@@ -139,7 +145,7 @@ public class CompanyIntroductionFSM : UIStateFSM
         _curTex = texs;
         _curIndex = 0;
         ShowImage.texture = _curTex[_curIndex];
-
+        CheckVideoTex(null, ShowImage.gameObject);
 
         if (_curTex.Count == 1)
         {
@@ -202,7 +208,7 @@ public class CompanyIntroductionFSM : UIStateFSM
         }
       
         ShowImage.texture = _curTex[_curIndex];
-
+        CheckVideoTex(_curTex[_curIndex], ShowImage.gameObject);
         if (_curIndex == _curTex.Count-1)
         {
             _previous.gameObject.SetActive(true);
@@ -226,7 +232,7 @@ public class CompanyIntroductionFSM : UIStateFSM
         }
 
         ShowImage.texture = _curTex[_curIndex];
-
+        CheckVideoTex(_curTex[_curIndex], ShowImage.gameObject);
         if (_curIndex == 0)
         {
             _previous.gameObject.SetActive(false);

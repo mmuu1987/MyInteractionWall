@@ -33,7 +33,7 @@ public class HeadItem : MonoBehaviour
 
         _personName = this.transform.Find("HeadItem/Parent/PersonName").GetComponent<Text>();
 
-        _personInfo = this.transform.Find("HeadItem/Parent/Scroll View/Viewport/Content/Describe").GetComponent<Text>();
+        _personInfo = this.transform.Find("HeadItem/Parent/Describe").GetComponent<Text>();
 
         _head = this.transform.Find("head").GetComponent<Image>();
 

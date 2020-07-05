@@ -79,6 +79,7 @@ public class HonorWallItem : MonoBehaviour
                 if (image.rectTransform.anchoredPosition.y >= 3240f)
                 {
                     image.rectTransform.anchoredPosition = new Vector3(pos.x, MinPos, pos.z);
+                    ChangeSprite(image);
                 }
             }
             else
@@ -91,8 +92,33 @@ public class HonorWallItem : MonoBehaviour
                 if (image.rectTransform.anchoredPosition.y <= MinPos)
                 {
                     image.rectTransform.anchoredPosition = new Vector3(pos.x, MaxPos, pos.z);
+                    ChangeSprite(image);
                 }
             }
+        }
+    }
+
+    /// <summary>
+    /// 改变头像
+    /// </summary>
+    private void ChangeSprite(Image image)
+    {
+
+        if (image.sprite != null && image.sprite.name != "logo")
+        {
+            List<PersonInfo> infos = PictureHandle.Instance.HonorWall;
+
+
+            int index = (int)(Common.PictureIndex % infos.Count);
+
+            Common.PictureIndex++;
+
+            var sprite = infos[index].headTex;
+
+            image.sprite = sprite;
+
+            if (image.sprite != null)
+                image.name = image.sprite.name;
         }
     }
     /// <summary>

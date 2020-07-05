@@ -38,7 +38,7 @@ public class HonorWallManager : MonoBehaviour
             images.AddRange(item.ButtonImages);
         }
 
-        List<PersonInfo> infos = PictureHandle.Instance.PersonInfos[0];
+        List<PersonInfo> infos = PictureHandle.Instance.HonorWall;
       
 
         for (int i = 0; i < images.Count; i++)
@@ -56,9 +56,9 @@ public class HonorWallManager : MonoBehaviour
 
             if(images[i].sprite !=null)
             images[i].name = images[i].sprite.name;
-
-
         }
+        //保存索引
+        Common.PictureIndex = images.Count;
     }
 
     private void ClickEvent(int index, PointerEventData data,Vector3 targetPos)
@@ -66,6 +66,8 @@ public class HonorWallManager : MonoBehaviour
         //Debug.Log("点击的索引是  " + index + "position is " + data.position);
 
         HeadItem item = Instantiate(HonorItem, Canvas.transform);
+
+        item.transform.SetSiblingIndex(10);
 
         item.RectTransform.anchoredPosition = data.position;
 

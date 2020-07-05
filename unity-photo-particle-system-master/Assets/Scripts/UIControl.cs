@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
-using NUnit.Framework.Constraints;
+
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -88,7 +88,7 @@ public class UIControl : MonoBehaviour
         DicUI.Add(UIState.CompanyIntroduction, new CompanyIntroductionFSM(this.transform.Find("CompanyIntroduction/CompanyIntroduction")));
         DicUI.Add(UIState.PrivateHeirs, new PrivateHeirsFSM(this.transform.Find("CompanyIntroduction/PrivateHeirs")));
         DicUI.Add(UIState.OutstandingStyle, new OutstandingStyleFSM(this.transform.Find("CompanyIntroduction/OutstandingStyle")));
-        DicUI.Add(UIState.Close, new CloseFSM(this.transform.Find("CompanyIntroduction/Close")));
+        DicUI.Add(UIState.Close, new CloseFSM(null));
 
         _Machine.SetCurrentState(DicUI[UIState.Close]);
 
@@ -111,6 +111,7 @@ public class UIControl : MonoBehaviour
         {
             _Machine.ChangeState(DicUI[UIState.Close]);
         }));
+        Btn2000_2009.transform.Find("Tip").gameObject.SetActive(true);
         Btn2000_2009.onClick.AddListener((() =>
         {
             MultiDepthMotion.ChangeState(0);

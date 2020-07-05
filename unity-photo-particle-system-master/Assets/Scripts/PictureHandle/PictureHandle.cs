@@ -40,9 +40,15 @@ public class PictureHandle : MonoBehaviour
     private List<int> _index20102019;
     private List<int> _index2020Max;
 
+    /// <summary>
+    /// 卓越风采
+    /// </summary>
     public List<List<PersonInfo>> PersonInfos = new List<List<PersonInfo>>();
 
-
+    /// <summary>
+    /// 荣誉墙
+    /// </summary>
+    public List<PersonInfo> HonorWall =new List<PersonInfo>();
 
     private GameObject _info;
 
@@ -458,6 +464,11 @@ public class PictureHandle : MonoBehaviour
        PersonInfos.Add(LoadPersonInfo(path2));
        string path3 = Application.streamingAssetsPath + "/卓越风采/双百万储备力量";
        PersonInfos.Add(LoadPersonInfo(path3));
+
+
+        //荣誉墙
+        string path4 = Application.streamingAssetsPath + "/荣誉墙";
+        HonorWall = LoadPersonInfo(path4);
     }
 
     /// <summary>

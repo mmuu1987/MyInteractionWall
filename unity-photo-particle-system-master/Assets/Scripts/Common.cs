@@ -26,6 +26,21 @@ public static class Common
     /// </summary>
     public static int PictureCount = 200;
 
+    public static float HeightTemp = 0f;
+
+    /// <summary>
+    /// 向屏幕的移动速度
+    /// </summary>
+    public static float MoveSpeed = 10f;
+    /// <summary>
+    /// 透明度的速度
+    /// </summary>
+    public static float Alpha = 20f;
+    /// <summary>
+    /// 荣誉墙头像索引
+    /// </summary>
+    public static Int64 PictureIndex;
+
     public static float GetCross(Vector2 p1, Vector2 p2, Vector2 p)
     {
         return (p2.x - p1.x) * (p.y - p1.y) - (p.x - p1.x) * (p2.y - p1.y);

@@ -34,18 +34,21 @@ public class UIStateFSM : FsmState<UIControl>
         }
 
 
+        if (Parent != null)
+        {
+            _videoImage = Parent.parent.transform.Find("VideoPlay").GetComponent<RawImage>();
 
-        _videoImage = Parent.parent.transform.Find("VideoPlay").GetComponent<RawImage>();
+            _videoPlayer = _videoImage.GetComponent<VideoPlayer>();
 
-        _videoPlayer = _videoImage.GetComponent<VideoPlayer>();
+            RenderTexture rt = new RenderTexture(1280, 720, 0);
 
-        RenderTexture rt = new RenderTexture(1280, 720, 0);
+            _videoPlayer.renderMode = VideoRenderMode.RenderTexture;
 
-        _videoPlayer.renderMode = VideoRenderMode.RenderTexture;
+            _videoPlayer.targetTexture = rt;
 
-        _videoPlayer.targetTexture = rt;
-
-        _videoImage.texture = rt;
+            _videoImage.texture = rt;
+        }
+       
     }
 
     public override void Enter()
@@ -57,9 +60,12 @@ public class UIStateFSM : FsmState<UIControl>
             trigger.enabled = true;
         }
         if (Parent != null)
+        {
             Parent.gameObject.SetActive(true);
+            _videoImage.rectTransform.localScale = Vector3.zero;
+        }
 
-        _videoImage.rectTransform.localScale = Vector3.zero;
+       
     }
     /// <summary>
     /// 检测是否是视频贴图，如果是，则播放视频
@@ -77,7 +83,7 @@ public class UIStateFSM : FsmState<UIControl>
 
             _videoPlayer.url = "file://" + url;
             _videoPlayer.transform.localScale = Vector3.one * 0.35f;
-
+            _videoPlayer.enabled = true;
             _videoPlayer.Play();
         }
         else

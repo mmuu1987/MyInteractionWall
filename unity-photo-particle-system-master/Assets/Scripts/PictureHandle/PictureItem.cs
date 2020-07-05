@@ -73,7 +73,7 @@ public class PictureItem : MonoBehaviour
         }
         _mat.SetTexture("_Year", tex);
 
-        // this.transform.rotation = Quaternion.Euler(10f,5f,0f);
+         this.transform.rotation = Quaternion.Euler(0f,0f,0f);
     }
 
     public void UpdateData(Vector3 clickPoint, Vector3[] clicks)
@@ -86,17 +86,28 @@ public class PictureItem : MonoBehaviour
 
         Vector4 velocity = _data.velocity;
 
-        Vector3 moveTarget = _data.moveTarget;
+        
 
         float z = _depthBuffer[(int)velocity.x].handleDepth;
 
         Alpha = _depthBuffer[(int)velocity.x].alpha;
 
+        Vector3 moveTarget = _data.moveTarget;
+
+        
+
         float scale = _depthBuffer[(int)velocity.x].scale;
 
-        Vector3 depthDir = new Vector3(0, 0, z);
+        Vector3 depthDir;
+        if (Alpha >= 1)
+        {
+            moveTarget.z = 0;
+            depthDir = new Vector3(0, 0, z );
+        }
+        else depthDir = new Vector3(0, 0f, z + velocity.w);
 
-        Vector3 moveDir = new Vector3(-0.004f, 0, 0);
+        
+        Vector3 moveDir = new Vector3(-0.0045f, 0, 0);
 
         moveTarget += moveDir;
 
@@ -113,9 +124,6 @@ public class PictureItem : MonoBehaviour
 
         for (int i = 0; i < count; i++)
         {
-
-
-
             Vector2 v2 = new Vector2(clicks[i].x, clicks[i].y);
 
             float length = Vector2.Distance(v2, v1);
@@ -133,16 +141,18 @@ public class PictureItem : MonoBehaviour
 
             //pos.xy = lerp(pos.xy,clicks[n].xy,deltaTime*0.5);
             Vector2 v2 = new Vector2(clicks[n].x, clicks[n].y);
-            v1 = Vector2.Lerp(v1, v2, Time.deltaTime * 0.5f);
+            v1 = Vector2.Lerp(v1, v2, Time.deltaTime * 1f);
             pos.x = v1.x;
             pos.y = v1.y;
         }
         else
         {
             Vector4 v4 = new Vector4(allDir.x, allDir.y, allDir.z, scale);
-            pos = Vector4.Lerp(pos, v4, Time.deltaTime);
-
-            velocity.y = Mathf.Lerp(velocity.y, Alpha, Time.deltaTime);
+           
+            pos =Vector4.Lerp(pos,v4,Time.deltaTime);
+            if(Alpha>=1)
+            velocity.y = Common.EaseOutQuad(velocity.y, Alpha, Time.deltaTime *Common.Alpha);
+            else velocity.y = Common.EaseInQuad(velocity.y, Alpha, Time.deltaTime * Common.Alpha);
         }
         //计算多点碰撞聚集运动的算法
         //-------------------------
@@ -166,7 +176,7 @@ public class PictureItem : MonoBehaviour
 
         _data.moveTarget = moveTarget;
 
-        _data.velocity = new Vector4(velocity.x, velocity.y, velocity.z, 0);//保存新的透明值
+        _data.velocity = new Vector4(velocity.x, velocity.y, velocity.z, velocity.w);//保存新的透明值
 
 
         Vector4 scaleVector4 = _data.initialVelocity;
@@ -189,34 +199,44 @@ public class PictureItem : MonoBehaviour
 
         if (clickPoint.z >= 100000) return;
 
-        Vector4 pos = _data.position;
+        //Vector4 pos = _data.position;
 
         Vector4 velocity = _data.velocity;
 
-        //  if(velocity.x>0)return;//值允许第一层有点击行为
+        ////  if(velocity.x>0)return;//值允许第一层有点击行为
 
         float alpha = _depthBuffer[(int)velocity.x].alpha;
 
         if (alpha < 1) return;// 在第一排的深度才可以点击，用透明度判断是否在第一排
 
-        //float2 leftDownP2, float2 leftUpP1, float2 rightDownP3, float2 rightUpP4, float2 p
-        //默认图片大小为长宽为1，一半就是0.5
-        Vector2 leftDown = new Vector2(pos.x - 0.5f, pos.y - 0.5f);//+ float2(-0.5, -0.5));
+        ////float2 leftDownP2, float2 leftUpP1, float2 rightDownP3, float2 rightUpP4, float2 p
+        ////默认图片大小为长宽为1，一半就是0.5
+        //Vector2 leftDown = new Vector2(pos.x - 0.5f, pos.y - 0.5f);//+ float2(-0.5, -0.5));
 
-        Vector2 leftUp = new Vector2(pos.x - 0.5f, pos.y + 0.5f);
+        //Vector2 leftUp = new Vector2(pos.x - 0.5f, pos.y + 0.5f);
 
-        Vector2 rightDown = new Vector2(pos.x + 0.5f, pos.y - 0.5f);
+        //Vector2 rightDown = new Vector2(pos.x + 0.5f, pos.y - 0.5f);
 
-        Vector2 rightUp = new Vector2(pos.x + 0.5f, pos.y + 0.5f);
+        //Vector2 rightUp = new Vector2(pos.x + 0.5f, pos.y + 0.5f);
 
-        bool isContains = Common.ContainsQuadrangle(leftDown, leftUp, rightDown, rightUp, clickPoint);
+        //bool isContains = Common.ContainsQuadrangle(leftDown, leftUp, rightDown, rightUp, clickPoint);
 
-        if (isContains)
+        //if (isContains)
+        //{
+        //    // positionBuffer[id.x].position.w=2;
+        //    _clickPointsBuff = _data;
+        //    PictureHandle.Instance.GetYearInfo(_data, _infoParent);
+        //    Debug.Log("Click index is " + _data.picIndex);
+        //}
+
+        if (Vector3.Distance(_cacheTransform.position, clickPoint) <= 0.01f)
         {
             // positionBuffer[id.x].position.w=2;
             _clickPointsBuff = _data;
             PictureHandle.Instance.GetYearInfo(_data, _infoParent);
             Debug.Log("Click index is " + _data.picIndex);
         }
+
+      
     }
 }

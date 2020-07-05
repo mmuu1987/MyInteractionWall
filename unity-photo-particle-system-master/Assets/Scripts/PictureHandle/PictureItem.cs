@@ -17,7 +17,7 @@ public class PictureItem : MonoBehaviour
 
 
     //点击屏幕，触发吸引力的范围,必须在CS赋值初始化
-    float dis = 3;
+    float dis = 800;
 
 
     private Transform _cacheTransform;
@@ -76,7 +76,7 @@ public class PictureItem : MonoBehaviour
          this.transform.rotation = Quaternion.Euler(0f,0f,0f);
     }
 
-    public void UpdateData(Vector3 clickPoint, Vector3[] clicks)
+    public void UpdateData( Vector3[] clicks)
     {
 
 
@@ -116,17 +116,25 @@ public class PictureItem : MonoBehaviour
 
         //计算多点碰撞聚集运动的算法
         //-------------------------
-        int count = clicks.Length;
-
         int n = -1;//让下面的循环else 体里只执行一次，否则执行十次，不是我们想要的
 
-        Vector2 v1 = new Vector2(pos.x, pos.y);
+       
 
-        for (int i = 0; i < count; i++)
+        Vector3 screenPos = Camera.main.WorldToScreenPoint(_cacheTransform.position);
+
+
+
+        Vector2 v1 = new Vector2(screenPos.x, screenPos.y);
+
+        for (int i = 0; i < clicks.Length; i++)
         {
+            if (clicks[i].z >= 1000) continue;
+
             Vector2 v2 = new Vector2(clicks[i].x, clicks[i].y);
 
             float length = Vector2.Distance(v2, v1);
+
+           // Debug.Log(length);
 
             //如果有鼠标点击事件//CS代码那边，如果没有点击，点击点会移到 Vector3.one * 1000000位置
             if (clicks[i].z < 1000 && length <= dis)
@@ -140,10 +148,11 @@ public class PictureItem : MonoBehaviour
         {
 
             //pos.xy = lerp(pos.xy,clicks[n].xy,deltaTime*0.5);
-            Vector2 v2 = new Vector2(clicks[n].x, clicks[n].y);
-            v1 = Vector2.Lerp(v1, v2, Time.deltaTime * 1f);
-            pos.x = v1.x;
-            pos.y = v1.y;
+            Vector3 v2 = Camera.main.ScreenToWorldPoint(new Vector3(clicks[n].x, clicks[n].y, _cacheTransform.position.z+10f));
+            //Debug.Log(_cacheTransform.position+"      "+v2);
+            Vector3 newPos = Vector3.Lerp(_cacheTransform.position, v2, Time.deltaTime);
+
+            pos = new Vector4(newPos.x,newPos.y,newPos.z,pos.w);
         }
         else
         {
@@ -187,17 +196,22 @@ public class PictureItem : MonoBehaviour
 
         _mat.SetFloat("_Alpha", velocity.y);
 
-        CheckClickPoint(clickPoint);
+        CheckClickPoint();
         //  LerpTex(id);
 
     }
 
+    public void SetClickPoint(Vector3 clikcPoint)
+    {
+        
+    }
+    public Vector3 ClickPoint;
     //检测点击点在哪个面片里面
-    void CheckClickPoint(Vector3 clickPoint)
+    void CheckClickPoint()
     {
         _clickPointsBuff.picIndex = -1;//重置索引
 
-        if (clickPoint.z >= 100000) return;
+        if (ClickPoint.z >= 100000) return;
 
         //Vector4 pos = _data.position;
 
@@ -229,7 +243,7 @@ public class PictureItem : MonoBehaviour
         //    Debug.Log("Click index is " + _data.picIndex);
         //}
 
-        if (Vector3.Distance(_cacheTransform.position, clickPoint) <= 0.01f)
+        if (Vector3.Distance(_cacheTransform.position, ClickPoint) <= 0.01f)
         {
             // positionBuffer[id.x].position.w=2;
             _clickPointsBuff = _data;
@@ -237,6 +251,6 @@ public class PictureItem : MonoBehaviour
             Debug.Log("Click index is " + _data.picIndex);
         }
 
-      
+      ClickPoint = Vector3.one*100000;
     }
 }

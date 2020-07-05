@@ -170,13 +170,13 @@ public class MultiDepthMotion : MotionInputMoveBase
                 {
                     s = 1f;
                     a = 1f;
-                    scaleY = 0.6f;
+                    scaleY = 0.55f;
                 }
                 else if (k == 2)
                 {
                     s = 1.2f;
                     a = 0.35f;
-                    scaleY = 0.5f;
+                    scaleY = 0.45f;
                 }
                 else if (k == 3)
                 {
@@ -365,7 +365,7 @@ public class MultiDepthMotion : MotionInputMoveBase
         {
 
             Vector3 pos = keyValuePair.Value.Position;
-            pos = Camera.main.ScreenToWorldPoint(new Vector3(pos.x, pos.y, 6));//6 深度是相机到物体的深度  是第一排物体的离相机的距离
+          //  pos = Camera.main.ScreenToWorldPoint(new Vector3(pos.x, pos.y, 9));//6 深度是相机到物体的深度  是第一排物体的离相机的距离
             temp[n] = pos;
             n++;
         }
@@ -392,7 +392,8 @@ public class MultiDepthMotion : MotionInputMoveBase
         {
 
             Vector3 pos = keyValuePair.Value.Position;
-            pos = Camera.main.ScreenToWorldPoint(new Vector3(pos.x, pos.y, 9));//6 深度是相机到物体的深度  是第一排物体的离相机的距离
+            //Debug.Log(pos);
+            //pos = Camera.main.ScreenToWorldPoint(new Vector3(pos.x, pos.y, 9));//6 深度是相机到物体的深度  是第一排物体的离相机的距离
             temp[n] = pos;
             n++;
         }
@@ -422,11 +423,11 @@ public class MultiDepthMotion : MotionInputMoveBase
         }
 
         if (_clickPoint.z < 0)
-            _clickPoint = Camera.main.ScreenToWorldPoint(new Vector3(_clickPoint.x, _clickPoint.y, 6));
+            _clickPoint = Camera.main.ScreenToWorldPoint(new Vector3(_clickPoint.x, _clickPoint.y, 9));
         else
             _clickPoint = Vector3.one * 1000000;
 
-        _depthPictureMove.Excute(clickPos, temp);
+        _depthPictureMove.Excute(temp);
 
 
         ComputeShader.SetVector("clickPoint", _clickPoint);
@@ -476,6 +477,21 @@ public class MultiDepthMotion : MotionInputMoveBase
         SetDepth(depth);
     }
 
+    public override void OnPointerClick(PointerEventData eventData)
+    {
+        base.OnPointerClick(eventData);
+
+        Ray ray = Camera.main.ScreenPointToRay(eventData.position);
+        Vector3 clickPos = Vector3.one * 100000;
+        RaycastHit hitInfo;
+        if (Physics.Raycast(ray, out hitInfo))
+        {
+            clickPos = hitInfo.transform.position;
+
+        }
+
+        _depthPictureMove.SetClickPoint(clickPos);
+    }
 
     public override void OnPointerUp(PointerEventData eventData)
     {
@@ -487,7 +503,7 @@ public class MultiDepthMotion : MotionInputMoveBase
             float temp = _touchIds[eventData.pointerId].ClickTime;
 
             // Debug.Log(temp);
-            if (temp <= 0.35f)
+            if (temp <= 0.5f)
             {
                 // Debug.Log("产生点击事件");
                 _clickPoint = new Vector3(eventData.position.x, eventData.position.y, -1);//-1表示有点击事件产生

@@ -67,12 +67,19 @@ public class MultiDepthPictureMove
 
     }
 
-    public void Excute(Vector3 clickIndex, Vector3[] clicks)
+    public void SetClickPoint(Vector3 clickPoint)
+    {
+        foreach (PictureItem pictureItem in items)
+        {
+            pictureItem.ClickPoint = clickPoint;
+        }
+    }
+    public void Excute( Vector3[] clicks)
     {
 
         foreach (PictureItem pictureItem in items)
         {
-            pictureItem.UpdateData(clickIndex, clicks);
+            pictureItem.UpdateData( clicks);
         }
     }
 

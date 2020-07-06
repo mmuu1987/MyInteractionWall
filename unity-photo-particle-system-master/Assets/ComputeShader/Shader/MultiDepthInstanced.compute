@@ -109,7 +109,7 @@ float3 ScreenToWorld(float3 p)
 
 
 }
-//验证正确
+//世界坐标转屏幕坐标
 float3 WorldToScreenPos(float3 worldPos)
 {
         float z = camPos.z - worldPos.z;

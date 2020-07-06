@@ -75,7 +75,68 @@ float m00;
 
 float m11;
 
+float3 camPos;
 
+//把屏幕坐标转成世界坐标
+float3 ScreenToWorld(float3 p)
+{
+       float px = p.x /Width;
+
+        px = (px - 0.5f) / 0.5f;
+
+        float py = p.y / Height;
+
+        py = (py - 0.5f) / 0.5f;
+
+        float3 ppos = float3(px, py, p.z);//得到了齐次坐标
+
+        ppos = float3(ppos.x * p.z, ppos.y * p.z, p.z);//反透视除法
+
+        float z1 = ppos.z / m32;
+
+        float x1 = ppos.x / m00;
+
+        float y1 = ppos.y / m11;
+
+
+		//相机转世界坐标
+		x1 = x1+camPos.x;
+		z1 = camPos.z-z1;
+		y1 = camPos.y+y1;
+
+		//得到的坐标为相机坐标
+		return float3(x1,y1,z1);
+
+
+}
+//验证正确
+float3 WorldToScreenPos(float3 worldPos)
+{
+        float z = camPos.z - worldPos.z;
+
+        float x = worldPos.x - camPos.x;
+
+        float3 temp1 = float3(x,worldPos.y,z);
+
+        float z1 = temp1 .z * m32;
+
+        float x1 = temp1 .x * m00;
+
+        float y1 = temp1 .y* m11;
+
+        float3 ppos = float3(x1 / z1, y1 / z1, z1);//透视除法
+
+        float x2 = ppos.x*0.5f + 0.5f;
+
+        float y2 = ppos.y*0.5f + 0.5f;
+
+        x2 = x2*Width;
+
+        y2 = y2*Height;
+
+
+      return float3(x2,y2,0);
+}
 //检测点击点在哪个面片里面
 void CheckClickPoint(uint3 id)
 {
@@ -108,9 +169,12 @@ void CheckClickPoint(uint3 id)
    if(isContains)
    {
    // positionBuffer[id.x].position.w=2;
-	clickPointsBuff[0] = positionBuffer[id.x];
+	 clickPointsBuff[0] = positionBuffer[id.x];
+	 clickPointsBuff[0].moveDir = ScreenToWorld(float3(400,500,10));
    }
 }
+
+
 
 void LerpTex(uint3 id )
 {
@@ -168,37 +232,7 @@ void LerpTex(uint3 id )
 	 positionBuffer[id.x].originalPos = v;
 	 positionBuffer[id.x].initialVelocity=cache ;
 }
-//把屏幕坐标转成世界坐标
-float3 ScreenToWorld(float3 p)
-{
-        float px = p.x /Width;
 
-        px = (px - 0.5f) / 0.5f;
-
-        float py = p.y / Height;
-
-        py = (py - 0.5f) / 0.5f;
-
-        float3 ppos = float3(px, py, p.z);//得到了齐次坐标
-
-        ppos = float3(ppos.x * p.z, ppos.y * p.z, p.z);//反透视除法
-
-        float z1 = ppos.z / m32;
-
-        float x1 = ppos.x / m00;
-
-        float y1 = ppos.y / m11;
-
-
-		//相机转世界坐标
-		x1 = x1+1;
-		z1 = -10-z1;
-
-		//得到的坐标为相机坐标
-		return float3(x1,y1,z1);
-
-
-}
 
 
 void OldMethods(uint3 id )
@@ -226,9 +260,11 @@ void OldMethods(uint3 id )
 
    float3 allDir = moveTarget +depthDir;
   
+   float3 screenPos = WorldToScreenPos(pos);
 
-   //float3 screenPos = ScreenToWorld()
+   float2 v1 = float2(screenPos.x, screenPos.y);
 
+   
     //计算多点碰撞聚集运动的算法
 	//-------------------------
     uint count;
@@ -238,10 +274,12 @@ void OldMethods(uint3 id )
 	
 	for (int i = 0; i < count; i++)
 	{
-	  
+	    if (clicks[i].z >= 1000) continue;
+
+	    float2 v2 =  float2(clicks[i].x, clicks[i].y);
 
 	   //如果有鼠标点击事件//CS代码那边，如果没有点击，点击点会移到 Vector3.one * 1000000位置
-       if(clicks[i].z<1000 &&length(pos.xy - clicks[i].xy)<=dis)
+       if(length(v1 - v2)<=dis)
        {
 	     n=i;//如果有在这个范围的，则跳出循环
 		 break;
@@ -250,7 +288,12 @@ void OldMethods(uint3 id )
 
 	if(n>=0)//如果在某个触摸点半径范围，则吸引
 	{
-	  pos.xy = lerp(pos.xy,clicks[n].xy,deltaTime*1);
+
+	  float3 float3V = float3(clicks[n].x, clicks[n].y, pos.z+10);
+	  float3 v3 = ScreenToWorld(float3V);
+	  float3 newPos = lerp(pos.xyz, v3, deltaTime);
+	  
+	  pos.xyz = newPos;
 	}
     else
 	{

@@ -404,33 +404,59 @@ public class Test : MonoBehaviour, IDragHandler, IEndDragHandler
 
         Matrix4x4 p = Camera.main.projectionMatrix;
 
+        //float z = camPos.z - worldPos.z;
+
+        //float x = worldPos.x - camPos.x;
+
+        //Vector3 temp1 = new Vector3(x,worldPos.y,z);
+
+        //Debug.Log("======================>>>>>得到的相机坐标为 " + temp1);
+
+        //float z1 = temp1 .z* p.m32;
+
+        //float x1 = temp1 .x* p.m00;
+
+        //float y1 = temp1 .y* p.m11;
+
+        
+
+        //Vector3 ppos = new Vector3(x1 / z1, y1 / z1, z1);//透视除法
+
+        //Debug.Log("======================>>>>>其次坐标为 " + ppos);
+
+        //float x2 = ppos.x*0.5f + 0.5f;
+
+        //float y2 = ppos.y*0.5f + 0.5f;
+
+        //x2 = x2*Screen.width;
+
+        //y2 = y2*Screen.height;
+
+
+        //Debug.Log("======================>>>>>得到的屏幕坐标为 " + new Vector3(x2, y2, 0));
+
+
         float z = camPos.z - worldPos.z;
 
         float x = worldPos.x - camPos.x;
 
-        Vector3 temp1 = new Vector3(x,worldPos.y,z);
+        Vector3 temp1 = new Vector3(x, worldPos.y, z);
 
-        Debug.Log("======================>>>>>得到的相机坐标为 " + temp1);
+        float z1 = temp1.z * p.m32;
 
-        float z1 = temp1 .z* p.m32;
+        float x1 = temp1.x * p.m00;
 
-        float x1 = temp1 .x* p.m00;
-
-        float y1 = temp1 .y* p.m11;
-
-        
+        float y1 = temp1.y * p.m11;
 
         Vector3 ppos = new Vector3(x1 / z1, y1 / z1, z1);//透视除法
 
-        Debug.Log("======================>>>>>其次坐标为 " + ppos);
+        float x2 = ppos.x * 0.5f + 0.5f;
 
-        float x2 = ppos.x*0.5f + 0.5f;
+        float y2 = ppos.y * 0.5f + 0.5f;
 
-        float y2 = ppos.y*0.5f + 0.5f;
+        x2 = x2 * Screen.width;
 
-        x2 = x2*Screen.width;
-
-        y2 = y2*Screen.height;
+        y2 = y2 * Screen.height;
 
 
         Debug.Log("======================>>>>>得到的屏幕坐标为 " + new Vector3(x2, y2, 0));

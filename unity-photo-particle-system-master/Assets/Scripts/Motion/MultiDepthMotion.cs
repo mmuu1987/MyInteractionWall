@@ -281,6 +281,7 @@ public class MultiDepthMotion : MotionInputMoveBase
         ComputeShader.SetFloat("m32", camMatri.m32);
         ComputeShader.SetFloat("m00", camMatri.m00);
         ComputeShader.SetFloat("m11", camMatri.m11);
+        ComputeShader.SetVector("camPos", Camera.main.transform.position);
 
 
        
@@ -304,7 +305,7 @@ public class MultiDepthMotion : MotionInputMoveBase
 
         MoveSpeed = 50f;//更改更快的插值速度
         ComputeShader.SetFloat("MoveSpeed", MoveSpeed);
-        ComputeShader.SetFloat("dis", 2);
+        ComputeShader.SetFloat("dis", 800);
 
         ComputeShader.SetBuffer(dispatchID, "clickPointsBuff", _clickPointBuff);
 
@@ -408,7 +409,7 @@ public class MultiDepthMotion : MotionInputMoveBase
 
             Vector3 pos = keyValuePair.Value.Position;
             //Debug.Log(pos);
-            pos = Camera.main.ScreenToWorldPoint(new Vector3(pos.x, pos.y, 6));//6 深度是相机到物体的深度  是第一排物体的离相机的距离
+           // pos = Camera.main.ScreenToWorldPoint(new Vector3(pos.x, pos.y, 6));//6 深度是相机到物体的深度  是第一排物体的离相机的距离
             temp[n] = pos;
             n++;
         }
@@ -460,7 +461,8 @@ public class MultiDepthMotion : MotionInputMoveBase
             PosAndDir[] datas = new PosAndDir[1];
             _clickPointBuff.GetData(datas);
             int index = datas[0].picIndex;
-            //Debug.Log("click index is " + index);
+            Vector3 temp1 = Camera.main.ScreenToWorldPoint(new Vector3(400, 500, 10));
+            Debug.Log("click WorldToScreenPos  is " + datas[0].moveDir + "     aip实现是 " + temp1);
             PictureHandle.Instance.GetYearInfo(datas[0], Canvas.transform);
             _clickPoint = Vector3.one * 1000000;//重置数据
         }

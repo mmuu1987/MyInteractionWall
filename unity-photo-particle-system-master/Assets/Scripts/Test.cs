@@ -328,7 +328,7 @@ public class Test : MonoBehaviour, IDragHandler, IEndDragHandler
         if (GUI.Button(new Rect(0f, 0f, 100f, 100f), "Test"))
         {
 
-          //  MyScreenToWorldPoint(new Vector3(300, 400, 200));
+            MyScreenToWorldPoint(new Vector3(300, 400, 200));
             MoveToHead();
 
         }
@@ -345,6 +345,8 @@ public class Test : MonoBehaviour, IDragHandler, IEndDragHandler
         Matrix4x4 p = Camera.main.projectionMatrix;
 
         Matrix4x4 v = Camera.main.worldToCameraMatrix;
+
+        Matrix4x4 vi = Camera.main.cameraToWorldMatrix;
 
         Debug.Log("初始屏幕坐标为 " + screenPos);
 
@@ -367,6 +369,7 @@ public class Test : MonoBehaviour, IDragHandler, IEndDragHandler
 
         Vector3 ppos = new Vector3(px, py, screenPos.z);//得到了齐次坐标
 
+        Debug.Log("齐次坐标 " + ppos);
         ppos = new Vector3(ppos.x * ppos.z, ppos.y * ppos.z, ppos.z);//反透视除法
 
         float z = ppos.z / p.m32;
@@ -375,7 +378,63 @@ public class Test : MonoBehaviour, IDragHandler, IEndDragHandler
 
         float y = ppos.y / p.m11;
 
+
+
         Debug.Log("得到相机坐标" + new Vector3(x, y, z));
+
+        Vector3 camPos = Camera.main.transform.position;
+
+        x = x + camPos.x;
+
+        z = camPos.z - z;
+
+        Debug.Log("得到的世界坐标为 " + new Vector3(x, y, z));
+
+        MyWorldToScreenPos(new Vector3(x, y, z));
+
+    }
+
+    /// <summary>
+    /// 世界坐标转屏幕坐标
+    /// </summary>
+    /// <param name="worldPos"></param>
+    public void MyWorldToScreenPos(Vector3 worldPos)
+    {
+        Vector3 camPos = Camera.main.transform.position;
+
+        Matrix4x4 p = Camera.main.projectionMatrix;
+
+        float z = camPos.z - worldPos.z;
+
+        float x = worldPos.x - camPos.x;
+
+        Vector3 temp1 = new Vector3(x,worldPos.y,z);
+
+        Debug.Log("======================>>>>>得到的相机坐标为 " + temp1);
+
+        float z1 = temp1 .z* p.m32;
+
+        float x1 = temp1 .x* p.m00;
+
+        float y1 = temp1 .y* p.m11;
+
+        
+
+        Vector3 ppos = new Vector3(x1 / z1, y1 / z1, z1);//透视除法
+
+        Debug.Log("======================>>>>>其次坐标为 " + ppos);
+
+        float x2 = ppos.x*0.5f + 0.5f;
+
+        float y2 = ppos.y*0.5f + 0.5f;
+
+        x2 = x2*Screen.width;
+
+        y2 = y2*Screen.height;
+
+
+        Debug.Log("======================>>>>>得到的屏幕坐标为 " + new Vector3(x2, y2, 0));
+
 
     }
 

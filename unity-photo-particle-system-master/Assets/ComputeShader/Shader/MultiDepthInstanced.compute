@@ -65,6 +65,17 @@ float dis = 5;
 
 float4 rangeRot;
 
+float Width;
+
+float Height;
+
+float m32;
+
+float m00;
+
+float m11;
+
+
 //检测点击点在哪个面片里面
 void CheckClickPoint(uint3 id)
 {
@@ -157,6 +168,37 @@ void LerpTex(uint3 id )
 	 positionBuffer[id.x].originalPos = v;
 	 positionBuffer[id.x].initialVelocity=cache ;
 }
+//把屏幕坐标转成世界坐标
+float3 ScreenToWorld(float3 p)
+{
+        float px = p.x /Width;
+
+        px = (px - 0.5f) / 0.5f;
+
+        float py = p.y / Height;
+
+        py = (py - 0.5f) / 0.5f;
+
+        float3 ppos = float3(px, py, p.z);//得到了齐次坐标
+
+        ppos = float3(ppos.x * p.z, ppos.y * p.z, p.z);//反透视除法
+
+        float z1 = ppos.z / m32;
+
+        float x1 = ppos.x / m00;
+
+        float y1 = ppos.y / m11;
+
+
+		//相机转世界坐标
+		x1 = x1+1;
+		z1 = -10-z1;
+
+		//得到的坐标为相机坐标
+		return float3(x1,y1,z1);
+
+
+}
 
 
 void OldMethods(uint3 id )
@@ -178,12 +220,14 @@ void OldMethods(uint3 id )
    
    float3 depthDir = float3(0,0,z);
 
-   float3 moveDir = float3(-0.0155,0,0);
+   float3 moveDir = float3(-0.0045,0,0);
 
    moveTarget +=  moveDir;
 
    float3 allDir = moveTarget +depthDir;
   
+
+   //float3 screenPos = ScreenToWorld()
 
     //计算多点碰撞聚集运动的算法
 	//-------------------------
@@ -194,6 +238,8 @@ void OldMethods(uint3 id )
 	
 	for (int i = 0; i < count; i++)
 	{
+	  
+
 	   //如果有鼠标点击事件//CS代码那边，如果没有点击，点击点会移到 Vector3.one * 1000000位置
        if(clicks[i].z<1000 &&length(pos.xy - clicks[i].xy)<=dis)
        {
@@ -204,7 +250,7 @@ void OldMethods(uint3 id )
 
 	if(n>=0)//如果在某个触摸点半径范围，则吸引
 	{
-	  pos.xy = lerp(pos.xy,clicks[n].xy,deltaTime*0.5);
+	  pos.xy = lerp(pos.xy,clicks[n].xy,deltaTime*1);
 	}
     else
 	{

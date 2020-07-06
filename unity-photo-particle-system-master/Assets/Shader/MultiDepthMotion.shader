@@ -20,7 +20,7 @@
 	//第一个描边PASS
 	    Pass {
 
-		   Tags { "Queue"="Transparent"   "RenderType"="Transparent"   "IgnoreProjection" = "True"}
+		   Tags { "Queue"="Transparent-1"   "RenderType"="Transparent"   "IgnoreProjection" = "True"}
 		   ZWrite off
 		    Blend SrcAlpha  OneMinusSrcAlpha
 
@@ -63,6 +63,7 @@
 				float3 initialVelocity = positionBuffer[instanceID].initialVelocity;//获取宽高
                 float3 localPosition = v.vertex.xyz * data.w ;
 				localPosition.x *=_WHScale.x*initialVelocity.x+_Margin;//_Margin向外拓展，用作描边
+				if(localPosition.y>0)localPosition.y+=0.2f;
 				localPosition.y *=_WHScale.y*initialVelocity.y+_Margin;//_Margin向外拓展，用作描边  
 				localPosition.z+=0.0001f;//不至于重叠
                 float3 worldPosition = data.xyz + localPosition;
@@ -89,8 +90,8 @@
 
            Tags { "Queue"="Transparent"   "RenderType"="Transparent"   "IgnoreProjection" = "True"}
 		   ZWrite on
-		  Blend SrcAlpha  OneMinusSrcAlpha
-            CGPROGRAM
+		   Blend SrcAlpha  OneMinusSrcAlpha
+           CGPROGRAM
 
             #pragma vertex vert
             #pragma fragment frag

@@ -248,7 +248,7 @@ public class PictureItem : MonoBehaviour
             // positionBuffer[id.x].position.w=2;
             _clickPointsBuff = _data;
             PictureHandle.Instance.GetYearInfo(_data, _infoParent);
-            Debug.Log("Click index is " + _data.picIndex);
+           // Debug.Log("Click index is " + _data.picIndex);
         }
 
       ClickPoint = Vector3.one*100000;

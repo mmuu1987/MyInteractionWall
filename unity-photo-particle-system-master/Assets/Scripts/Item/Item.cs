@@ -216,6 +216,10 @@ public class Item : MonoBehaviour, IDragHandler, IPointerClickHandler,IPointerDo
 
         Vector2  newSize = new Vector2(size.x * scale.x,size.y *scale.y);//1500:2000
 
+        float v1 = size.x / size.y;
+
+        float v2 = scale.x/scale.y;
+
 
         float newWidth = newSize.x;
 
@@ -230,6 +234,15 @@ public class Item : MonoBehaviour, IDragHandler, IPointerClickHandler,IPointerDo
                  newWidth = 800f;
 
                  newHeight = newSize.y/a;
+
+                if (newHeight > 600)
+                {
+                    float a1 = newHeight/600f;
+
+                    newWidth = newWidth/a1;
+
+                    newHeight = 600;
+                }
             }
         }
         else if (newSize.x <= newSize.y)
@@ -241,6 +254,15 @@ public class Item : MonoBehaviour, IDragHandler, IPointerClickHandler,IPointerDo
                  newWidth = newSize.x/a;
 
                  newHeight = 600f;
+
+                 if (newWidth > 800)
+                 {
+                     float a1 = newWidth / 800f;
+
+                     newHeight = newHeight / a1;
+
+                     newWidth = 800;
+                 }
             }
         }
 

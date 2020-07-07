@@ -212,56 +212,53 @@ public class Item : MonoBehaviour, IDragHandler, IPointerClickHandler,IPointerDo
 
         _curIndex = 0;
 
+        //图片的容器的宽高
         Vector2 size = _image.rectTransform.sizeDelta;//max 800  600
 
         Vector2  newSize = new Vector2(size.x * scale.x,size.y *scale.y);//1500:2000
 
-        float v1 = size.x / size.y;
-
-        float v2 = scale.x/scale.y;
+        float v2 = scale.x/scale.y;//图片的比率
 
 
         float newWidth = newSize.x;
 
         float newHeight = newSize.y;
 
-        if (newSize.x > newSize.y)
+        if (newWidth > newHeight)//如果图片宽大于高
         {
-            if (newSize.x > 800)
+            if (newWidth > size.x)//如果图片宽大于容器的宽
             {
-                float a = newSize.x/800f;
 
-                 newWidth = 800f;
+                newWidth = size.x;//以容器宽为准
 
-                 newHeight = newSize.y/a;
+                newHeight = size.x / v2;//把图片高按比例缩小
 
-                if (newHeight > 600)
-                {
-                    float a1 = newHeight/600f;
+                if (newHeight > size.y)//如果图片的高还是大于容器的高
+                 {
 
-                    newWidth = newWidth/a1;
 
-                    newHeight = 600;
-                }
+                     newHeight = size.y;//则以容器的高为标准
+
+                     newWidth = size.y * v2;//容器的高再度计算赋值
+
+                    //一下逻辑同理
+                 }
             }
         }
-        else if (newSize.x <= newSize.y)
+        else if (newWidth <= newHeight)
         {
-            if (newSize.y > 600f)
+            if (newHeight > size.y)
             {
-                float a = newSize.y / 600f;
+                newHeight = size.x;
 
-                 newWidth = newSize.x/a;
+                newWidth = size .y* v2;
 
-                 newHeight = 600f;
-
-                 if (newWidth > 800)
+                if (newWidth > size.x)
                  {
-                     float a1 = newWidth / 800f;
 
-                     newHeight = newHeight / a1;
+                     newHeight = size.x / v2;
 
-                     newWidth = 800;
+                     newWidth = size.x;
                  }
             }
         }

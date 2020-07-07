@@ -398,6 +398,7 @@ public class MultiDepthMotion : MotionInputMoveBase
 
         //_clickBuff.GetData(temp);
         //传输过去前，先重置数据
+        //
         for (int i = 0; i < temp.Length; i++)
         {
             temp[i] = Vector3.one * 1000000;
@@ -409,7 +410,7 @@ public class MultiDepthMotion : MotionInputMoveBase
 
             Vector3 pos = keyValuePair.Value.Position;
             //Debug.Log(pos);
-           // pos = Camera.main.ScreenToWorldPoint(new Vector3(pos.x, pos.y, 6));//6 深度是相机到物体的深度  是第一排物体的离相机的距离
+            // pos = Camera.main.ScreenToWorldPoint(new Vector3(pos.x, pos.y, 6));//6 深度是相机到物体的深度  是第一排物体的离相机的距离
             temp[n] = pos;
             n++;
         }

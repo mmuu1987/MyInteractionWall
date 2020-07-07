@@ -2,15 +2,33 @@
 #pragma kernel CSMain1
 //2 定义buffer
 RWTexture2D<float4>  Result;
+
+Texture2D Source;
+
+int LableHeight;
+int width;
+
+int ImageHeitht;
+
+int ImageWidth;
 //3 kernel函数
 //组内三维线程数
-[numthreads(8,8,1)]
+[numthreads(1,1,1)]
 void CSMain1 (uint3 id : SV_DispatchThreadID)
 {
     //给buffer赋值
     //纯红色
-    //Result[id.xy] = float4(1,0,0,1);
+   // Result[id.xy] = Source[id.xy];
+
     //基于uv的x给颜色
-    float v = id.x/256.0f;
-    Result[id.xy] = float4(id.x/350.0f,id.y/256.0f,0,1);
+   // float v = id.x/256.0f;
+   if(id.x>width&& id.x<width+ImageWidth && id.y>width && id.y<width+ImageHeitht)
+   {
+     int indexWidth = id.x-width;
+
+	 int indexHeight = id.y-width;
+     
+     Result[id.xy] =Source[uint2(indexWidth,indexHeight)];
+   }
+	else Result[id.xy]= float4(1,1,1,1);
 }

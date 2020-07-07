@@ -336,27 +336,46 @@ public class Test : MonoBehaviour, IDragHandler, IEndDragHandler
 
     #region 相机原理代码
     /// <summary>
-    /// 屏幕坐标转世界坐标
+    /// 屏幕坐标转世界坐标，不支持相机旋转设置，必须固定相机旋转为vector3(0,0,0)
     /// </summary>
     public void MyScreenToWorldPoint(Vector3 screenPos)
     {
-        //屏幕坐标转为投影坐标,
-
-        Matrix4x4 p = Camera.main.projectionMatrix;
-
-        Matrix4x4 v = Camera.main.worldToCameraMatrix;
-
-        Matrix4x4 vi = Camera.main.cameraToWorldMatrix;
 
         Debug.Log("初始屏幕坐标为 " + screenPos);
 
-        Vector3 apiPos = Camera.main.ScreenToWorldPoint(screenPos);
+        //屏幕坐标转为投影坐标矩阵
+        Matrix4x4 p = Camera.main.projectionMatrix;
+        //世界坐标到相机坐标矩阵
+        Matrix4x4 v = Camera.main.worldToCameraMatrix;
+      
 
-        Debug.Log("apiPos 得到的世界坐标为 " + apiPos);
+        Vector3 apiWorldPos = Camera.main.ScreenToWorldPoint(screenPos);
 
-        Vector3 v1 = v.MultiplyPoint(apiPos);
+        Vector3 cam = Camera.main.transform.position;
 
-        Debug.Log("api 世界到相机的坐标为 " + v1);
+        Debug.Log("apiPos 得到的世界坐标为 " + apiWorldPos);
+
+        Debug.Log("相机矩阵为 \r\n" + v);
+
+        Vector3 v1 = v.MultiplyPoint(apiWorldPos);//4阶矩阵必须跟四维向量相乘，这里四维向量w自动补全为1
+
+        Debug.Log("根据unity的api 得到的相机坐标为 " + v1);
+
+        float cx1 = apiWorldPos.x + v.m03;//v.mo3  为相机 -cam.x 的值
+
+        float cy1 = apiWorldPos.y + v.m13;//v.m13 为相机  -cam.y 的值
+
+        float cz1 = -apiWorldPos.z + v.m23;//v.m13 为相机  cam.z 的值
+
+        Debug.Log("自己算法得到的世界坐标为 " + new Vector3(cx1,cy1,cz1));
+
+        float cx2 = apiWorldPos.x - cam.x;
+
+        float cy2 = apiWorldPos.y - cam.y;
+
+        float cz2 = -apiWorldPos.z + cam.z;
+
+        Debug.Log("根据相机位置算出的世界坐标为 " + new Vector3(cx2, cy2, cz2));
 
 
         float px = screenPos.x / Screen.width;
@@ -386,6 +405,8 @@ public class Test : MonoBehaviour, IDragHandler, IEndDragHandler
 
         x = x + camPos.x;
 
+        y = y + camPos.y;
+
         z = camPos.z - z;
 
         Debug.Log("得到的世界坐标为 " + new Vector3(x, y, z));
@@ -395,7 +416,7 @@ public class Test : MonoBehaviour, IDragHandler, IEndDragHandler
     }
 
     /// <summary>
-    /// 世界坐标转屏幕坐标
+    /// 世界坐标转屏幕坐标，不支持相机旋转设置，必须固定相机旋转为vector3(0,0,0)
     /// </summary>
     /// <param name="worldPos"></param>
     public void MyWorldToScreenPos(Vector3 worldPos)
@@ -404,43 +425,15 @@ public class Test : MonoBehaviour, IDragHandler, IEndDragHandler
 
         Matrix4x4 p = Camera.main.projectionMatrix;
 
-        //float z = camPos.z - worldPos.z;
-
-        //float x = worldPos.x - camPos.x;
-
-        //Vector3 temp1 = new Vector3(x,worldPos.y,z);
-
-        //Debug.Log("======================>>>>>得到的相机坐标为 " + temp1);
-
-        //float z1 = temp1 .z* p.m32;
-
-        //float x1 = temp1 .x* p.m00;
-
-        //float y1 = temp1 .y* p.m11;
-
-        
-
-        //Vector3 ppos = new Vector3(x1 / z1, y1 / z1, z1);//透视除法
-
-        //Debug.Log("======================>>>>>其次坐标为 " + ppos);
-
-        //float x2 = ppos.x*0.5f + 0.5f;
-
-        //float y2 = ppos.y*0.5f + 0.5f;
-
-        //x2 = x2*Screen.width;
-
-        //y2 = y2*Screen.height;
-
-
-        //Debug.Log("======================>>>>>得到的屏幕坐标为 " + new Vector3(x2, y2, 0));
-
-
         float z = camPos.z - worldPos.z;
 
         float x = worldPos.x - camPos.x;
 
-        Vector3 temp1 = new Vector3(x, worldPos.y, z);
+        float y = worldPos.y - camPos.y;
+
+        Vector3 temp1 = new Vector3(x, y, z);//得到相机坐标
+
+        Debug.Log("======================>>>>>得到的相机坐标为 " + temp1);
 
         float z1 = temp1.z * p.m32;
 
@@ -449,6 +442,8 @@ public class Test : MonoBehaviour, IDragHandler, IEndDragHandler
         float y1 = temp1.y * p.m11;
 
         Vector3 ppos = new Vector3(x1 / z1, y1 / z1, z1);//透视除法
+
+        Debug.Log("======================>>>>>其次坐标为 " + ppos);
 
         float x2 = ppos.x * 0.5f + 0.5f;
 
@@ -463,7 +458,7 @@ public class Test : MonoBehaviour, IDragHandler, IEndDragHandler
 
 
     }
-
+    #endregion
     private void Stwts()
     {
         Vector3 worldPos = Camera.main.ScreenToWorldPoint(new Vector3(300, 400, 200f));
@@ -523,7 +518,4 @@ public class Test : MonoBehaviour, IDragHandler, IEndDragHandler
 
         //再从相机坐标转世界坐标
     }
-
-    #endregion
-
 }

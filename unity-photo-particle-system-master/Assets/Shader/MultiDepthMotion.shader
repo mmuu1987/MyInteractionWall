@@ -17,73 +17,73 @@
 		 
 			
 
-	//第一个描边PASS
-	    Pass {
+	////第一个描边PASS
+	//    Pass {
 
-		   Tags { "Queue"="Transparent-1"   "RenderType"="Transparent"   "IgnoreProjection" = "True"}
-		   ZWrite on
-		    Blend SrcAlpha  OneMinusSrcAlpha
+	//	   Tags { "Queue"="Transparent-1"   "RenderType"="Transparent"   "IgnoreProjection" = "True"}
+	//	    ZWrite off
+	//	    Blend SrcAlpha  OneMinusSrcAlpha
 
 		
-            CGPROGRAM
+ //           CGPROGRAM
 
-            #pragma vertex vert
-            #pragma fragment frag
-            #pragma target 4.5
-			//#pragma multi_compile_instancing
-            #include "UnityCG.cginc"
-            #include "Assets/Common/Shaders/Math.cginc"
-			#include "Assets/ComputeShader/GPUParticle.cginc"
+ //           #pragma vertex vert
+ //           #pragma fragment frag
+ //           #pragma target 4.5
+	//		//#pragma multi_compile_instancing
+ //           #include "UnityCG.cginc"
+ //           #include "Assets/Common/Shaders/Math.cginc"
+	//		#include "Assets/ComputeShader/GPUParticle.cginc"
 		   
-            sampler2D _MainTex;
-			fixed4 _BGColor;
-			float4 _WHScale;
-      	    float _Margin;
+ //           sampler2D _MainTex;
+	//		fixed4 _BGColor;
+	//		float4 _WHScale;
+ //     	    float _Margin;
 		 
 
-			#if SHADER_TARGET >= 45
-            StructuredBuffer<PosAndDir> positionBuffer;
-            #endif
+	//		#if SHADER_TARGET >= 45
+ //           StructuredBuffer<PosAndDir> positionBuffer;
+ //           #endif
 
-            struct v2f
-            {
-                float4 pos : SV_POSITION;
-			    float2 uv_MainTex : TEXCOORD0;
-				uint index:SV_InstanceID;//告诉片元，输送实例ID
-            };
-            v2f vert (appdata_base v, uint instanceID : SV_InstanceID)
-            {
-           #if SHADER_TARGET >= 45
-                float4 data = positionBuffer[instanceID].position;
-            #else
-                float4 data = 0;
-            #endif
-			    v2f o;
+ //           struct v2f
+ //           {
+ //               float4 pos : SV_POSITION;
+	//		    float2 uv_MainTex : TEXCOORD0;
+	//			uint index:SV_InstanceID;//告诉片元，输送实例ID
+ //           };
+ //           v2f vert (appdata_base v, uint instanceID : SV_InstanceID)
+ //           {
+ //          #if SHADER_TARGET >= 45
+ //               float4 data = positionBuffer[instanceID].position;
+ //           #else
+ //               float4 data = 0;
+ //           #endif
+	//		    v2f o;
 				
-				float3 initialVelocity = positionBuffer[instanceID].initialVelocity;//获取宽高
-                float3 localPosition = v.vertex.xyz * data.w ;
-				localPosition.x *=_WHScale.x*initialVelocity.x+_Margin;//_Margin向外拓展，用作描边
-				//if(localPosition.y>0)localPosition.y+=0.2f;
-				localPosition.y *=_WHScale.y*initialVelocity.y+_Margin;//_Margin向外拓展，用作描边  
-				localPosition.z+=0.0001f;//不至于重叠
-                float3 worldPosition = data.xyz + localPosition;
+	//			float3 initialVelocity = positionBuffer[instanceID].initialVelocity;//获取宽高
+ //               float3 localPosition = v.vertex.xyz * data.w ;
+	//			localPosition.x *=_WHScale.x*initialVelocity.x+_Margin;//_Margin向外拓展，用作描边
+	//			//if(localPosition.y>0)localPosition.y+=0.2f;
+	//			localPosition.y *=_WHScale.y*initialVelocity.y+_Margin;//_Margin向外拓展，用作描边  
+	//			localPosition.z+=0.0001f;//不至于重叠
+ //               float3 worldPosition = data.xyz + localPosition;
 
-				o.index = instanceID;
-                o.pos = mul(UNITY_MATRIX_VP, float4(worldPosition, 1.0f));
-				o.uv_MainTex = v.texcoord;
-                return o;
-            }
+	//			o.index = instanceID;
+ //               o.pos = mul(UNITY_MATRIX_VP, float4(worldPosition, 1.0f));
+	//			o.uv_MainTex = v.texcoord;
+ //               return o;
+ //           }
 
-            fixed4 frag (v2f i, uint instanceID : SV_InstanceID) : SV_Target
-            {
+ //           fixed4 frag (v2f i, uint instanceID : SV_InstanceID) : SV_Target
+ //           {
 
-		       float4 velocity =  positionBuffer[instanceID].velocity;
-			   float alpha = velocity.y;
-               return fixed4(_BGColor.r,_BGColor.g,_BGColor.b,alpha);
-            }
+	//	       float4 velocity =  positionBuffer[instanceID].velocity;
+	//		   float alpha = velocity.y;
+ //              return fixed4(_BGColor.r,_BGColor.g,_BGColor.b,alpha);
+ //           }
 
-            ENDCG
-        }
+ //           ENDCG
+ //       }
 
 
         Pass {

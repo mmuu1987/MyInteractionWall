@@ -58,6 +58,9 @@ public class PictureHandle : MonoBehaviour
 
         Instance = this;
         DontDestroyOnLoad(this.gameObject);
+
+        
+        
     }
     void Start()
     {
@@ -612,7 +615,17 @@ public class PictureHandle : MonoBehaviour
 
                             Vector2 vector2;
 
-                            byte[] bytes = Common.MakeThumNail(s, Common.PictureWidth, Common.PictureHeight, "HW", out vector2);
+                            FileInfo fileInfo = new FileInfo(s);
+
+                            string fileName = fileInfo.FullName;
+
+                            if (!fileInfo.Name.Contains("AddOutLine"))//添加边框 
+                            {
+                                fileName = RunShader( fileInfo.DirectoryName, fileInfo.Name);
+                            }
+
+
+                            byte[] bytes = Common.MakeThumNail(fileName, Common.PictureWidth, Common.PictureHeight, "HW", out vector2);
 
                             Texture2D tex = new Texture2D(Common.PictureWidth, Common.PictureHeight, TextureFormat.DXT1, false);
 
@@ -637,11 +650,106 @@ public class PictureHandle : MonoBehaviour
 
         // Debug.Log(Texs.Count);
     }
+   
+    public ComputeShader shader;
 
-    private void LoadTexture()
+    public int width = 10;//边框像素单位宽度
+
+    public int LableHeight = 10;//文字占有高度像素单位
+
+
+
+   
+
+   /// <summary>
+   /// 用computeshader来设置贴图边框
+   /// </summary>
+   /// <param name="sourceTex"></param>
+   /// <param name="contents"></param>
+   /// <param name="fileName"></param>
+   /// <returns></returns>
+    string RunShader( string contents, string fileName)
     {
+        System.Drawing.Image originalImage = System.Drawing.Image.FromFile(contents+"/"+fileName);
 
+        byte[] bytes;
+        MemoryStream ms = new MemoryStream();
+
+       
+        originalImage.Save(ms, ImageFormat.Jpeg);
+
+        bytes = ms.GetBuffer();
+        ms.Dispose();
+
+        
+        Texture2D sourceTex = new Texture2D(originalImage.Width,originalImage.Height);
+
+
+
+        sourceTex.LoadImage(bytes);
+
+        sourceTex.Apply();
+
+        originalImage.Dispose();
+        
+        
+
+        int texWidth = sourceTex.width + 2 * width;
+        int texHeight = sourceTex.height + width + LableHeight;
+        ////////////////////////////////////////
+        //    RenderTexture
+        ////////////////////////////////////////
+        //1 新建RenderTexture
+        RenderTexture rt = new RenderTexture(texWidth, texHeight, 24);
+        //2 开启随机写入
+        rt.enableRandomWrite = true;
+        //3 创建RenderTexture
+        rt.Create();
+      
+        ////////////////////////////////////////
+        //    Compute Shader
+        ////////////////////////////////////////
+        //1 找到compute shader中所要使用的KernelID
+        int k = shader.FindKernel("CSMain1");
+        //2 设置贴图    参数1=kid  参数2=shader中对应的buffer名 参数3=对应的texture, 如果要写入贴图，贴图必须是RenderTexture并enableRandomWrite
+        shader.SetTexture(k, "Result", rt);
+        shader.SetTexture(k, "Source", sourceTex);
+
+        shader.SetInt("width", width);
+        shader.SetInt("LableHeight", LableHeight);
+        shader.SetInt("ImageWidth", sourceTex.width);
+        shader.SetInt("ImageHeitht", sourceTex.height);
+
+
+        Debug.Log("tex info width is " + texWidth + "  Height is " + texHeight);
+        //3 运行shader  参数1=kid  参数2=线程组在x维度的数量 参数3=线程组在y维度的数量 参数4=线程组在z维度的数量
+        shader.Dispatch(k, texWidth, texHeight, 1);
+     
+        return   SaveRenderTextureToJpg(rt, contents, fileName);
     }
+
+    //将RenderTexture保存成一张png图片  
+    public string SaveRenderTextureToJpg(RenderTexture rt, string contents, string fileName)
+    {
+        RenderTexture prev = RenderTexture.active;
+        RenderTexture.active = rt;
+        Texture2D png = new Texture2D(rt.width, rt.height, TextureFormat.ARGB32, false);
+        png.ReadPixels(new Rect(0, 0, rt.width, rt.height), 0, 0);
+        byte[] bytes = png.EncodeToJPG();
+
+        string filePath = contents + "/AddOutLine_" + fileName ;
+
+        File.WriteAllBytes(filePath, bytes);
+        //同时，删掉旧贴图
+        File.Delete(contents + "/" + fileName );
+
+        RenderTexture.active = prev;
+
+        rt.Release();
+
+        return filePath;
+
+    }  
     public void DestroyTexture()
     {
         foreach (Texture2D texture2D in Texs)
@@ -681,42 +789,6 @@ public class PictureHandle : MonoBehaviour
         TexArr.wrapMode = TextureWrapMode.Clamp;
         TexArr.filterMode = FilterMode.Bilinear;
     }
-
-    //private void OnGUI()
-    //{
-    //    if (GUI.Button(new Rect(0f, 0f, 300f, 300f), "Test"))
-    //    {
-    //        RestSizePicture();
-    //    }
-    //}
-
-    private void RestSizePicture()
-    {
-        string path = "D:\\介绍图片_001.jpg";
-
-        System.Diagnostics.Stopwatch watch = new Stopwatch();
-        Vector2 size = Vector2.zero;
-        watch.Start();
-        byte[] bytes = Common.MakeThumNail(path, 512, 512, "HW", out size);
-        //init();计算耗时的方法
-        watch.Stop();
-        var mSeconds = watch.ElapsedMilliseconds;
-        UnityEngine.Debug.Log("耗时：" + mSeconds + "  原始尺寸是 " + size);
-
-        Texture2D tex = new Texture2D(512, 512, TextureFormat.DXT5, false, true);
-
-        tex.LoadImage(bytes);
-
-
-
-        tex.Apply();
-
-        TestImage.texture = tex;
-
-        TestImage.SetNativeSize();
-    }
-
-
 
 }
 

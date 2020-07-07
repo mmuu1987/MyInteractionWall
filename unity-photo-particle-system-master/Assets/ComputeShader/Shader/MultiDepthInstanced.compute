@@ -77,7 +77,7 @@ float m11;
 
 float3 camPos;
 
-//把屏幕坐标转成世界坐标
+//把屏幕坐标转成世界坐标，不支持相机旋转
 float3 ScreenToWorld(float3 p)
 {
        float px = p.x /Width;
@@ -100,23 +100,25 @@ float3 ScreenToWorld(float3 p)
 
 
 		//相机转世界坐标
-		x1 = x1+camPos.x;
-		z1 = camPos.z-z1;
+		x1 = camPos.x+x1;
 		y1 = camPos.y+y1;
+		z1 = camPos.z-z1;
 
-		//得到的坐标为相机坐标
+		//得到的坐标为世界坐标
 		return float3(x1,y1,z1);
 
 
 }
-//世界坐标转屏幕坐标
+//世界坐标转屏幕坐标 不支持相机旋转
 float3 WorldToScreenPos(float3 worldPos)
 {
         float z = camPos.z - worldPos.z;
 
         float x = worldPos.x - camPos.x;
 
-        float3 temp1 = float3(x,worldPos.y,z);
+		float y = worldPos.y - camPos.y;
+
+        float3 temp1 = float3(x,y,z);
 
         float z1 = temp1 .z * m32;
 

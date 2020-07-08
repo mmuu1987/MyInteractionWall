@@ -190,7 +190,7 @@ public class PictureHandle : MonoBehaviour
 
         Item item = temp.GetComponent<Item>();
 
-        item.LoadData(ye, TexArr,pad.initialVelocity);
+        item.LoadData(ye, TexArr);
 
         Vector3 screenPos = Camera.main.WorldToScreenPoint(pad.position);
 

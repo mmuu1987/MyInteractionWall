@@ -4,6 +4,7 @@
 	{
 		_Index("Index",int) = 1
 		_TexArrOne ("Texture Array", 2DArray) = "" {}
+		_Yscale("Yscale",Range(0,1)) = 1
 	}
 	SubShader
 	{
@@ -34,12 +35,14 @@
 			};
 			 
 		    int _Index;
-			
+			float _Yscale;
 			v2f vert (appdata v)
 			{
 				v2f o;
 				o.vertex = UnityObjectToClipPos(v.vertex);
-				o.uv = v.uv;
+				float v1 = v.uv.y*_Yscale;
+				float u1 = v.uv.x;
+				o.uv = float2(u1,v1);
 				
 				return o;
 			}

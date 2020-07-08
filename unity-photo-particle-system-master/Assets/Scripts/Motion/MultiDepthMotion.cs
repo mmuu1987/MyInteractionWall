@@ -457,13 +457,13 @@ public class MultiDepthMotion : MotionInputMoveBase
        
         Dispatch(dispatchID, system);
 
-        if (_clickPoint.z < 1000000)//相当于有点击事件才触发
+        if (_clickPoint.z < 1000000)//相当于有点击事件才触发 
         {
             PosAndDir[] datas = new PosAndDir[1];
             _clickPointBuff.GetData(datas);
             int index = datas[0].picIndex;
             Vector3 temp1 = Camera.main.ScreenToWorldPoint(new Vector3(400, 500, 10));
-            Debug.Log("click WorldToScreenPos  is " + datas[0].moveDir + "     aip实现是 " + temp1);
+           // Debug.Log("click WorldToScreenPos  is " + datas[0].moveDir + "     aip实现是 " + temp1);
             PictureHandle.Instance.GetYearInfo(datas[0], Canvas.transform);
             _clickPoint = Vector3.one * 1000000;//重置数据
         }

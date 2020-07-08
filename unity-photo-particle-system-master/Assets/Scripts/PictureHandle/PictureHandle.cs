@@ -31,7 +31,9 @@ public class PictureHandle : MonoBehaviour
 
     public Texture2DArray TexArr { get; set; }
 
-    List<YearsInfo> _yesrsInfos = new List<YearsInfo>();
+    public List<Texture2D> YearTexs = new List<Texture2D>();
+
+    private List<YearsInfo> _yesrsInfos = new List<YearsInfo>();
 
     public List<Texture2D> Texs = new List<Texture2D>();
 
@@ -621,7 +623,7 @@ public class PictureHandle : MonoBehaviour
 
                             if (!fileInfo.Name.Contains("AddOutLine"))//添加边框 
                             {
-                                fileName = RunShader( fileInfo.DirectoryName, fileInfo.Name);
+                                fileName = RunShader(yearsEvent.Years, fileInfo.DirectoryName, fileInfo.Name);
                             }
 
 
@@ -668,7 +670,7 @@ public class PictureHandle : MonoBehaviour
    /// <param name="contents"></param>
    /// <param name="fileName"></param>
    /// <returns></returns>
-    string RunShader( string contents, string fileName)
+    string RunShader(string year, string contents, string fileName)
     {
         System.Drawing.Image originalImage = System.Drawing.Image.FromFile(contents+"/"+fileName);
 
@@ -680,6 +682,19 @@ public class PictureHandle : MonoBehaviour
 
         bytes = ms.GetBuffer();
         ms.Dispose();
+
+        //获取年代图片
+       Texture2D yearTex = null;
+
+       foreach (Texture2D texture2D in YearTexs)
+       {
+           if (texture2D.name == year)
+           {
+               yearTex = texture2D;
+               break;
+           }
+       }
+
 
         
         Texture2D sourceTex = new Texture2D(originalImage.Width,originalImage.Height);
@@ -714,11 +729,10 @@ public class PictureHandle : MonoBehaviour
         //2 设置贴图    参数1=kid  参数2=shader中对应的buffer名 参数3=对应的texture, 如果要写入贴图，贴图必须是RenderTexture并enableRandomWrite
         shader.SetTexture(k, "Result", rt);
         shader.SetTexture(k, "Source", sourceTex);
-
-        shader.SetInt("width", width);
+        shader.SetTexture(k, "YearTex", yearTex);
+        shader.SetInt("BorderWidth", width);
         shader.SetInt("LableHeight", LableHeight);
-        shader.SetInt("ImageWidth", sourceTex.width);
-        shader.SetInt("ImageHeitht", sourceTex.height);
+       
 
 
         Debug.Log("tex info width is " + texWidth + "  Height is " + texHeight);

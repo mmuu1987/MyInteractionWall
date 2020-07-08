@@ -7,7 +7,7 @@ public class SetTexColor_1 : MonoBehaviour
     public Material mat;
     public ComputeShader shader;
 
-    public int width = 50;//边框像素单位宽度
+    public int BorderWidth = 50;//边框像素单位宽度
 
     public int LableHeight = 50;//文字占有高度像素单位
 
@@ -16,9 +16,13 @@ public class SetTexColor_1 : MonoBehaviour
     public Transform Image;
 
     public Texture2D HandleTex;
+    /// <summary>
+    /// 年份贴图
+    /// </summary>
+    public Texture2D YearTex;
     void Start()
     {
-      //  RunShader(HandleTex);
+        RunShader(HandleTex, YearTex);
     }
 
     /// <summary>
@@ -28,11 +32,11 @@ public class SetTexColor_1 : MonoBehaviour
     {
         
     }
-    void RunShader(Texture2D sourceTex,string contents, string pngName)
+    void RunShader(Texture2D sourceTex,Texture2D yearTex)
     {
 
-        int texWidth = sourceTex.width + 2 * width;
-        int texHeight = sourceTex.height + width + LableHeight;
+        int texWidth = sourceTex.width + 2 * BorderWidth;
+        int texHeight = sourceTex.height + BorderWidth + LableHeight;
         ////////////////////////////////////////
         //    RenderTexture
         ////////////////////////////////////////
@@ -53,11 +57,10 @@ public class SetTexColor_1 : MonoBehaviour
         //2 设置贴图    参数1=kid  参数2=shader中对应的buffer名 参数3=对应的texture, 如果要写入贴图，贴图必须是RenderTexture并enableRandomWrite
         shader.SetTexture(k, "Result", rt);
         shader.SetTexture(k, "Source", sourceTex);
+        shader.SetTexture(k, "YearTex", yearTex);
 
-        shader.SetInt("width", width);
+        shader.SetInt("BorderWidth", BorderWidth);
         shader.SetInt("LableHeight", LableHeight);
-        shader.SetInt("ImageWidth", sourceTex.width);
-        shader.SetInt("ImageHeitht", sourceTex.height);
       
 
         Debug.Log("tex info width is " + texWidth +"  Height is " +texHeight);
@@ -68,7 +71,7 @@ public class SetTexColor_1 : MonoBehaviour
 
         if(Image!=null)
         Image.localScale = new Vector3(scale,1,1);
-        SaveRenderTextureToJpg(rt, contents, pngName);
+       // SaveRenderTextureToJpg(rt, contents, pngName);
     }
 
      //将RenderTexture保存成一张png图片  

@@ -239,6 +239,8 @@ public class Test : MonoBehaviour, IDragHandler, IEndDragHandler
             Transform cam = Camera.main.transform;
             
             
+
+            //不好理解可以先吧_timeTemp=1的时候理解
             //角度插值系数
             float lerpValue = Mathf.Lerp(0f, _angle, _timeTemp);
             Debug.Log(lerpValue);
@@ -248,15 +250,19 @@ public class Test : MonoBehaviour, IDragHandler, IEndDragHandler
             float dis = Mathf.Lerp(Distance, 3, _timeTemp);
 
 
+            //相机到头部的向量  +  头部到相机的高度的向量  当_timeTemp=1时，dir的y轴必为0，这样就可以水平注视头部
             Vector3 dir = _camToheadDir + new Vector3(0f, tempHeight, 0f);
-
             dir = dir.normalized;
 
-            Quaternion r = Quaternion.Euler(new Vector3(0f, -lerpValue, 0f));//正数顺时针，负数逆时针
+            //r为旋转量，当_timeTemp=1时，就是相机应该旋转多少度才能跟头部相对的 量 
+            //-lerpValue可能为正，也可能为负数，这就是-号存在的意义 正数顺时针，负数逆时针 
+            Quaternion r = Quaternion.Euler(new Vector3(0f, -lerpValue, 0f));
 
-            Vector3 newDir = r * -dir;//旋转向量
+            Vector3 newDir = r * -dir;//用四元数旋转向量，很牛逼，必须记住//-号是因为我们需要的是反向的向量
 
-            cam.position = Head.position + newDir * dis;
+            //新位置= 位置 +向量 这个公式不用说了吧  
+            // newDir * dis单位向量乘以长度得到长度为dis的向量
+            cam.position = Head.position + newDir * dis;//
 
 
             //旋转相对容易，难得是位置
@@ -328,7 +334,7 @@ public class Test : MonoBehaviour, IDragHandler, IEndDragHandler
         if (GUI.Button(new Rect(0f, 0f, 100f, 100f), "Test"))
         {
 
-            MyScreenToWorldPoint(new Vector3(300, 400, 200));
+           // MyScreenToWorldPoint(new Vector3(300, 400, 200));
             MoveToHead();
 
         }

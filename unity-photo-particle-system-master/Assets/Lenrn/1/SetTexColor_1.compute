@@ -6,29 +6,66 @@ RWTexture2D<float4>  Result;
 Texture2D Source;
 
 int LableHeight;
-int width;
+int BorderWidth;
 
-int ImageHeitht;
-
-int ImageWidth;
 //3 kernel函数
 //组内三维线程数
 [numthreads(1,1,1)]
 void CSMain1 (uint3 id : SV_DispatchThreadID)
 {
-    //给buffer赋值
-    //纯红色
-   // Result[id.xy] = Source[id.xy];
+       //图片宽
+   uint ImageHeitht;
+   //图片高 
+   uint ImageWidth;
 
-    //基于uv的x给颜色
-   // float v = id.x/256.0f;
-   if(id.x>width&& id.x<width+ImageWidth && id.y>width && id.y<width+ImageHeitht)
+    Source.GetDimensions(ImageWidth,ImageHeitht);
+
+   if(id.x>BorderWidth&& id.x<BorderWidth+ImageWidth && id.y>BorderWidth && id.y<BorderWidth+ImageHeitht)
    {
-     int indexWidth = id.x-width;
+     int indexWidth = id.x-BorderWidth;
 
-	 int indexHeight = id.y-width;
+	 int indexHeight = id.y-BorderWidth;
      
      Result[id.xy] =Source[uint2(indexWidth,indexHeight)];
    }
 	else Result[id.xy]= float4(1,1,1,1);
 }
+
+//void CSMain1 (uint3 id : SV_DispatchThreadID)
+//{
+   
+//   //图片宽
+//   uint ImageHeitht;
+//   //图片高 
+//   uint ImageWidth;
+
+//   Source.GetDimensions(ImageWidth,ImageHeitht);
+
+//    //基于uv的x给颜色
+//   if(id.x>BorderWidth&& id.x<BorderWidth+ImageWidth && id.y>BorderWidth && id.y<BorderWidth+ImageHeitht)
+//   {
+//     int indexWidth = id.x-BorderWidth;
+
+//	 int indexHeight = id.y-BorderWidth;
+     
+//     Result[id.xy] =Source[uint2(indexWidth,indexHeight)];
+//   }
+//   else
+//   {
+//      if(id.y>=BorderWidth+ImageHeitht)
+//	  {
+//	    uint y1 =  id.y - BorderWidth-ImageHeitht ;
+
+//		uint w,h;
+
+//		YearTex.GetDimensions( w, h);
+
+//	     if(id.x< w)
+//	      Result[id.xy] = YearTex[uint2(id.x,y1)];
+//		 else
+//		  Result[id.xy]= float4(1,1,1,1);
+//	  }
+//	  else Result[id.xy]= float4(1,1,1,1);
+//   }
+	
+//}

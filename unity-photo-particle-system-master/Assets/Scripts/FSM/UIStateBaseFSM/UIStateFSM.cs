@@ -90,6 +90,8 @@ public class UIStateFSM : FsmState<UIControl>
         {
             _videoPlayer.transform.localScale = Vector3.zero;
             showGo.gameObject.SetActive(true);
+            _videoPlayer.Stop();
+          
 
         }
     }

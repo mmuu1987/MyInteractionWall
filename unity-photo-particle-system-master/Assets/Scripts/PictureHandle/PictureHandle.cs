@@ -817,7 +817,7 @@ public class PictureHandle : MonoBehaviour
 
 
 
-        Debug.Log("tex info width is " + texWidth + "  Height is " + texHeight);
+        //Debug.Log("tex info width is " + texWidth + "  Height is " + texHeight);
         //3 运行shader  参数1=kid  参数2=线程组在x维度的数量 参数3=线程组在y维度的数量 参数4=线程组在z维度的数量
         shader.Dispatch(k, texWidth, texHeight, 1);
 

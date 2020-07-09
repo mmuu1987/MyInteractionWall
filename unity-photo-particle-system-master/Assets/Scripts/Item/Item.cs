@@ -71,6 +71,7 @@ public class Item : MonoBehaviour, IDragHandler, IPointerClickHandler,IPointerDo
              if (_curIndex < 0) _curIndex=0;
 
              _mat.SetInt("_Index", textureIndex[_curIndex]);
+             ShowImage(_curIndex);
              _videoPlayer.Pause();
              _videoImage.gameObject.SetActive(false);
              _image.gameObject.SetActive(true);
@@ -96,6 +97,7 @@ public class Item : MonoBehaviour, IDragHandler, IPointerClickHandler,IPointerDo
                      else
                      {
                          _mat.SetInt("_Index", textureIndex[textureIndex.Count-1]);
+                         ShowImage(textureIndex.Count - 1);
                          _videoImage.gameObject.SetActive(false);
                          _image.gameObject.SetActive(true);
                          _curIndex--;
@@ -109,6 +111,7 @@ public class Item : MonoBehaviour, IDragHandler, IPointerClickHandler,IPointerDo
              else
              {
                  _mat.SetInt("_Index", textureIndex[_curIndex]);
+                 ShowImage(_curIndex);
                  _videoImage.gameObject.SetActive(false);
                  _image.gameObject.SetActive(true);
                 
@@ -215,83 +218,7 @@ public class Item : MonoBehaviour, IDragHandler, IPointerClickHandler,IPointerDo
 
         ShowImage(_curIndex);
 
-     //   Vector2 temp = yearsEvent.PictureInfos[textureIndex[0]];
-
-     //  // temp.y -= PictureHandle.Instance.LableHeight;
-     //   //图片的容器的宽高
-     //   Vector2 size = _image.rectTransform.sizeDelta;//max 800  600
-
-     //   float scaleY = temp.y/(temp.y + PictureHandle.Instance.LableHeight + 2*PictureHandle.Instance.width);
-
-     //   float v2 = temp.x / temp.y;//图片的比率
-       
-
-     //   if (temp.x > temp.y)//如果图片宽大于高
-     //   {
-     //       if (temp.x > size.x)//如果图片宽大于容器的宽
-     //       {
-     //           temp.x = size.x;//以容器宽为准
-
-     //           temp.y = size.x / v2;//把图片高按比例缩小
-
-     //           if (temp.y > size.y)//如果图片的高还是大于容器的高
-     //            {
-     //                temp.y = size.y;//则以容器的高为标准
-
-     //                temp.x = size.y * v2;//容器的高再度计算赋值
-
-     //               //一下逻辑同理
-     //            }
-     //       }
-     //       else //如果图片宽小于容器的宽
-     //       {
-                
-     //           if (temp.y > size.y)//如果图片的高还是大于容器的高
-     //           {
-     //               temp.y = size.y;//则以容器的高为标准
-
-     //               temp.x = size.y * v2;//容器的高再度计算赋值
-
-                   
-     //           }
-     //       }
-     //   }
-     //   else if (temp.x <= temp.y)//如果图片的高大于宽 
-     //   {
-     //       if (temp.y > size.y)//如果图片高大于容器的高
-     //       {
-     //           temp.y = size.y;//以容器的高为准
-
-     //           temp.x = size.y * v2;//重新计算图片的宽
-
-     //           if (temp.x > size.x)//如果图片的宽还是大于容器的高
-     //            {
-
-     //                temp.x = size.x;//则再次以容器的宽为标准
-
-     //                temp.y = size.x / v2;//再以容器的宽计算得到容器的高
-     //            }
-     //       }
-     //       else //如果图片的高小于容器的高
-     //       {
-     //           //但是图片的宽大于容器的宽
-     //           if (temp.x > size.x)
-     //           {
-     //               temp.x = size.x;//以容器的宽为准
-     //               temp.y = size.x / v2;//再以容器的宽计算得到容器的高
-     //           }
-               
-     //       }
-     //   }
-
-
-     ////   Vector2 realSize =_yearsEvent.PictureIndes
-
-     //   _image.rectTransform.sizeDelta = new Vector2(temp.x,temp.y);
-
-     //   _mat.SetFloat("_Yscale", scaleY);
-     //   _image.SetNativeSize();
-
+     
     }
 
     private void ShowImage(int index)
@@ -378,67 +305,7 @@ public class Item : MonoBehaviour, IDragHandler, IPointerClickHandler,IPointerDo
         _mat.SetFloat("_Yscale", scaleY);
         _image.SetNativeSize();
     }
-    /// <summary>
-    /// 调整图片尺寸
-    /// </summary>
-    private void ReztPictureSize(Vector2 realScale)
-    {
-        //图片的容器的宽高
-        Vector2 size = _image.rectTransform.sizeDelta;//max 800  600
-
-        Vector2 newSize = new Vector2(size.x * realScale.x, size.y * realScale.y);//1500:2000
-
-        float v2 = realScale.x / realScale.y;//图片的比率
-
-
-        float newWidth = newSize.x;
-
-        float newHeight = newSize.y;
-
-        if (newWidth > newHeight)//如果图片宽大于高
-        {
-            if (newWidth > size.x)//如果图片宽大于容器的宽
-            {
-
-                newWidth = size.x;//以容器宽为准
-
-                newHeight = size.x / v2;//把图片高按比例缩小
-
-                if (newHeight > size.y)//如果图片的高还是大于容器的高
-                {
-
-
-                    newHeight = size.y;//则以容器的高为标准
-
-                    newWidth = size.y * v2;//容器的高再度计算赋值
-
-                    //一下逻辑同理
-                }
-            }
-        }
-        else if (newWidth <= newHeight)
-        {
-            if (newHeight > size.y)
-            {
-                newHeight = size.x;
-
-                newWidth = size.y * v2;
-
-                if (newWidth > size.x)
-                {
-                    newHeight = size.x / v2;
-
-                    newWidth = size.x;
-                }
-            }
-        }
-
-
-        //   Vector2 realSize =_yearsEvent.PictureIndes
-
-        _image.rectTransform.sizeDelta = new Vector2(newWidth, newHeight);
-        _image.SetNativeSize();
-    }
+   
     private void OnDestroy()
     {
         Destroy(_mat);

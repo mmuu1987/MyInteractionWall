@@ -221,7 +221,7 @@
             #else
                  col = _Color;
             #endif
-               return fixed4(col.rgb,alpha);
+               return fixed4(col.rgb,alpha*col.a);
             }
 
             ENDCG

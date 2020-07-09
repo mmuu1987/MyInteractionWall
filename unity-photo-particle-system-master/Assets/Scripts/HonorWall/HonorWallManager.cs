@@ -56,6 +56,10 @@ public class HonorWallManager : MonoBehaviour
 
             if(images[i].sprite !=null)
             images[i].name = images[i].sprite.name;
+            else
+            {
+                Debug.Log(infos[index].PersonName);
+            }
         }
         //保存索引
         Common.PictureIndex = images.Count;
@@ -86,7 +90,7 @@ public class HonorWallManager : MonoBehaviour
 
         //加载内容
 
-        foreach (PersonInfo personInfo in PictureHandle.Instance.PersonInfos[0])
+        foreach (PersonInfo personInfo in PictureHandle.Instance.HonorWall)
         {
             if (personInfo.PictureIndex == index)
             {

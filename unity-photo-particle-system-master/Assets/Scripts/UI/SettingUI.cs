@@ -16,6 +16,8 @@ public class SettingUI : MonoBehaviour
 
     public Button EnterGame;
 
+    public Button FirstDirButton;
+
 
     /// <summary>
     /// 是否有按钮操作
@@ -52,7 +54,17 @@ public class SettingUI : MonoBehaviour
 	    AutoEnterGame();
       
 
-      
+      FirstDirButton.onClick.AddListener((() =>
+      {
+         string dirName=  FirstDirButton.transform.parent.Find("Text").GetComponent<Text>().text;
+
+          if (!string.IsNullOrEmpty(dirName))
+          {
+              SettingManager.Instance.ChangeDirectName(Direct.FirstDir, dirName);
+          }
+
+         
+      }));
 
 	}
 
@@ -65,7 +77,7 @@ public class SettingUI : MonoBehaviour
 
 
 
-      StartCoroutine(Common.WaitTime(1f, (() =>
+      StartCoroutine(Common.WaitTime(1, (() =>
      {
          if (isClick)
          {

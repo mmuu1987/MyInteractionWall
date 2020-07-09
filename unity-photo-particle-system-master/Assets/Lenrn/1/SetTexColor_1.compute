@@ -39,7 +39,7 @@ void CSMain1 (uint3 id : SV_DispatchThreadID)
 
    Source.GetDimensions(ImageWidth,ImageHeitht);
 
-    //基于uv的x给颜色
+   //图片索引是从左下角开始
    if(id.x>BorderWidth&& id.x<BorderWidth+ImageWidth && id.y>BorderWidth && id.y<BorderWidth+ImageHeitht)
    {
      int indexWidth = id.x-BorderWidth;
@@ -50,9 +50,9 @@ void CSMain1 (uint3 id : SV_DispatchThreadID)
    }
    else
    {
-      if(id.y>=BorderWidth+ImageHeitht)
+      if(id.y>=BorderWidth + BorderWidth+ImageHeitht)
 	  {
-	    uint y1 =  id.y - BorderWidth-ImageHeitht ;
+	    uint y1 =  id.y - BorderWidth-BorderWidth-ImageHeitht ;
 
 		uint w,h;
 

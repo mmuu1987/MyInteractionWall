@@ -68,6 +68,7 @@ public class PictureHandle : MonoBehaviour
     {
         LoadPicture();
         LoadTextureAssets();
+
         LoadCompanyIntroductionPic();
         LoadPrivateHeirsPic();
         LoadPersonInfo();
@@ -490,8 +491,14 @@ public class PictureHandle : MonoBehaviour
         DirectoryInfo[] infos = directoryInfo.GetDirectories();//获取角色目录数
         foreach (DirectoryInfo info in infos)
         {
+            string personName = null;
+            if (info.Name.Contains("_"))//卓越风采的文件夹命名风格
+            {
+                personName = info.Name.Substring(4, info.Name.Length - 4);
+            }
+            else personName = info.Name;//荣誉墙的命名风格
 
-            PersonInfo personInfo = new PersonInfo { PersonName = info.Name };
+            PersonInfo personInfo = new PersonInfo { PersonName = personName };
 
 
             FileInfo[] fileInfos = info.GetFiles();
@@ -502,7 +509,7 @@ public class PictureHandle : MonoBehaviour
                 {
                     personInfo.DescribeFilePath = fileInfo.FullName;
                 }
-                else if (fileInfo.Extension == ".jpg")
+                else if (fileInfo.Extension == ".jpg" || fileInfo.Extension == ".JPG" )
                 {
                     personInfo.PicturePath = fileInfo.FullName;
                 }
@@ -510,7 +517,7 @@ public class PictureHandle : MonoBehaviour
                 {
                     personInfo.YearEventVideo = fileInfo.FullName;
                 }
-                else if (fileInfo.Extension == ".png")
+                else if (fileInfo.Extension == ".png" || fileInfo.Extension == ".PNG")
                 {
                     personInfo.PicturePath = fileInfo.FullName;
                 }
@@ -619,15 +626,8 @@ public class PictureHandle : MonoBehaviour
 
                             FileInfo fileInfo = new FileInfo(s);
 
-                            string fileName = fileInfo.FullName;
+                            byte[] bytes = HandlePicture(yearsEvent.Years, fileInfo.DirectoryName, fileInfo.Name, out vector2);
 
-                            if (!fileInfo.Name.Contains("AddOutLine"))//添加边框 
-                            {
-                                fileName = RunShader(yearsEvent.Years, fileInfo.DirectoryName, fileInfo.Name);
-                            }
-
-
-                            byte[] bytes = Common.MakeThumNail(fileName, Common.PictureWidth, Common.PictureHeight, "HW", out vector2);
 
                             Texture2D tex = new Texture2D(Common.PictureWidth, Common.PictureHeight, TextureFormat.DXT1, false);
 
@@ -710,7 +710,7 @@ public class PictureHandle : MonoBehaviour
         
 
         int texWidth = sourceTex.width + 2 * width;
-        int texHeight = sourceTex.height + width + LableHeight;
+        int texHeight = sourceTex.height + 2 * width + LableHeight;
         ////////////////////////////////////////
         //    RenderTexture
         ////////////////////////////////////////
@@ -740,6 +740,98 @@ public class PictureHandle : MonoBehaviour
         shader.Dispatch(k, texWidth, texHeight, 1);
      
         return   SaveRenderTextureToJpg(rt, contents, fileName);
+    }
+    /// <summary>
+    /// 给图片加边框和标题，标题写的是年份，并且缩放图片规格，返回字节数据
+    /// </summary>
+    /// <param name="year"></param>
+    /// <param name="contents"></param>
+    /// <param name="fileName"></param>
+    /// <param name="size">返回图片原始尺寸</param>
+    /// <returns></returns>
+    byte [] HandlePicture(string year, string contents, string fileName,out Vector2 size)
+    {
+        System.Drawing.Image originalImage = System.Drawing.Image.FromFile(contents + "/" + fileName);
+
+        size.x = originalImage.Width;
+        size.y = originalImage.Height;
+
+        byte[] bytes;
+
+        MemoryStream ms = new MemoryStream();
+
+        originalImage.Save(ms, ImageFormat.Jpeg);
+
+        bytes = ms.GetBuffer();
+        ms.Dispose();
+
+        //获取年代图片
+        Texture2D yearTex = null;
+
+        foreach (Texture2D texture2D in YearTexs)
+        {
+            if (texture2D.name == year)
+            {
+                yearTex = texture2D;
+                break;
+            }
+        }
+
+
+
+        Texture2D sourceTex = new Texture2D(originalImage.Width, originalImage.Height);
+
+
+
+        sourceTex.LoadImage(bytes);
+
+        sourceTex.Apply();
+
+        originalImage.Dispose();
+
+
+
+        int texWidth = sourceTex.width + 2 * width;
+        int texHeight = sourceTex.height + 2 * width + LableHeight;
+        ////////////////////////////////////////
+        //    RenderTexture
+        ////////////////////////////////////////
+        //1 新建RenderTexture
+        RenderTexture rt = new RenderTexture(texWidth, texHeight, 24);
+        //2 开启随机写入
+        rt.enableRandomWrite = true;
+        //3 创建RenderTexture
+        rt.Create();
+
+        ////////////////////////////////////////
+        //    Compute Shader
+        ////////////////////////////////////////
+        //1 找到compute shader中所要使用的KernelID
+        int k = shader.FindKernel("CSMain1");
+        //2 设置贴图    参数1=kid  参数2=shader中对应的buffer名 参数3=对应的texture, 如果要写入贴图，贴图必须是RenderTexture并enableRandomWrite
+        shader.SetTexture(k, "Result", rt);
+        shader.SetTexture(k, "Source", sourceTex);
+        shader.SetTexture(k, "YearTex", yearTex);
+        shader.SetInt("BorderWidth", width);
+        shader.SetInt("LableHeight", LableHeight);
+
+
+
+        Debug.Log("tex info width is " + texWidth + "  Height is " + texHeight);
+        //3 运行shader  参数1=kid  参数2=线程组在x维度的数量 参数3=线程组在y维度的数量 参数4=线程组在z维度的数量
+        shader.Dispatch(k, texWidth, texHeight, 1);
+
+       
+        RenderTexture.active = rt;
+        Texture2D jpg = new Texture2D(rt.width, rt.height, TextureFormat.ARGB32, false);
+        jpg.ReadPixels(new Rect(0, 0, rt.width, rt.height), 0, 0);
+
+        byte[] bytesEnd = jpg.EncodeToJPG();
+
+
+
+        return Common.MakeThumNail(bytesEnd, Common.PictureWidth, Common.PictureHeight, "HW"); 
+
     }
 
     //将RenderTexture保存成一张png图片  

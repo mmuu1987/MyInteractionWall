@@ -17,7 +17,6 @@ public class SettingManager : Singleton<SettingManager>
     public override void Init()
     {
         base.Init();
-
         Setting = new Setting();
         LoadDirectInfo();
     }
@@ -49,82 +48,65 @@ public class SettingManager : Singleton<SettingManager>
         }
     }
 
-    public void SaveDirectInfo()
-    {
-        string path = Application.streamingAssetsPath + "/Setting.data";
-
-        string data = JsonUtility.ToJson(Setting);
-
-        byte[] bytes = Encoding.UTF8.GetBytes(data);
-
-        File.WriteAllBytes(path, bytes);
-    }
+    
 
     /// <summary>
     /// 改变文件夹名字
     /// </summary>
-    public void ChangeDirectName(Direct type, string directName)
+    public string GetDirectName(Direct type)
     {
-        string path = null;
+       
+        DirectoryInfo dif = null;
         switch (type)
         {
             case Direct.None:
                 break;
             case Direct.FirstDir:
-                path = Application.streamingAssetsPath + "/大事记/" + Setting.FirstDir;
-                Setting.FirstDir = directName;
-                break;
+                dif  =new DirectoryInfo( Setting.FirstDir);
+                return dif.Name;
+               
             case Direct.SecondDir:
-                path = Application.streamingAssetsPath + "/大事记/" + Setting.SecondDir;
-                Setting.SecondDir = directName;
-                break;
+                dif = new DirectoryInfo(Setting.SecondDir);
+                return dif.Name;
             case Direct.ThirdDir:
-                path = Application.streamingAssetsPath + "/大事记/" + Setting.ThirdDir;
-                Setting.ThirdDir = directName;
-                break;
+                dif = new DirectoryInfo(Setting.ThirdDir);
+                return dif.Name;
+              
             default:
                 throw new ArgumentOutOfRangeException("type", type, null);
         }
 
-        ChangeDirectName(path, directName);
+       // ChangeDirectName(path, directName);
 
 
-        SaveDirectInfo();
+       // SaveDirectInfo();
+        return null;
     }
 
-    private void ChangeDirectName(string path, string directName)
-    {
-        DirectoryInfo dif = new DirectoryInfo(path);
-
-        string newPath = dif.Parent + "/" + directName;
-
-        Directory.Move(dif.FullName, newPath);
-
-        Debug.Log("改名成功");
-    }
+   
 
 }
 
 public class Setting
 {
     /// <summary>
-    /// 大事件的第一层文件夹名字
+    /// 大事件的第一层文件夹路径
     /// </summary>
     public string FirstDir;
     /// <summary>
-    /// 大事件的第一层文件夹名字
+    /// 大事件的第一层文件夹路径
     /// </summary>
     public string SecondDir;
     /// <summary>
-    /// 大事件的第一层文件夹名字
+    /// 大事件的第一层文件夹路径
     /// </summary>
     public string ThirdDir;
 
     public Setting()
     {
-        FirstDir = "2001-2009";
-        SecondDir = "2010-2019";
-        ThirdDir = "2020";
+        FirstDir = Application.streamingAssetsPath + "/大事记/2001-2009";
+        SecondDir = Application.streamingAssetsPath + "/大事记/2010-2019";
+        ThirdDir = Application.streamingAssetsPath + "/大事记/2020";
     }
 
 

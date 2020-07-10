@@ -143,9 +143,13 @@ public class MultiDepthMotion : MotionInputMoveBase
         int k = 0;
         float z = 6;
         float scaleY = 1;//y轴位置屏幕有内容的比率
-        float delay = 0f;
-        List<Vector2> randomPos = new List<Vector2>();
 
+        //得到随机点的个数，第一层的随机点个数不允许低于40
+        //这个参数存在的意义是Common.Sample2D方法采样的时候会得不到正确的个数，有时候明显偏低，这个参数就是为了修正这个数据
+        //这个数据如果scaleY s 两个参数有变化，应该考虑第一层随机点个数的变化
+        int count = 40;
+        List<Vector2> randomPos = new List<Vector2>();
+        
         for (int j = 0; j < newData.Length; j++)
         {
 
@@ -193,9 +197,28 @@ public class MultiDepthMotion : MotionInputMoveBase
                     a = 0.25f;
                     scaleY = 0.6f;
                 }
-                randomPos = Common.Sample2D((_screenPosRightDown.x - _screenPosLeftDown.x) * 4, (_screenPosLeftUp.y - _screenPosLeftDown.y) * scaleY, s + 0.75f, 25);
+               
+
+
+                while (true)
+                {
+                    if (count >= randomPos.Count)//如果得到的个数比上一个还小，那是不正确的采样，必须重新采样
+                    {
+                       // Debug.Log("x:" + _screenPosRightDown.x + " \r\n x1:" + _screenPosLeftDown.x + " \r\n  y:" + _screenPosLeftUp.y + "\r\n  y1:" + _screenPosLeftDown.y + " \r\n scaleY:" + scaleY + " \r\n  s:" + s);
+                        randomPos = Common.Sample2D((_screenPosRightDown.x - _screenPosLeftDown.x) * 4, (_screenPosLeftUp.y - _screenPosLeftDown.y) * scaleY, s + 0.75f, 25);
+                    }
+                    else
+                    {
+                        count = randomPos.Count;
+                        break;
+                    }
+                }
+
+               
+                    
                 Debug.Log("randomPos count is  " + randomPos.Count + " 层级为=> " + (k - 1) + "   tempZ is=>" + tempZ);
                 _depths[k - 1] = new DepthInfo(k - 1, tempZ, s, a);
+               
             }
 
 
@@ -208,17 +231,22 @@ public class MultiDepthMotion : MotionInputMoveBase
            
             Vector2 randomPoint;
 
+
+
+
             if (randomPos.Count > 0)
             {
-             int rangIndex = Random.Range(0, randomPos.Count);
+               // Random.InitState(Random.Range(0, randomPos.Count));
 
-             randomPoint = randomPos[rangIndex];
+                int rangIndex = Random.Range(0, randomPos.Count);
 
-             randomPos.RemoveAt(rangIndex);
+                randomPoint = randomPos[rangIndex];
+
+                randomPos.RemoveAt(rangIndex);
             }
             else//如果多出来，则放到看不到的地方
             {
-                randomPoint = new Vector2(_screenPosLeftDown.x,Random.Range(1000f,2000f));
+                randomPoint = new Vector2(_screenPosLeftDown.x, Random.Range(1000f, 2000f));
             }
            
 

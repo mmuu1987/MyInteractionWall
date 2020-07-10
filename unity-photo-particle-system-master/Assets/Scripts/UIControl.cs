@@ -111,6 +111,8 @@ public class UIControl : MonoBehaviour
         {
             _Machine.ChangeState(DicUI[UIState.Close]);
         }));
+
+
         Btn2000_2009.transform.Find("Tip").gameObject.SetActive(true);
         Btn2000_2009.onClick.AddListener((() =>
         {
@@ -119,6 +121,9 @@ public class UIControl : MonoBehaviour
             Btn2010_2019.transform.Find("Tip").gameObject.SetActive(false);
             Btn2020.transform.Find("Tip").gameObject.SetActive(false);
         }));
+        Btn2000_2009.transform.Find("Text").GetComponent<Text>().text =SettingManager.Instance.GetDirectName(Direct.FirstDir);
+
+
 
         Btn2010_2019.onClick.AddListener((() =>
         {
@@ -127,6 +132,7 @@ public class UIControl : MonoBehaviour
             Btn2010_2019.transform.Find("Tip").gameObject.SetActive(true);
             Btn2020.transform.Find("Tip").gameObject.SetActive(false);
         }));
+        Btn2010_2019.transform.Find("Text").GetComponent<Text>().text = SettingManager.Instance.GetDirectName(Direct.SecondDir);
 
         Btn2020.onClick.AddListener((() =>
         {
@@ -135,6 +141,7 @@ public class UIControl : MonoBehaviour
             Btn2010_2019.transform.Find("Tip").gameObject.SetActive(false);
             Btn2020.transform.Find("Tip").gameObject.SetActive(true);
         }));
+        Btn2020.transform.Find("Text").GetComponent<Text>().text = SettingManager.Instance.GetDirectName(Direct.ThirdDir);
     }
     
 	// Use this for initialization

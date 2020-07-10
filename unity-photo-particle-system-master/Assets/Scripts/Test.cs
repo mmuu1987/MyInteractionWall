@@ -25,7 +25,7 @@ public class Test : MonoBehaviour, IDragHandler, IEndDragHandler
 
     public GameObject Quab;
 
-    
+
 
     public List<Texture2D> Texture2DOne;
 
@@ -33,13 +33,13 @@ public class Test : MonoBehaviour, IDragHandler, IEndDragHandler
 
     public Material CurMaterial;
 
-	// Use this for initialization
-	void Start ()
-	{
-       // HandleTextureArry(Texture2DOne, "_TexArrOne");
-       // HandleTextureArry(Texture2DTwo, "_TexArrTwo");
-	}
-    private void HandleTextureArry(List<Texture2D> textures,string texsName)
+    // Use this for initialization
+    void Start()
+    {
+        // HandleTextureArry(Texture2DOne, "_TexArrOne");
+        // HandleTextureArry(Texture2DTwo, "_TexArrTwo");
+    }
+    private void HandleTextureArry(List<Texture2D> textures, string texsName)
     {
         Texture2DArray texs;
         if (textures == null || textures.Count == 0)
@@ -67,31 +67,31 @@ public class Test : MonoBehaviour, IDragHandler, IEndDragHandler
 
         // using (Timer timer = new Timer(Timer.ETimerLogType.Tick))
         //{
-      
-            for (int i = 0; i < textures.Count; i++)
-            {
-                // 以下两行都可以 //
-                //Graphics.CopyTexture(textures[i], 0, texArr, i);
-                Graphics.CopyTexture(textures[i], 0, 0, texs, i, 0);
 
-            }
-        
-        
+        for (int i = 0; i < textures.Count; i++)
+        {
+            // 以下两行都可以 //
+            //Graphics.CopyTexture(textures[i], 0, texArr, i);
+            Graphics.CopyTexture(textures[i], 0, 0, texs, i, 0);
+
+        }
+
+
         //}
 
-            texs.wrapMode = TextureWrapMode.Clamp;
-            texs.filterMode = FilterMode.Bilinear;
+        texs.wrapMode = TextureWrapMode.Clamp;
+        texs.filterMode = FilterMode.Bilinear;
 
 
 
-            CurMaterial.SetTexture(texsName, texs);
+        CurMaterial.SetTexture(texsName, texs);
         //m_mat.SetFloat("_Index", Random.Range(0, textures.Length));
 
         //AssetDatabase.CreateAsset(texArr, "Assets/RogueX/Prefab/texArray.asset");
     }
-    private Vector3 [] QuadTest(Rect rect,int count,float z)
+    private Vector3[] QuadTest(Rect rect, int count, float z)
     {
-      
+
         //生成八个盒子，横列4个，竖列2个
         float width = rect.width; //480
         float height = rect.height;//540
@@ -133,23 +133,23 @@ public class Test : MonoBehaviour, IDragHandler, IEndDragHandler
         float wheightBig = heightBigpos.y - origin.y;
 
         //因为quad边长为1，对quab进行缩放加工，quad的位置的Z轴位置一定要正确
-        Quab.transform.localScale = new Vector3(wwidth,wheight,1f);
+        Quab.transform.localScale = new Vector3(wwidth, wheight, 1f);
 
 
         Vector3[] vector3S = new Vector3[row * column];
         //把小矩形填充整个大矩形
         int rowsTemp = 0;//横列个数    y轴概念
         //row*column 为实际上用到的quad个数
-        for (int i = 0; i < row*column; i++)
+        for (int i = 0; i < row * column; i++)
         {
-           // Vector3 pos = Vector3.zero;
+            // Vector3 pos = Vector3.zero;
             if (i != 0 && i % row == 0)
                 rowsTemp++;
             int columnTemp = i - rowsTemp * row;//竖列个数  x轴概念
 
-            Vector3 pos =new Vector3(origin.x,origin.y,0) +
+            Vector3 pos = new Vector3(origin.x, origin.y, 0) +
                 //这里的xy,存放的是倍数
-                new Vector3(wwidthBig *_rect.position.x, wheightBig * _rect.position.y, 0) + 
+                new Vector3(wwidthBig * _rect.position.x, wheightBig * _rect.position.y, 0) +
                 new Vector3(wwidth * columnTemp + wwidth / 2, wheight * rowsTemp + wheight / 2f, Quab.transform.position.z);
             vector3S[i] = pos;
         }
@@ -209,10 +209,10 @@ public class Test : MonoBehaviour, IDragHandler, IEndDragHandler
             _angle *= -1;
         }
         Debug.Log(_angle);
-         
+
         _timeTemp = 0f;
 
-       
+
 
         //算出角度后，再重新获取完整的向量
         _camToheadDir = Head.position - cam.position;
@@ -221,8 +221,8 @@ public class Test : MonoBehaviour, IDragHandler, IEndDragHandler
 
         _height = cam.position.y - Head.position.y;
 
-          GameObject go = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-            go.transform.position = cam.position;
+        GameObject go = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        go.transform.position = cam.position;
     }
 
 
@@ -237,8 +237,8 @@ public class Test : MonoBehaviour, IDragHandler, IEndDragHandler
             _timeTemp += Time.deltaTime * speed;
 
             Transform cam = Camera.main.transform;
-            
-            
+
+
 
             //不好理解可以先吧_timeTemp=1的时候理解
             //角度插值系数
@@ -295,29 +295,29 @@ public class Test : MonoBehaviour, IDragHandler, IEndDragHandler
         float far = Camera.main.farClipPlane;
         float aspect = Camera.main.aspect;
 
-        float top = near * Mathf.Tan(Mathf.Deg2Rad *(fov / 2));
+        float top = near * Mathf.Tan(Mathf.Deg2Rad * (fov / 2));
 
         float bottom = -top;
 
-        float right = top*aspect;
+        float right = top * aspect;
 
         float left = -right;
 
-         _projection = new Matrix4x4();
+        _projection = new Matrix4x4();
 
-        _projection.m00 = 2*near/(right - left);
+        _projection.m00 = 2 * near / (right - left);
 
-        _projection.m11 = 2*near/(top - bottom);
+        _projection.m11 = 2 * near / (top - bottom);
 
-        _projection.m02 = (right + left)/(right - left);
+        _projection.m02 = (right + left) / (right - left);
 
         _projection.m12 = (right - left) / (right + left);
 
-        _projection.m22 = -(far + near)/(far - near);
+        _projection.m22 = -(far + near) / (far - near);
 
         _projection.m32 = -1;
 
-        _projection.m23 = (-2*far*near)/(far - near);
+        _projection.m23 = (-2 * far * near) / (far - near);
 
         _projection.m12 = 0f;
 
@@ -334,9 +334,9 @@ public class Test : MonoBehaviour, IDragHandler, IEndDragHandler
         if (GUI.Button(new Rect(0f, 0f, 100f, 100f), "Test"))
         {
 
-           // MyScreenToWorldPoint(new Vector3(300, 400, 200));
-            MoveToHead();
-
+            // MyScreenToWorldPoint(new Vector3(300, 400, 200));
+            // MoveToHead();
+          StartCoroutine(  PrintPoints());
         }
     }
 
@@ -353,7 +353,7 @@ public class Test : MonoBehaviour, IDragHandler, IEndDragHandler
         Matrix4x4 p = Camera.main.projectionMatrix;
         //世界坐标到相机坐标矩阵
         Matrix4x4 v = Camera.main.worldToCameraMatrix;
-      
+
 
         Vector3 apiWorldPos = Camera.main.ScreenToWorldPoint(screenPos);
 
@@ -373,7 +373,7 @@ public class Test : MonoBehaviour, IDragHandler, IEndDragHandler
 
         float cz1 = -apiWorldPos.z + v.m23;//v.m13 为相机  cam.z 的值
 
-        Debug.Log("自己算法得到的世界坐标为 " + new Vector3(cx1,cy1,cz1));
+        Debug.Log("自己算法得到的世界坐标为 " + new Vector3(cx1, cy1, cz1));
 
         float cx2 = apiWorldPos.x - cam.x;
 
@@ -465,63 +465,50 @@ public class Test : MonoBehaviour, IDragHandler, IEndDragHandler
 
     }
     #endregion
-    private void Stwts()
+
+    private IEnumerator PrintPoints()
     {
-        Vector3 worldPos = Camera.main.ScreenToWorldPoint(new Vector3(300, 400, 200f));
 
-        Debug.Log("得到的世界的坐标为 " + worldPos);
+        int n = 0;
 
-        Matrix4x4 p = Camera.main.projectionMatrix;
+        while (true)
+        {
+            Debug.Log("run");
+            var v1 = GetPoints(8.211203f, -8.211203f, 4.46410f, -2.464101f, 0.55f, 1);
+            // Debug.Log("randomPos count is  " + v1.Count + " 层级为=> " + 1);
 
-        Matrix4x4 v = Camera.main.worldToCameraMatrix;
+           // var v2 = GetPoints(16.42241f, -16.42241f, 7.928202f, -5.928202f, 0.25f, 1.2f);
+            //  Debug.Log("randomPos count is  " + v2.Count + " 层级为=> " + 2);
 
-        Vector3 v1 = v.MultiplyPoint(worldPos);
+           // var v3 = GetPoints(24.63361f, -24.63361f, 11.3923f, -9.392303f, 0.18f, 1.4f);
+            // Debug.Log("randomPos count is  " + v3.Count + " 层级为=> " + 3);
 
-        Debug.Log("世界到相机的坐标为 " + v.MultiplyPoint(worldPos));
+            if (v1.Count < 50) Debug.LogError("计算错误v1< 30:    >>>>>>>>>>>>>" + v1.Count);
 
-        Vector3 v2 = p.MultiplyPoint(v1);
+            //if (v1.Count > v2.Count)
+            //{
+            //    Debug.LogError("计算错误v1>v2:    " + v1.Count + "    " + v2.Count);
+            //}
+            //else if (v2.Count > v3.Count)
+            //{
+            //    Debug.LogError("计算错误 v2>v3    " + v2.Count + "    " + v3.Count);
+            //}
+            //else if (v1.Count > v3.Count)
+            //{
+            //    Debug.LogError("计算错误 v1>v3    " + v1.Count + "    " + v3.Count);
+            //}
 
-        Vector3 v3 = _projection.MultiplyPoint(v1);
+            yield return null;
 
-        Debug.Log("v2 is " + v2 + "  v3 is" + v3);
+            n++;
+            if (n >= 1000) break;
+        }
 
-        Matrix4x4 pv = p * v;
+      
+    }
+    public List<Vector2> GetPoints(float x, float x1, float y, float y1, float scaleY, float s)
+    {
+        return Common.Sample2D((x - x1) * 4, (y - y1) * scaleY, s + 0.75f, 25);
 
-        Vector3 pos = pv.MultiplyPoint(worldPos);
-
-        Debug.Log("1  得到投影坐标为 " + pos + " z is " + pos.z);
-        //转为屏幕坐标，这时候z值就可以舍弃了，得到了屏幕二维坐标，xy
-        float x = pos.x * 0.5f + 0.5f;
-
-        float y = pos.y * 0.5f + 0.5f;
-
-        Vector3 newPos = new Vector3(x * 1920, y * 1080, pos.z);
-
-        Debug.Log("2   得到屏幕坐标为 " + newPos);
-
-        //屏幕坐标转为投影坐标,
-
-        float px = newPos.x / 1920f;
-
-        px = (px - 0.5f) / 0.5f;
-
-        float py = newPos.y / 1080f;
-
-        py = (py - 0.5f) / 0.5f;
-
-        Vector3 ppos = new Vector3(px, py, pos.z);
-
-        Debug.Log("3  得到投影坐标为 " + ppos);
-        //屏幕坐标转世界坐标 ，ppos的z要怎么计算才能得到正确的z
-        //就当ppos是一个新的屏幕坐标，我要怎么获取z的值呢,求大佬指教
-        Matrix4x4 vp = p * v;
-
-        Vector3 wpos = vp.inverse.MultiplyPoint(ppos);
-
-        Debug.Log("得到世界坐标为 " + wpos);
-
-        // UnprojectScreenToWorld(p,v,ref screenPos);
-
-        //再从相机坐标转世界坐标
     }
 }

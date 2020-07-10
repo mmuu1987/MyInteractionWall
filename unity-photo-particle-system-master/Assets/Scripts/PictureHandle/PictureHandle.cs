@@ -32,15 +32,23 @@ public class PictureHandle : MonoBehaviour
     public Texture2DArray TexArr { get; set; }
 
     public List<Texture2D> YearTexs = new List<Texture2D>();
-
+    /// <summary>
+    /// 所有的大事件集合
+    /// </summary>
     private List<YearsInfo> _yesrsInfos = new List<YearsInfo>();
+
+    private List<YearsInfo> _firstYearsInfos = new List<YearsInfo>(); 
+
+    private List<YearsInfo> _secondYearInfos = new List<YearsInfo>(); 
+
+    private List<YearsInfo> _thirdYearInfos = new List<YearsInfo>(); 
 
     public List<Texture2D> Texs = new List<Texture2D>();
 
 
-    private List<int> _index20012009;
-    private List<int> _index20102019;
-    private List<int> _index2020Max;
+    private List<int> _index1;
+    private List<int> _index2;
+    private List<int> _index3;
 
     /// <summary>
     /// 卓越风采
@@ -53,6 +61,13 @@ public class PictureHandle : MonoBehaviour
     public List<PersonInfo> HonorWall =new List<PersonInfo>();
 
     private GameObject _info;
+    private int _pictureIndex = 0;
+    public ComputeShader shader;
+
+    public int width = 10;//边框像素单位宽度
+
+    public int LableHeight = 10;//文字占有高度像素单位
+
 
     private void Awake()
     {
@@ -66,16 +81,38 @@ public class PictureHandle : MonoBehaviour
     }
     void Start()
     {
-        LoadPicture();
-        LoadTextureAssets();
+       // LoadPicture();
+
+       var infos1 = LoadPicture(SettingManager.Instance.Setting.FirstDir);
+       var infos2 = LoadPicture(SettingManager.Instance.Setting.SecondDir);
+       var infos3 = LoadPicture(SettingManager.Instance.Setting.ThirdDir);
+
+      _yesrsInfos.AddRange(infos1);
+
+      _yesrsInfos.AddRange(infos2);
+
+      _yesrsInfos.AddRange(infos3);
+
+     //  LoadTextureAssets();
+
+      _pictureIndex = 0;
+
+      _index1 = LoadTextureAssets(infos1);
+
+      _index2 = LoadTextureAssets(infos2);
+
+      _index3 = LoadTextureAssets(infos3);
+
+
+        //_index1 = GetYearIndex(1);
+        //_index2 = GetYearIndex(2);
+        //_index3 = GetYearIndex(3);
+
+
 
         LoadCompanyIntroductionPic();
         LoadPrivateHeirsPic();
         LoadPersonInfo();
-
-        _index20012009 = GetYearIndex(1);
-        _index20102019 = GetYearIndex(2);
-        _index2020Max = GetYearIndex(3);
 
 
         HandleTextureArry(Texs);
@@ -84,14 +121,7 @@ public class PictureHandle : MonoBehaviour
         _info = Resources.Load<GameObject>("Prefabs/Info");
         //预制体缩放，后面用来做缩放动画
         _info.transform.localScale = Vector3.one * 0.35f;
-        //LoadYearInfo();
-        // var temp = Common.Sample2D(1920, 1080, 1,10);
-
-        // Debug.Log(temp.Count);
-
-        //UnityEngine.SceneManagement.SceneManager.LoadScene("demo1");
-
-        //
+       
     }
 
    
@@ -114,13 +144,13 @@ public class PictureHandle : MonoBehaviour
         {
             case 0://2001-2009
 
-                indexs = _index20012009;
+                indexs = _index1;
                 break;
             case 1://2010-2019
-                indexs = _index20102019;
+                indexs = _index2;
                 break;
             case 2://2020-至今
-                indexs = _index2020Max;
+                indexs = _index3;
                 break;
             default:
                 Debug.Log("levle is " + level);
@@ -366,6 +396,77 @@ public class PictureHandle : MonoBehaviour
 
     }
 
+    public List<YearsInfo> LoadPicture(string path)
+    {
+        List<YearsInfo> years = new List<YearsInfo>();
+
+        DirectoryInfo directoryInfo = new DirectoryInfo(path);
+
+        DirectoryInfo[] infos = directoryInfo.GetDirectories();//获取年份目录
+        foreach (DirectoryInfo info in infos)
+        {
+            DirectoryInfo[] temps = info.GetDirectories();//获取年份下事件
+
+            YearsInfo tempYearsInfo = new YearsInfo();
+
+            tempYearsInfo.Years = info.Name;
+
+
+
+            tempYearsInfo.EventCount = temps.Length;
+
+
+            int index = 0;
+            foreach (DirectoryInfo temp in temps)
+            {
+                index++;
+                YearsEvent yearsEvent = new YearsEvent();
+
+                yearsEvent.Years = info.Name;
+                yearsEvent.IndexPos = index;
+
+
+                FileInfo[] fileInfos = temp.GetFiles();
+
+
+
+                foreach (FileInfo fileInfo in fileInfos)
+                {
+                    if (fileInfo.Extension == ".txt")
+                    {
+
+                        yearsEvent.DescribePath = fileInfo.FullName;
+
+                        byte[] bytes = File.ReadAllBytes(fileInfo.FullName);
+
+                        string str = Encoding.UTF8.GetString(bytes);
+
+                        yearsEvent.Describe = str;
+                    }
+                    else if (fileInfo.Extension == ".jpg" || fileInfo.Extension == ".JPG" || fileInfo.Extension == ".jpeg")
+                    {
+
+                        yearsEvent.PicturesPath.Add(fileInfo.FullName);
+                    }
+                    else if (fileInfo.Extension == ".mp4")
+                    {
+                        yearsEvent.YearEventVideo = fileInfo.FullName;
+                    }
+                    else if (fileInfo.Extension == ".png" || fileInfo.Extension == ".PNG")
+                    {
+                        yearsEvent.PicturesPath.Add(fileInfo.FullName);
+                        // Debug.Log(fileInfo.FullName);
+                    }
+                }
+                tempYearsInfo.yearsEvents.Add(yearsEvent);
+            }
+
+            years.Add(tempYearsInfo);
+        }
+        return years;
+
+    }
+
     public void LoadCompanyIntroductionPic()
     {
         CompanyAllTexList = new List<CompanyInfo>();
@@ -509,7 +610,7 @@ public class PictureHandle : MonoBehaviour
                 {
                     personInfo.DescribeFilePath = fileInfo.FullName;
                 }
-                else if (fileInfo.Extension == ".jpg" || fileInfo.Extension == ".JPG" )
+                else if (fileInfo.Extension == ".jpg" || fileInfo.Extension == ".JPG" ||fileInfo.Extension == ".jpeg")
                 {
                     personInfo.PicturePath = fileInfo.FullName;
                 }
@@ -650,15 +751,83 @@ public class PictureHandle : MonoBehaviour
             }
         }
 
-        // Debug.Log(Texs.Count);
+       
+    }
+
+   
+    public List<int> LoadTextureAssets( List<YearsInfo> yearInfos)
+    {
+        //先默认为512*512的图片,原始图片的长宽我们在用另外的vector2保存
+        //生成需要表现的图片
+        List<int> temps = new List<int>();
+       
+        foreach (YearsInfo yesrsInfo in yearInfos)
+        {
+            foreach (YearsEvent yearsEvent in yesrsInfo.yearsEvents)
+            {
+                if (yearsEvent.PicturesPath.Count <= 0)//如果没有图片，我们生成一个logo的先填充
+                {
+                    string s = Application.streamingAssetsPath + "/logo.png";
+
+                    Vector2 vector2;
+
+                    byte[] bytes = Common.MakeThumNail(s, Common.PictureWidth, Common.PictureHeight, "HW", out vector2);
+
+                    Texture2D tex = new Texture2D(Common.PictureWidth, Common.PictureHeight, TextureFormat.DXT1, false);
+
+                    tex.LoadImage(bytes);
+
+                    tex.Compress(true);
+
+                    tex.Apply();
+
+                    Texs.Add(tex);
+
+                    yearsEvent.PictureIndes.Add(_pictureIndex);
+                    temps.Add(_pictureIndex);
+                    yearsEvent.AddPictureInfo(_pictureIndex, vector2);
+
+                    _pictureIndex++;
+                }
+                else
+                    foreach (string s in yearsEvent.PicturesPath)
+                    {
+
+                        if (File.Exists(s))
+                        {
+
+                            Vector2 vector2;
+
+                            FileInfo fileInfo = new FileInfo(s);
+
+                            byte[] bytes = HandlePicture(yearsEvent.Years, fileInfo.DirectoryName, fileInfo.Name, out vector2);
+
+
+                            Texture2D tex = new Texture2D(Common.PictureWidth, Common.PictureHeight, TextureFormat.DXT1, false);
+
+                            tex.LoadImage(bytes);
+
+                            tex.Compress(true);
+
+                            tex.Apply();
+
+                            Texs.Add(tex);
+
+                            yearsEvent.PictureIndes.Add(_pictureIndex);
+                            temps.Add(_pictureIndex);
+                            yearsEvent.AddPictureInfo(_pictureIndex, vector2);
+
+                            _pictureIndex++;
+                        }
+
+                    }
+            }
+        }
+        return temps;
+
     }
    
-    public ComputeShader shader;
-
-    public int width = 10;//边框像素单位宽度
-
-    public int LableHeight = 10;//文字占有高度像素单位
-
+   
 
 
    

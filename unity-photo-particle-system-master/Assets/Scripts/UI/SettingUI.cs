@@ -60,7 +60,7 @@ public class SettingUI : MonoBehaviour
 
           if (!string.IsNullOrEmpty(dirName))
           {
-              SettingManager.Instance.ChangeDirectName(Direct.FirstDir, dirName);
+              //SettingManager.Instance.ChangeDirectName(Direct.FirstDir, dirName);
           }
 
          

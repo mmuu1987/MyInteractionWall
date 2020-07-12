@@ -471,23 +471,23 @@ public class PictureHandle : MonoBehaviour
     {
         CompanyAllTexList = new List<CompanyInfo>();
 
-        string path1 = Application.streamingAssetsPath + "/公司介绍/集团介绍";
+        string path1 = SettingManager.Instance.Setting.IcOne;
 
         CompanyAllTexList.Add(LoadCompanyIntroductionPic(path1));
 
-        string path2 = Application.streamingAssetsPath + "/公司介绍/基本信息";
+        string path2 = SettingManager.Instance.Setting.IcTwo;
         CompanyAllTexList.Add(LoadCompanyIntroductionPic(path2));
 
-        string path3 = Application.streamingAssetsPath + "/公司介绍/股东概况";
+        string path3 = SettingManager.Instance.Setting.IcThree;
         CompanyAllTexList.Add(LoadCompanyIntroductionPic(path3));
 
-        string path4 = Application.streamingAssetsPath + "/公司介绍/荣誉奖项";
+        string path4 = SettingManager.Instance.Setting.IcFour;
         CompanyAllTexList.Add(LoadCompanyIntroductionPic(path4));
 
-        string path5 = Application.streamingAssetsPath + "/公司介绍/产品体系";
+        string path5 = SettingManager.Instance.Setting.IcFive;
         CompanyAllTexList.Add(LoadCompanyIntroductionPic(path5));
 
-        string path6 = Application.streamingAssetsPath + "/公司介绍/服务体系";
+        string path6 = SettingManager.Instance.Setting.IcSix;
         CompanyAllTexList.Add(LoadCompanyIntroductionPic(path6));
     }
 
@@ -495,14 +495,14 @@ public class PictureHandle : MonoBehaviour
     {
         PrivateHeirsAllTexList = new List<CompanyInfo>();
 
-        string path1 = Application.streamingAssetsPath + "/私享传家/品牌介绍";
+        string path1 = SettingManager.Instance.Setting.PhOne;
 
         PrivateHeirsAllTexList.Add(LoadCompanyIntroductionPic(path1));
 
-        string path2 = Application.streamingAssetsPath + "/私享传家/尊享服务";
+        string path2 = SettingManager.Instance.Setting.PhTwo;
         PrivateHeirsAllTexList.Add(LoadCompanyIntroductionPic(path2));
 
-        string path3 = Application.streamingAssetsPath + "/私享传家/大湾区高净值中心";
+        string path3 = SettingManager.Instance.Setting.PhThree;
         PrivateHeirsAllTexList.Add(LoadCompanyIntroductionPic(path3));
 
     }

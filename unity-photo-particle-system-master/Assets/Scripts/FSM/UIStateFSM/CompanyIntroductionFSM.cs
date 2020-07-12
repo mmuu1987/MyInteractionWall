@@ -90,6 +90,7 @@ public class CompanyIntroductionFSM : UIStateFSM
             SetBtn(IntroduceTexs);
             SetHighlight(Introduce.transform);
         }));
+        Introduce.transform.Find("Text").GetComponent<Text>().text = SettingManager.Instance.GetDirectName(Direct.IcOne);
 
         Info.onClick.AddListener((() =>
         {
@@ -97,6 +98,7 @@ public class CompanyIntroductionFSM : UIStateFSM
             SetHighlight(Info.transform);
 
         }));
+        Info.transform.Find("Text").GetComponent<Text>().text = SettingManager.Instance.GetDirectName(Direct.IcTwo);
 
         Shareholder.onClick.AddListener((() =>
         {
@@ -104,6 +106,8 @@ public class CompanyIntroductionFSM : UIStateFSM
             SetHighlight(Shareholder.transform);
 
         }));
+        Shareholder.transform.Find("Text").GetComponent<Text>().text = SettingManager.Instance.GetDirectName(Direct.IcThree);
+
 
         Honor.onClick.AddListener((() =>
         {
@@ -111,18 +115,22 @@ public class CompanyIntroductionFSM : UIStateFSM
             SetHighlight(Honor.transform);
 
         }));
+        Honor.transform.Find("Text").GetComponent<Text>().text = SettingManager.Instance.GetDirectName(Direct.IcFour);
 
         Product.onClick.AddListener((() =>
         {
             SetBtn(ProductTexs);
             SetHighlight(Product.transform);
         }));
+        Product.transform.Find("Text").GetComponent<Text>().text = SettingManager.Instance.GetDirectName(Direct.IcFive);
 
         Service.onClick.AddListener((() =>
         {
             SetBtn(ServiceTexs);
             SetHighlight(Service.transform);
         }));
+        Service.transform.Find("Text").GetComponent<Text>().text = SettingManager.Instance.GetDirectName(Direct.IcSix);
+
         _highlights.Add(Introduce.transform.Find("Image").GetComponent<Image>());
         _highlights.Add(Info.transform.Find("Image").GetComponent<Image>());
         _highlights.Add(Shareholder.transform.Find("Image").GetComponent<Image>());

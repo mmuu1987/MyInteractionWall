@@ -79,19 +79,21 @@ public class PrivateHeirsFSM : UIStateFSM
             SetBtn(_brandTex);
             SetHighlight(BrandIntroductionBtn.transform);
         }));
+        BrandIntroductionBtn.transform.Find("Text").GetComponent<Text>().text = SettingManager.Instance.GetDirectName(Direct.PhOne);
 
         DawanDistrictBtn.onClick.AddListener((() =>
         {
             SetBtn(DawanTex);
             SetHighlight(DawanDistrictBtn.transform);
         }));
+        DawanDistrictBtn.transform.Find("Text").GetComponent<Text>().text = SettingManager.Instance.GetDirectName(Direct.PhTwo);
 
         ValueAddedServices.onClick.AddListener((() =>
         {
             SetBtn(ValueAddTex);
             SetHighlight(ValueAddedServices.transform);
         }));
-
+        ValueAddedServices.transform.Find("Text").GetComponent<Text>().text = SettingManager.Instance.GetDirectName(Direct.PhThree);
        
 
         _highlights.Add(BrandIntroductionBtn.transform.Find("Image").GetComponent<Image>());

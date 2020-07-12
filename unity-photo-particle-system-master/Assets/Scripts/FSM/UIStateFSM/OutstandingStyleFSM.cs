@@ -97,6 +97,7 @@ public class OutstandingStyleFSM : UIStateFSM
             _introduce.gameObject.SetActive(false);
             SetHighlight(HonorListBtn.transform);
         }));
+        HonorListBtn.transform.Find("Text").GetComponent<Text>().text = SettingManager.Instance.GetDirectName(Direct.OsOne);
 
         StandardList.onClick.AddListener((() =>
         {
@@ -106,6 +107,7 @@ public class OutstandingStyleFSM : UIStateFSM
             _introduce.gameObject.SetActive(false);
             SetHighlight(StandardList.transform);
         }));
+        StandardList.transform.Find("Text").GetComponent<Text>().text = SettingManager.Instance.GetDirectName(Direct.OsTwo);
 
         DoubleMillion.onClick.AddListener((() =>
         {
@@ -115,6 +117,8 @@ public class OutstandingStyleFSM : UIStateFSM
             _introduce.gameObject.SetActive(false);
             SetHighlight(DoubleMillion.transform);
         }));
+        DoubleMillion.transform.Find("Text").GetComponent<Text>().text = SettingManager.Instance.GetDirectName(Direct.OsThree);
+
 
         Parent.Find("introduce/Close").GetComponent<Button>().onClick.AddListener((() =>
        {

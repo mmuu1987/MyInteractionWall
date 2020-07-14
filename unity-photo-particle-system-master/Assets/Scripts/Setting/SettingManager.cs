@@ -193,6 +193,30 @@ public class Setting
 
     public Setting()
     {
+
+        string path = Application.streamingAssetsPath;//
+
+        DirectoryInfo temp = new DirectoryInfo(path);
+
+        FirstDir = temp + "/大事记/2001-2009";
+        SecondDir = temp + "/大事记/2010-2019";
+        ThirdDir = temp + "/大事记/2020";
+
+        IcOne = temp + "/公司介绍/集团介绍";
+        IcTwo = temp + "/公司介绍/基本信息";
+        IcThree = temp + "/公司介绍/股东概况";
+        IcFour = temp + "/公司介绍/荣誉奖项";
+        IcFive = temp + "/公司介绍/产品体系";
+        IcSix = temp + "/公司介绍/服务体系";
+
+        PhOne = temp + "/私享传家/品牌介绍";
+        PhTwo = temp + "/私享传家/尊享服务";
+        PhThree = temp + "/私享传家/大湾区高净值中心";
+
+        OsOne = temp + "/卓越风采/MDRT荣誉榜";
+        OsTwo = temp + "/卓越风采/2020年MDRT达标榜";
+        OsThree = temp + "/卓越风采/双百万储备力量";
+
         FirstDir = Application.streamingAssetsPath + "/大事记/2001-2009";
         SecondDir = Application.streamingAssetsPath + "/大事记/2010-2019";
         ThirdDir = Application.streamingAssetsPath + "/大事记/2020";

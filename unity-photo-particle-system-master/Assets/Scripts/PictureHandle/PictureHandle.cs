@@ -83,9 +83,9 @@ public class PictureHandle : MonoBehaviour
     {
        // LoadPicture();
 
-       var infos1 = LoadPicture(SettingManager.Instance.Setting.FirstDir);
-       var infos2 = LoadPicture(SettingManager.Instance.Setting.SecondDir);
-       var infos3 = LoadPicture(SettingManager.Instance.Setting.ThirdDir);
+       var infos1 = LoadPicture(SettingManager.Instance.GetDirectName(Direct.FirstDir,true));
+       var infos2 = LoadPicture(SettingManager.Instance.GetDirectName(Direct.SecondDir,true));
+       var infos3 = LoadPicture(SettingManager.Instance.GetDirectName(Direct.ThirdDir,true));
 
       _yesrsInfos.AddRange(infos1);
 
@@ -471,23 +471,23 @@ public class PictureHandle : MonoBehaviour
     {
         CompanyAllTexList = new List<CompanyInfo>();
 
-        string path1 = SettingManager.Instance.Setting.IcOne;
+        string path1 = SettingManager.Instance.GetDirectName(Direct.IcOne,true);
 
         CompanyAllTexList.Add(LoadCompanyIntroductionPic(path1));
 
-        string path2 = SettingManager.Instance.Setting.IcTwo;
+        string path2 = SettingManager.Instance.GetDirectName(Direct.IcTwo, true);
         CompanyAllTexList.Add(LoadCompanyIntroductionPic(path2));
 
-        string path3 = SettingManager.Instance.Setting.IcThree;
+        string path3 = SettingManager.Instance.GetDirectName(Direct.ThirdDir, true);
         CompanyAllTexList.Add(LoadCompanyIntroductionPic(path3));
 
-        string path4 = SettingManager.Instance.Setting.IcFour;
+        string path4 = SettingManager.Instance.GetDirectName(Direct.IcFour, true);
         CompanyAllTexList.Add(LoadCompanyIntroductionPic(path4));
 
-        string path5 = SettingManager.Instance.Setting.IcFive;
+        string path5 = SettingManager.Instance.GetDirectName(Direct.IcFive, true);
         CompanyAllTexList.Add(LoadCompanyIntroductionPic(path5));
 
-        string path6 = SettingManager.Instance.Setting.IcSix;
+        string path6 = SettingManager.Instance.GetDirectName(Direct.IcSix, true);
         CompanyAllTexList.Add(LoadCompanyIntroductionPic(path6));
     }
 
@@ -495,14 +495,14 @@ public class PictureHandle : MonoBehaviour
     {
         PrivateHeirsAllTexList = new List<CompanyInfo>();
 
-        string path1 = SettingManager.Instance.Setting.PhOne;
+        string path1 = SettingManager.Instance.GetDirectName(Direct.PhOne, true);
 
         PrivateHeirsAllTexList.Add(LoadCompanyIntroductionPic(path1));
 
-        string path2 = SettingManager.Instance.Setting.PhTwo;
+        string path2 = SettingManager.Instance.GetDirectName(Direct.PhTwo, true);
         PrivateHeirsAllTexList.Add(LoadCompanyIntroductionPic(path2));
 
-        string path3 = SettingManager.Instance.Setting.PhThree;
+        string path3 = SettingManager.Instance.GetDirectName(Direct.PhThree, true);
         PrivateHeirsAllTexList.Add(LoadCompanyIntroductionPic(path3));
 
     }

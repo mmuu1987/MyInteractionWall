@@ -54,71 +54,73 @@ public class SettingManager : Singleton<SettingManager>
     /// <summary>
     /// 获取文件夹名字
     /// </summary>
-    public string GetDirectName(Direct type)
+    public string GetDirectName(Direct type,bool isPath=false)
     {
 
         DirectoryInfo dif = null;
+        string path = Application.streamingAssetsPath+"/";
+        string temp = null;
         switch (type)
         {
             case Direct.None:
                 break;
             case Direct.FirstDir:
-                dif = new DirectoryInfo(Setting.FirstDir);
-                return dif.Name;
+                dif = new DirectoryInfo(path+Setting.FirstDir);
+                break;
             case Direct.SecondDir:
-                dif = new DirectoryInfo(Setting.SecondDir);
-                return dif.Name;
+                dif = new DirectoryInfo(path + Setting.SecondDir);
+                break;
             case Direct.ThirdDir:
-                dif = new DirectoryInfo(Setting.ThirdDir);
-                return dif.Name;
+                dif = new DirectoryInfo(path + Setting.ThirdDir);
+                break;
             case Direct.IcOne:
-                dif = new DirectoryInfo(Setting.IcOne);
-                return dif.Name;
+                dif = new DirectoryInfo(path + Setting.IcOne);
+                break;
             case Direct.IcTwo:
-                dif = new DirectoryInfo(Setting.IcTwo);
-                return dif.Name;
+                dif = new DirectoryInfo(path + Setting.IcTwo);
+                break;
             case Direct.IcThree:
-                dif = new DirectoryInfo(Setting.IcThree);
-                return dif.Name;
+                dif = new DirectoryInfo(path + Setting.IcThree);
+                break;
             case Direct.IcFour:
-                dif = new DirectoryInfo(Setting.IcFour);
-                return dif.Name;
+                dif = new DirectoryInfo(path + Setting.IcFour);
+                break;
             case Direct.IcFive:
-                dif = new DirectoryInfo(Setting.IcFive);
-                return dif.Name;
+                dif = new DirectoryInfo(path + Setting.IcFive);
+                break;
             case Direct.IcSix:
-                dif = new DirectoryInfo(Setting.IcSix);
-                return dif.Name;
+                dif = new DirectoryInfo(path + Setting.IcSix);
+                break;
             case Direct.PhOne:
-                dif = new DirectoryInfo(Setting.PhOne);
-                return dif.Name;
+                dif = new DirectoryInfo(path + Setting.PhOne);
+                break;
             case Direct.PhTwo:
-                dif = new DirectoryInfo(Setting.PhTwo);
-                return dif.Name;
+                dif = new DirectoryInfo(path + Setting.PhTwo);
+                break;
             case Direct.PhThree:
-                dif = new DirectoryInfo(Setting.PhThree);
-                return dif.Name;
+                dif = new DirectoryInfo(path + Setting.PhThree);
+                break;
             case Direct.OsOne:
-                dif = new DirectoryInfo(Setting.OsOne);
-                return dif.Name;
+                dif = new DirectoryInfo(path + Setting.OsOne);
+                break;
             case Direct.OsTwo:
-                dif = new DirectoryInfo(Setting.OsTwo);
-                return dif.Name;
+                dif = new DirectoryInfo(path + Setting.OsTwo);
+                break;
             case Direct.OsThree:
-                dif = new DirectoryInfo(Setting.OsThree);
-                return dif.Name;
+                dif = new DirectoryInfo(path + Setting.OsThree);
+                break;
 
 
             default:
                 throw new ArgumentOutOfRangeException("type", type, null);
         }
 
-        // ChangeDirectName(path, directName);
-
-
-        // SaveDirectInfo();
-        return null;
+        if (isPath) return dif.FullName;
+         return dif.Name;
+       
     }
+
+    
 
 
 
@@ -194,47 +196,28 @@ public class Setting
     public Setting()
     {
 
-        string path = Application.streamingAssetsPath;//
+      
 
-        DirectoryInfo temp = new DirectoryInfo(path);
+        FirstDir = "/大事记/2001-2009";
+        SecondDir =  "/大事记/2010-2019";
+        ThirdDir =  "/大事记/2020";
 
-        FirstDir = temp + "/大事记/2001-2009";
-        SecondDir = temp + "/大事记/2010-2019";
-        ThirdDir = temp + "/大事记/2020";
+        IcOne =  "/公司介绍/集团介绍";
+        IcTwo = "/公司介绍/基本信息";
+        IcThree =  "/公司介绍/股东概况";
+        IcFour =  "/公司介绍/荣誉奖项";
+        IcFive = "/公司介绍/产品体系";
+        IcSix =  "/公司介绍/服务体系";
 
-        IcOne = temp + "/公司介绍/集团介绍";
-        IcTwo = temp + "/公司介绍/基本信息";
-        IcThree = temp + "/公司介绍/股东概况";
-        IcFour = temp + "/公司介绍/荣誉奖项";
-        IcFive = temp + "/公司介绍/产品体系";
-        IcSix = temp + "/公司介绍/服务体系";
+        PhOne =  "/私享传家/品牌介绍";
+        PhTwo =  "/私享传家/尊享服务";
+        PhThree =  "/私享传家/大湾区高净值中心";
 
-        PhOne = temp + "/私享传家/品牌介绍";
-        PhTwo = temp + "/私享传家/尊享服务";
-        PhThree = temp + "/私享传家/大湾区高净值中心";
+        OsOne = "/卓越风采/MDRT荣誉榜";
+        OsTwo ="/卓越风采/2020年MDRT达标榜";
+        OsThree =  "/卓越风采/双百万储备力量";
 
-        OsOne = temp + "/卓越风采/MDRT荣誉榜";
-        OsTwo = temp + "/卓越风采/2020年MDRT达标榜";
-        OsThree = temp + "/卓越风采/双百万储备力量";
-
-        FirstDir = Application.streamingAssetsPath + "/大事记/2001-2009";
-        SecondDir = Application.streamingAssetsPath + "/大事记/2010-2019";
-        ThirdDir = Application.streamingAssetsPath + "/大事记/2020";
-
-        IcOne = Application.streamingAssetsPath + "/公司介绍/集团介绍";
-        IcTwo = Application.streamingAssetsPath + "/公司介绍/基本信息";
-        IcThree = Application.streamingAssetsPath + "/公司介绍/股东概况";
-        IcFour = Application.streamingAssetsPath + "/公司介绍/荣誉奖项";
-        IcFive = Application.streamingAssetsPath + "/公司介绍/产品体系";
-        IcSix = Application.streamingAssetsPath + "/公司介绍/服务体系";
-
-        PhOne = Application.streamingAssetsPath + "/私享传家/品牌介绍";
-        PhTwo = Application.streamingAssetsPath + "/私享传家/尊享服务";
-        PhThree = Application.streamingAssetsPath + "/私享传家/大湾区高净值中心";
-
-        OsOne = Application.streamingAssetsPath + "/卓越风采/MDRT荣誉榜";
-        OsTwo = Application.streamingAssetsPath + "/卓越风采/2020年MDRT达标榜";
-        OsThree = Application.streamingAssetsPath + "/卓越风采/双百万储备力量";
+    
     }
 
 

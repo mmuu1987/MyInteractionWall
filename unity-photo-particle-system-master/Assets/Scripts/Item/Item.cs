@@ -68,7 +68,11 @@ public class Item : MonoBehaviour, IDragHandler, IPointerClickHandler,IPointerDo
          {
              //Debug.Log("previous");
              _curIndex--;
-             if (_curIndex < 0) _curIndex=0;
+             if (_curIndex < 1)
+             {
+                 _curIndex=1;
+               
+             }
 
              _mat.SetInt("_Index", textureIndex[_curIndex]);
              ShowImage(_curIndex);
@@ -77,8 +81,14 @@ public class Item : MonoBehaviour, IDragHandler, IPointerClickHandler,IPointerDo
              _image.gameObject.SetActive(true);
 
              _image.SetNativeSize();
-            
 
+             if (_curIndex == 1)
+             {
+                 this.transform.Find("previous").gameObject.SetActive(false);
+                 this.transform.Find("next").gameObject.SetActive(true);
+             }
+
+           
          }));
          this.transform.Find("next").GetComponent<Button>().onClick.AddListener((() =>
          {
@@ -86,6 +96,10 @@ public class Item : MonoBehaviour, IDragHandler, IPointerClickHandler,IPointerDo
              _curIndex ++;
              if (_curIndex >= textureIndex.Count)
              {
+
+                 this.transform.Find("previous").gameObject.SetActive(true);
+                 this.transform.Find("next").gameObject.SetActive(false);
+
                  if (_curIndex == textureIndex.Count)
                  {
                      if (!string.IsNullOrEmpty(_mp4Url))
@@ -199,13 +213,12 @@ public class Item : MonoBehaviour, IDragHandler, IPointerClickHandler,IPointerDo
              this.transform.Find("previous").gameObject.SetActive(false);
              this.transform.Find("next").gameObject.SetActive(false);
         }
-
-
-        _mp4Url = "";
-
-        if (!string.IsNullOrEmpty(_mp4Url))
+        if (!string.IsNullOrEmpty(yearsEvent.YearEventVideo))
         {
+            _mp4Url = "file://" + yearsEvent.YearEventVideo;
             _videoPlayer.url = _mp4Url;
+            this.transform.Find("previous").gameObject.SetActive(false);
+            this.transform.Find("next").gameObject.SetActive(true);
         }
 
         _mat.SetTexture("_TexArrOne", texArry);
@@ -230,7 +243,7 @@ public class Item : MonoBehaviour, IDragHandler, IPointerClickHandler,IPointerDo
 
         // temp.y -= PictureHandle.Instance.LableHeight;
         //图片的容器的宽高
-        Vector2 size = _image.rectTransform.sizeDelta;//max 800  600
+        Vector2 size =new Vector2(800f,600f);//max 800  600
         float scaleY = 1;
         if((int)temp.x !=842 && (int)temp.y!=223)//logo文件不参与边框和年份标题处理
          scaleY = temp.y / (temp.y + PictureHandle.Instance.LableHeight + 2 * PictureHandle.Instance.width);

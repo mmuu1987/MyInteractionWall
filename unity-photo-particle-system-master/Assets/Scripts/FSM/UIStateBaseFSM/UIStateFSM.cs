@@ -99,8 +99,6 @@ public class UIStateFSM : FsmState<UIControl>
     {
         Texture2D tex = Resources.Load<Texture2D>("暂停");
 
-
-
         foreach (string videoPath in videoPaths)
         {
 

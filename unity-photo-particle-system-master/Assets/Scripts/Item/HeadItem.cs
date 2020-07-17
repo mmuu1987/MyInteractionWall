@@ -72,7 +72,7 @@ public class HeadItem : MonoBehaviour
 
         _head.sprite = info.headTex;
 
-        StartCoroutine(Common.WaitTime(10f, (() =>
+        StartCoroutine(Common.WaitTime(40f, (() =>
         {
             Destroy(this.gameObject);
         })));

@@ -710,7 +710,7 @@ public class PictureHandle : MonoBehaviour
 
                     Texs.Add(tex);
 
-                    yearsEvent.PictureIndes.Add(pictureIndex);
+                    //yearsEvent.PictureIndes.Add(pictureIndex);
 
                     yearsEvent.AddPictureInfo(pictureIndex, vector2);
 
@@ -740,7 +740,7 @@ public class PictureHandle : MonoBehaviour
 
                             Texs.Add(tex);
 
-                            yearsEvent.PictureIndes.Add(pictureIndex);
+                            //yearsEvent.PictureIndes.Add(pictureIndex);
 
                             yearsEvent.AddPictureInfo(pictureIndex, vector2);
 
@@ -783,7 +783,7 @@ public class PictureHandle : MonoBehaviour
 
                     Texs.Add(tex);
 
-                    yearsEvent.PictureIndes.Add(_pictureIndex);
+                   // yearsEvent.PictureIndes.Add(_pictureIndex);
                     temps.Add(_pictureIndex);
                     yearsEvent.AddPictureInfo(_pictureIndex, vector2);
 
@@ -813,7 +813,7 @@ public class PictureHandle : MonoBehaviour
 
                             Texs.Add(tex);
 
-                            yearsEvent.PictureIndes.Add(_pictureIndex);
+                          //  yearsEvent.PictureIndes.Add(_pictureIndex);
                             temps.Add(_pictureIndex);
                             yearsEvent.AddPictureInfo(_pictureIndex, vector2);
 
@@ -1161,6 +1161,7 @@ public class YearsEvent
 
     public void AddPictureInfo(int index, Vector2 size)
     {
+        if (!PictureIndes.Contains(index))
         PictureIndes.Add(index);
         PictureInfos.Add(index, size);
     }

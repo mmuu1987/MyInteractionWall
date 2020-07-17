@@ -68,9 +68,9 @@ public class Item : MonoBehaviour, IDragHandler, IPointerClickHandler,IPointerDo
          {
              //Debug.Log("previous");
              _curIndex--;
-             if (_curIndex < 1)
+             if (_curIndex < 0)
              {
-                 _curIndex=1;
+                 _curIndex=0;
                
              }
 
@@ -82,9 +82,14 @@ public class Item : MonoBehaviour, IDragHandler, IPointerClickHandler,IPointerDo
 
              _image.SetNativeSize();
 
-             if (_curIndex == 1)
+             if (_curIndex == 0)
              {
                  this.transform.Find("previous").gameObject.SetActive(false);
+                 this.transform.Find("next").gameObject.SetActive(true);
+             }
+             else
+             {
+                 this.transform.Find("previous").gameObject.SetActive(true);
                  this.transform.Find("next").gameObject.SetActive(true);
              }
 
@@ -128,6 +133,9 @@ public class Item : MonoBehaviour, IDragHandler, IPointerClickHandler,IPointerDo
                  ShowImage(_curIndex);
                  _videoImage.gameObject.SetActive(false);
                  _image.gameObject.SetActive(true);
+
+                 this.transform.Find("previous").gameObject.SetActive(true);
+                 this.transform.Find("next").gameObject.SetActive(true);
                 
              }
 
@@ -208,7 +216,7 @@ public class Item : MonoBehaviour, IDragHandler, IPointerClickHandler,IPointerDo
 
          _image.material = _mat;
 
-        if (yearsEvent.PictureIndes.Count == 2)
+        if (yearsEvent.PictureIndes.Count == 1)
         {
              this.transform.Find("previous").gameObject.SetActive(false);
              this.transform.Find("next").gameObject.SetActive(false);

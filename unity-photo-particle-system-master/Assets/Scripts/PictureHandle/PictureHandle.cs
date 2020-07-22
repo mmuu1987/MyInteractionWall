@@ -565,11 +565,11 @@ public class PictureHandle : MonoBehaviour
 
     public void LoadPersonInfo()
     {
-        string path1 = Application.streamingAssetsPath + "/卓越风采/MDRT荣誉榜";
+        string path1 =  SettingManager.Instance.GetDirectName(Direct.OsOne, true);
        PersonInfos.Add(LoadPersonInfo(path1));
-       string path2 = Application.streamingAssetsPath + "/卓越风采/2020年MDRT达标榜";
+       string path2 = SettingManager.Instance.GetDirectName(Direct.OsTwo, true);
        PersonInfos.Add(LoadPersonInfo(path2));
-       string path3 = Application.streamingAssetsPath + "/卓越风采/双百万储备力量";
+       string path3 = SettingManager.Instance.GetDirectName(Direct.OsThree, true);
        PersonInfos.Add(LoadPersonInfo(path3));
 
 
@@ -586,6 +586,7 @@ public class PictureHandle : MonoBehaviour
 
         List<PersonInfo> personInfos = new List<PersonInfo>();
       
+
 
         DirectoryInfo directoryInfo = new DirectoryInfo(path);
 

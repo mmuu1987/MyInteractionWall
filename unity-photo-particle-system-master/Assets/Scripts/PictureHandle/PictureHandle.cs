@@ -478,7 +478,7 @@ public class PictureHandle : MonoBehaviour
         string path2 = SettingManager.Instance.GetDirectName(Direct.IcTwo, true);
         CompanyAllTexList.Add(LoadCompanyIntroductionPic(path2));
 
-        string path3 = SettingManager.Instance.GetDirectName(Direct.ThirdDir, true);
+        string path3 = SettingManager.Instance.GetDirectName(Direct.IcThree, true);
         CompanyAllTexList.Add(LoadCompanyIntroductionPic(path3));
 
         string path4 = SettingManager.Instance.GetDirectName(Direct.IcFour, true);

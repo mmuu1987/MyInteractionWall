@@ -67,9 +67,11 @@ public class PrivateHeirsFSM : UIStateFSM
 
         _brandTex = PictureHandle.Instance.PrivateHeirsAllTexList[0].TexInfo;
 
-        ValueAddTex = PictureHandle.Instance.PrivateHeirsAllTexList[1].TexInfo;
+        DawanTex = PictureHandle.Instance.PrivateHeirsAllTexList[1].TexInfo;
 
-        DawanTex = PictureHandle.Instance.PrivateHeirsAllTexList[2].TexInfo;
+        ValueAddTex = PictureHandle.Instance.PrivateHeirsAllTexList[2].TexInfo;
+
+    
 
 
       
@@ -107,6 +109,7 @@ public class PrivateHeirsFSM : UIStateFSM
         AddVideoTex(_brandTex, PictureHandle.Instance.PrivateHeirsAllTexList[0].VideoInfo);
         AddVideoTex(DawanTex, PictureHandle.Instance.PrivateHeirsAllTexList[1].VideoInfo);
         AddVideoTex(ValueAddTex, PictureHandle.Instance.PrivateHeirsAllTexList[2].VideoInfo);
+      
 
     }
 

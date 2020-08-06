@@ -1,0 +1,95 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+
+public class ScaleImage : MonoBehaviour
+{
+
+
+    public RawImage SrcRawImage;
+
+    public RawImage DstRawImage;
+
+    public Texture2D TargeTexture2D;
+
+    public ComputeShader ScaleImageComputeShader;
+
+    /// <summary>
+    /// 缩放的宽度倍数
+    /// </summary>
+    public float WidthScale = 0.5f;
+    /// <summary>
+    /// 缩放的高度倍数
+    /// </summary>
+    public float HeightScale = 0.5f;
+	// Use this for initialization
+	void Start () {
+		
+	}
+	
+	// Update is called once per frame
+	void Update () {
+		
+	}
+
+    public void ScaleImageUserRt()
+    {
+
+        ////////////////////////////////////////
+        //    RenderTexture
+        ////////////////////////////////////////
+        //1 新建RenderTexture
+        RenderTexture rtSrc = new RenderTexture(TargeTexture2D.width, TargeTexture2D.height, 24);
+        //2 开启随机写入
+        rtSrc.enableRandomWrite = true;
+        //3 创建RenderTexture
+        rtSrc.Create();
+
+        RenderTexture rtDes = new RenderTexture((int)(TargeTexture2D.width ), (int)(TargeTexture2D.height ), 24);
+        rtDes.enableRandomWrite = true;
+        rtDes.Create();
+
+
+        ////////////////////////////////////////
+        //    Compute Shader
+        ////////////////////////////////////////
+        //1 找到compute shader中所要使用的KernelID
+        int k = ScaleImageComputeShader.FindKernel("CSMain");
+        //2 设置贴图    参数1=kid  参数2=shader中对应的buffer名 参数3=对应的texture, 如果要写入贴图，贴图必须是RenderTexture并enableRandomWrite
+        ScaleImageComputeShader.SetTexture(k, "Source", TargeTexture2D);
+        ScaleImageComputeShader.SetTexture(k, "Result", rtSrc);
+        ScaleImageComputeShader.SetTexture(k, "Dst", rtDes);
+        ScaleImageComputeShader.SetFloat( "widthScale", WidthScale);
+        ScaleImageComputeShader.SetFloat( "heightScale", HeightScale);
+       
+
+
+
+        //Debug.Log("tex info width is " + texWidth + "  Height is " + texHeight);
+        //3 运行shader  参数1=kid  参数2=线程组在x维度的数量 参数3=线程组在y维度的数量 参数4=线程组在z维度的数量
+        ScaleImageComputeShader.Dispatch(k, TargeTexture2D.width, TargeTexture2D.height, 1);
+
+        //RenderTexture.active = rtDes;
+
+        //Texture2D jpg = new Texture2D(rtDes.width, rtDes.height, TextureFormat.ARGB32, false);
+        //jpg.ReadPixels(new Rect(0, 0, rtDes.width, rtDes.height), 0, 0);
+        //RenderTexture.active = null;
+        //byte[] bytesEnd = jpg.EncodeToJPG();
+
+        SrcRawImage.texture = TargeTexture2D;
+        DstRawImage.texture = rtDes;
+
+
+
+    }
+
+
+    private void OnGUI()
+    {
+        if (GUI.Button(new Rect(0f, 0f, 100f, 100f), "test"))
+        {
+            ScaleImageUserRt();
+        }
+    }
+}

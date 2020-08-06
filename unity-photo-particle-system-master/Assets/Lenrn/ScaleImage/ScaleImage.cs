@@ -36,17 +36,9 @@ public class ScaleImage : MonoBehaviour
     public void ScaleImageUserRt()
     {
 
-        ////////////////////////////////////////
-        //    RenderTexture
-        ////////////////////////////////////////
-        //1 新建RenderTexture
-        RenderTexture rtSrc = new RenderTexture(TargeTexture2D.width, TargeTexture2D.height, 24);
-        //2 开启随机写入
-        rtSrc.enableRandomWrite = true;
-        //3 创建RenderTexture
-        rtSrc.Create();
+       
 
-        RenderTexture rtDes = new RenderTexture((int)(TargeTexture2D.width ), (int)(TargeTexture2D.height ), 24);
+        RenderTexture rtDes = new RenderTexture((int)(TargeTexture2D.width * WidthScale), (int)(TargeTexture2D.height * HeightScale), 24);
         rtDes.enableRandomWrite = true;
         rtDes.Create();
 
@@ -58,7 +50,7 @@ public class ScaleImage : MonoBehaviour
         int k = ScaleImageComputeShader.FindKernel("CSMain");
         //2 设置贴图    参数1=kid  参数2=shader中对应的buffer名 参数3=对应的texture, 如果要写入贴图，贴图必须是RenderTexture并enableRandomWrite
         ScaleImageComputeShader.SetTexture(k, "Source", TargeTexture2D);
-        ScaleImageComputeShader.SetTexture(k, "Result", rtSrc);
+       
         ScaleImageComputeShader.SetTexture(k, "Dst", rtDes);
         ScaleImageComputeShader.SetFloat( "widthScale", WidthScale);
         ScaleImageComputeShader.SetFloat( "heightScale", HeightScale);
@@ -68,7 +60,7 @@ public class ScaleImage : MonoBehaviour
 
         //Debug.Log("tex info width is " + texWidth + "  Height is " + texHeight);
         //3 运行shader  参数1=kid  参数2=线程组在x维度的数量 参数3=线程组在y维度的数量 参数4=线程组在z维度的数量
-        ScaleImageComputeShader.Dispatch(k, TargeTexture2D.width, TargeTexture2D.height, 1);
+        ScaleImageComputeShader.Dispatch(k, (int)(TargeTexture2D.width * WidthScale), (int)(TargeTexture2D.height * HeightScale), 1);
 
         //RenderTexture.active = rtDes;
 

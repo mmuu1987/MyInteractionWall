@@ -24,10 +24,25 @@ public class ScaleImage : MonoBehaviour
     /// </summary>
     public float HeightScale = 0.5f;
 	// Use this for initialization
-	void Start () {
-		
+	void Start ()
+	{
+
+	    Standardization();
 	}
-	
+
+    private void Standardization()
+    {
+        bool isStand = !(WidthScale <= 0f || HeightScale <= 0f);
+
+        if (ScaleImageComputeShader == null || TargeTexture2D == null || DstRawImage == null || SrcRawImage == null)
+            isStand = false;
+
+        if (!isStand)
+        {
+            throw new UnityException("变量数据不符合规范");
+        }
+
+    }
 	// Update is called once per frame
 	void Update () {
 		
@@ -48,9 +63,8 @@ public class ScaleImage : MonoBehaviour
         ////////////////////////////////////////
         //1 找到compute shader中所要使用的KernelID
         int k = ScaleImageComputeShader.FindKernel("CSMain");
-        //2 设置贴图    参数1=kid  参数2=shader中对应的buffer名 参数3=对应的texture, 如果要写入贴图，贴图必须是RenderTexture并enableRandomWrite
+
         ScaleImageComputeShader.SetTexture(k, "Source", TargeTexture2D);
-       
         ScaleImageComputeShader.SetTexture(k, "Dst", rtDes);
         ScaleImageComputeShader.SetFloat( "widthScale", WidthScale);
         ScaleImageComputeShader.SetFloat( "heightScale", HeightScale);
@@ -71,7 +85,7 @@ public class ScaleImage : MonoBehaviour
 
         SrcRawImage.texture = TargeTexture2D;
         DstRawImage.texture = rtDes;
-
+        DstRawImage.SetNativeSize();
 
 
     }

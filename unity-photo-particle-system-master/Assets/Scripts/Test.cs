@@ -243,7 +243,7 @@ public class Test : MonoBehaviour, IDragHandler, IEndDragHandler
             //不好理解可以先吧_timeTemp=1的时候理解
             //角度插值系数
             float lerpValue = Mathf.Lerp(0f, _angle, _timeTemp);
-            Debug.Log(lerpValue);
+            //Debug.Log(lerpValue);
             //高度插值系数
             float tempHeight = Mathf.Lerp(0f, _height, _timeTemp);
             //距离插值系数
@@ -264,7 +264,7 @@ public class Test : MonoBehaviour, IDragHandler, IEndDragHandler
             // newDir * dis单位向量乘以长度得到长度为dis的向量
             cam.position = Head.position + newDir * dis;//
 
-
+           
             //旋转相对容易，难得是位置
             cam.transform.forward = Vector3.Lerp(cam.transform.forward, (-newDir).normalized, _timeTemp);//使相机慢慢朝向脸 timeTemp可另外使用一个变量参数
 
@@ -335,8 +335,8 @@ public class Test : MonoBehaviour, IDragHandler, IEndDragHandler
         {
 
             // MyScreenToWorldPoint(new Vector3(300, 400, 200));
-            // MoveToHead();
-          StartCoroutine(  PrintPoints());
+             MoveToHead();
+        //  StartCoroutine(  PrintPoints());
         }
     }
 

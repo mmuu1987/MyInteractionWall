@@ -89,7 +89,7 @@
         Pass {
 
            Tags { "Queue"="Transparent"   "RenderType"="Transparent"   "IgnoreProjection" = "True"}
-		   ZWrite off
+		   ZWrite on
 		   Blend SrcAlpha  OneMinusSrcAlpha
            CGPROGRAM
 

@@ -614,6 +614,8 @@ public class PictureHandle : MonoBehaviour
                 else if (fileInfo.Extension == ".jpg" || fileInfo.Extension == ".JPG" ||fileInfo.Extension == ".jpeg")
                 {
                     personInfo.PicturePath = fileInfo.FullName;
+                    //Debug.Log(fileInfo.FullName + "      "+ info.Name);
+                   
                 }
                 else if (fileInfo.Extension == ".mp4")
                 {
@@ -660,7 +662,8 @@ public class PictureHandle : MonoBehaviour
 
                     tex.Apply();
 
-
+                    //if (personInfo.PersonName == "谢志红")
+                    //    Debug.Log("找到了该人的名字 index is  " + index);
 
                     personInfo.PictureIndex = index;
 

@@ -111,6 +111,8 @@ public class HonorWallItem : MonoBehaviour
 
             int index = (int)(Common.PictureIndex % infos.Count);
 
+           // Debug.Log("PictureIndex is " + Common.PictureIndex + "      index is " + index);
+
             Common.PictureIndex++;
 
             var sprite = infos[index].headTex;
@@ -118,7 +120,10 @@ public class HonorWallItem : MonoBehaviour
             image.sprite = sprite;
 
             if (image.sprite != null)
+            {
                 image.name = image.sprite.name;
+               
+            }
         }
     }
     /// <summary>

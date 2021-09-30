@@ -44,7 +44,7 @@ public class COMShader2 : MonoBehaviour
 
         mat.SetPass(0);
 
-        Graphics.DrawProcedural(MeshTopology.Points, number);
+        Graphics.DrawProceduralNow(MeshTopology.Points, number);
 
 
     }
